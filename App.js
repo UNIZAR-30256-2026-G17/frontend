@@ -1,20 +1,38 @@
-import { StatusBar } from 'expo-status-bar';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Container } from './src/components/Container';
+import { theme } from './src/theme/theme';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Container>
+      <View style={styles.contentArea}>
+        <Text style={styles.welcomeText}>
+          ¡Bienvenido a Montgomery App!
+        </Text>
+        <Text style={styles.subText}>
+          Selecciona una pestaña en la cabecera para comenzar o inicia sesión.
+        </Text>
+      </View>
+    </Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  contentArea: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  welcomeText: {
+    fontSize: 24,
+    color: theme.colors.text,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  subText: {
+    fontSize: 16,
+    color: theme.colors.text,
+    textAlign: 'center',
   },
 });
