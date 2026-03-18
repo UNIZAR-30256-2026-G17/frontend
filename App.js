@@ -8,7 +8,7 @@ export default function App() {
     <Container>
       <View style={styles.contentArea}>
         <Text style={styles.welcomeText}>
-          ¡Bienvenido a Montgomery App!
+          ¡Bienvenido a Montgomery SafetyMap App!
         </Text>
         <Text style={styles.subText}>
           Selecciona una pestaña en la cabecera para comenzar o inicia sesión.
