@@ -1,32 +1,83 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Container } from '../components/layout/Container';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
 
 import { theme } from '../theme';
 
 export const HomeScreen = () => {
     return (
         <Container>
-            <Text style={styles.welcomeText}>
-                ¡Bienvenido a Montgomery SafetyMap App!
-            </Text>
-            <Text style={styles.subText}>
-                Selecciona una pestaña en la cabecera para comenzar o inicia sesión.
-            </Text>
+            <View style={styles.container}>
+                <Text style={styles.welcomeText}>
+                    ¡Bienvenido a Montgomery SafetyMap App!
+                </Text>
+
+                <Text style={styles.text}>
+                    Botones disponibles:
+                </Text>
+                <View style={styles.sameRow}>
+                    <Button
+                        title="Botón primario"
+                        icon="user"
+                        variant="primary"
+                        onPress={() => console.log('Botón primario presionado')}
+                    />
+                    <Button
+                        title="Botón secundario"
+                        icon="user"
+                        variant="secondary"
+                        onPress={() => console.log('Botón secundario presionado')}
+                    />
+                    <Button
+                        title="Botón de cabecera"
+                        icon="user"
+                        variant="header"
+                        onPress={() => console.log('Botón de cabecera presionado')}
+                    />
+                </View>
+
+                <Text style={styles.text}>
+                    Cards disponibles:
+                </Text>
+                <Card
+                    title="Zona segura"
+                    description="No se han reportado incidentes recientes"
+                />
+                <Card
+                    title="Zona peligrosa"
+                    description="Alta incidencia de robos"
+                    icon="warning"
+                />
+                <Card
+                    title="Estadísticas"
+                    description="Estadísticas de esta semana"
+                    icon="bar-chart"
+                >
+                    <Text style={{ color: 'white' }}>
+                        12 incidentes esta semana
+                    </Text>
+                </Card>
+            </View>
         </Container>
     );
 };
 
 const styles = StyleSheet.create({
-    welcomeText: {
-        fontSize: 24,
-        color: theme.colors.text,
-        fontWeight: 'bold',
-        marginBottom: 10,
+    container: {
+        flex: 1,
     },
-    subText: {
-        fontSize: 16,
+    welcomeText: {
+        ...theme.typography.pageTitle,
         color: theme.colors.text,
-        textAlign: 'center',
+    },
+    text: {
+        ...theme.typography.body,
+        color: theme.colors.text,
+    },
+    sameRow: {
+        flexDirection: 'row',
+        gap: 10,
     },
 });
