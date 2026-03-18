@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Container } from '../components/Container';
+import { Container } from '../components/layout/Container';
 import { theme } from '../theme/theme';
 
 export const HomeScreen = () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { theme } from '../theme/theme';
-import { Button } from './Button';
+import { theme } from '../../theme/theme';
+import { Button } from '../ui/Button';
 
 export const Header = () => {
   return (

@@ -1,10 +1,10 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { theme } from '../theme/theme';
+import { theme } from '../../theme/theme';
 
 export const Button = ({ title, onPress, variant = 'primary', style }) => {
   const isPrimary = variant === 'primary';
-  
+
   return (
     <TouchableOpacity
       style={[

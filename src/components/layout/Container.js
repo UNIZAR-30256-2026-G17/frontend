@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, SafeAreaView, Platform, StatusBar } from 'react-native';
-import { theme } from '../theme/theme';
+import { theme } from '../../theme/theme';
 import { Header } from './Header';
 
 export const Container = ({ children }) => {
