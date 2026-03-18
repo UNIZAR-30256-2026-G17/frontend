@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 import { Container } from '../components/layout/Container';
@@ -6,10 +6,21 @@ import { Container } from '../components/layout/Container';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import Input from '../components/ui/Input';
+import Dropdown from '../components/ui/Dropdown';
 
 import { theme } from '../theme';
 
 export const HomeScreen = () => {
+    const options = [
+        { label: 'Madrid', value: 'madrid' },
+        { label: 'Barcelona', value: 'barcelona' },
+        { label: 'Valencia', value: 'valencia' },
+    ];
+
+    const [selectedOption, setSelectedOption] = useState(options[0]);
+    const [noSelectedOption, setNoSelectedOption] = useState(null);
+
+
     return (
         <Container>
             <View style={styles.container}>
@@ -109,6 +120,24 @@ export const HomeScreen = () => {
                         secureTextEntry
                     />
                 </View>
+
+                {/* DROPDOWNS DISPONIBLES */}
+                <Text style={styles.text}>
+                    Dropdowns disponibles:
+                </Text>
+                <View style={styles.sameRow}>
+                    <Dropdown
+                        options={options}
+                        selected={selectedOption}
+                        onSelect={setSelectedOption}
+                    />
+                    <Dropdown
+                        options={options}
+                        selected={noSelectedOption}
+                        onSelect={setNoSelectedOption}
+                    />
+                </View>
+
 
             </View>
         </Container>
