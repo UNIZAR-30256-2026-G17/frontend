@@ -1,20 +1,21 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+
+import AppNavigator from './src/navigation/AppNavigator';
 import { Container } from './src/components/Container';
+
 import { theme } from './src/theme/theme';
+
 
 export default function App() {
   return (
-    <Container>
-      <View style={styles.contentArea}>
-        <Text style={styles.welcomeText}>
-          ¡Bienvenido a Montgomery SafetyMap App!
-        </Text>
-        <Text style={styles.subText}>
-          Selecciona una pestaña en la cabecera para comenzar o inicia sesión.
-        </Text>
-      </View>
-    </Container>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <AppNavigator />
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 
