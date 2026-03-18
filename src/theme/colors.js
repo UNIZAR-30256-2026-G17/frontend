@@ -46,4 +46,13 @@ export const colors = {
   inputPlaceholder: '#B3B3B3',
   inputLabel: '#FFFFFF',
   inputIcon: '#FFFFFF',
+
+  // Dropdown
+  dropdownBackground: 'transparent',
+  dropdownBorder: '#FFFFFF',
+  dropdownText: '#FFFFFF',
+  dropdownIcon: '#FFFFFF',
+  dropdownOptionBackground: 'transparent',
+  dropdownOptionText: '#FFFFFF',
+  dropdownOptionBorder: '#FFFFFF',
 };
