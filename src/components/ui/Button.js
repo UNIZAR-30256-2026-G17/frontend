@@ -1,53 +1,93 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { theme } from '../../theme/theme';
+import { FontAwesome } from '@expo/vector-icons';
+import { theme } from '../../theme';
 
-export const Button = ({ title, onPress, variant = 'primary', style }) => {
-  const isPrimary = variant === 'primary';
+
+export default function Button({
+  title,
+  icon,
+  variant = 'primary',
+  onPress,
+  disabled = false,
+}) {
+
+  const isIconOnly = icon && !title;
+
+  const variants = {
+    primary: {
+      backgroundColor: theme.colors.primaryButtonBackground,
+      textColor: theme.colors.primaryButtonText,
+      iconColor: theme.colors.primaryButtonIcon,
+    },
+    secondary: {
+      backgroundColor: theme.colors.secondaryButtonBackground,
+      textColor: theme.colors.secondaryButtonText,
+      iconColor: theme.colors.secondaryButtonIcon,
+      borderColor: theme.colors.secondaryButtonBorder,
+    },
+    header: {
+      backgroundColor: theme.colors.headerButtonBackground,
+      textColor: theme.colors.headerButtonText,
+      iconColor: theme.colors.headerButtonIcon,
+    }
+  };
+
+  const current = variants[variant];
 
   return (
     <TouchableOpacity
       style={[
         styles.button,
-        isPrimary ? styles.primary : styles.secondary,
-        style
+        isIconOnly && styles.iconButton,
+        {
+          backgroundColor: current.backgroundColor,
+          borderWidth: variant === 'secondary' ? 1 : 0,
+          borderColor: current.borderColor,
+          opacity: disabled ? 0.2 : 1,
+        }
       ]}
-      onPress={onPress}
-      activeOpacity={0.8}
+      onPress={!disabled ? onPress : null}
+      activeOpacity={disabled ? 1 : 0.8}
     >
-      <Text style={[
-        styles.text,
-        isPrimary ? styles.primaryText : styles.secondaryText
-      ]}>
-        {title}
-      </Text>
+      {icon && (
+        <FontAwesome
+          name={icon}
+          size={16}
+          color={current.iconColor}
+        />
+      )}
+
+      {title && (
+        <Text style={[styles.text, { color: current.textColor }]}>
+          {title}
+        </Text>
+      )}
     </TouchableOpacity>
   );
-};
+}
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 8,
-  },
-  primary: {
-    backgroundColor: theme.colors.primaryButton,
-  },
-  secondary: {
-    backgroundColor: theme.colors.secondaryButton,
+    gap: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    marginVertical: 10,
   },
   text: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    ...theme.typography.body,
   },
-  primaryText: {
-    color: theme.colors.primaryButtonText,
-  },
-  secondaryText: {
-    color: theme.colors.secondaryButtonText,
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { theme } from '../../theme/theme';
-import { Button } from '../ui/Button';
+import { theme } from '../../theme';
+
+import Button from '../ui/Button';
 
 export const Header = () => {
   return (
@@ -20,8 +21,8 @@ export const Header = () => {
 
         <Button
           title="Iniciar sesión"
-          variant="secondary"
-          style={styles.loginButton}
+          variant="header"
+          onPress={() => navigation.navigate('')}
         />
       </View>
     </View>
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0B800', // Slightly darker yellow for border
+    borderBottomColor: '#E0B800',
   },
   title: {
     fontSize: 24,
