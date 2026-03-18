@@ -6,8 +6,8 @@ import { Button } from './Button';
 export const Header = () => {
   return (
     <View style={styles.header}>
-      <Text style={styles.title}>Montgomery App</Text>
-      
+      <Text style={styles.title}>Montgomery SafetyMap</Text>
+
       <View style={styles.rightSection}>
         <View style={styles.tabs}>
           <TouchableOpacity style={styles.tab}>
@@ -17,9 +17,9 @@ export const Header = () => {
             <Text style={styles.tabText}>Estadísticas</Text>
           </TouchableOpacity>
         </View>
-        
-        <Button 
-          title="Iniciar sesión" 
+
+        <Button
+          title="Iniciar sesión"
           variant="secondary"
           style={styles.loginButton}
         />
