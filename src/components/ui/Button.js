@@ -30,10 +30,20 @@ export default function Button({
       backgroundColor: theme.colors.headerButtonBackground,
       textColor: theme.colors.headerButtonText,
       iconColor: theme.colors.headerButtonIcon,
-    }
+    },
+    danger: {
+      backgroundColor: theme.colors.dangerButtonBackground,
+      textColor: theme.colors.dangerButtonText,
+      iconColor: theme.colors.dangerButtonIcon,
+    },
+    success: {
+      backgroundColor: theme.colors.successButtonBackground,
+      textColor: theme.colors.successButtonText,
+      iconColor: theme.colors.successButtonIcon,
+    },
   };
 
-  const current = variants[variant];
+  const current = variants[variant] || variants.primary;
 
   return (
     <TouchableOpacity
@@ -42,7 +52,7 @@ export default function Button({
         isIconOnly && styles.iconButton,
         {
           backgroundColor: current.backgroundColor,
-          borderWidth: variant === 'secondary' ? 1 : 0,
+          borderWidth: current.borderColor ? 1 : 0,
           borderColor: current.borderColor,
           opacity: disabled ? 0.2 : 1,
         }

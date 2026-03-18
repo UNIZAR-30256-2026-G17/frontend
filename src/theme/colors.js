@@ -24,6 +24,14 @@ export const colors = {
   secondaryButtonIcon: '#FFD100',
   secondaryButtonBorder: '#FFD100',
 
+  dangerButtonBackground: '#FA5856',
+  dangerButtonText: '#000000',
+  dangerButtonIcon: '#000000',
+
+  successButtonBackground: '#BFE181',
+  successButtonText: '#000000',
+  successButtonIcon: '#000000',
+
   // Card
   cardBackground: '#333533',
   cardBorder: '#D6D6D6',

@@ -14,6 +14,7 @@ export const HomeScreen = () => {
                     ¡Bienvenido a Montgomery SafetyMap App!
                 </Text>
 
+                {/* BOTONES */}
                 <Text style={styles.text}>
                     Botones disponibles:
                 </Text>
@@ -36,8 +37,21 @@ export const HomeScreen = () => {
                         variant="header"
                         onPress={() => console.log('Botón de cabecera presionado')}
                     />
+                    <Button
+                        title="Botón eliminar"
+                        icon="close"
+                        variant="danger"
+                        onPress={() => console.log('Botón eliminar presionado')}
+                    />
+                    <Button
+                        title="Botón de éxito"
+                        icon="check"
+                        variant="success"
+                        onPress={() => console.log('Botón de éxito presionado')}
+                    />
                 </View>
 
+                {/* CARDS */}
                 <Text style={styles.text}>
                     Cards disponibles:
                 </Text>
@@ -58,6 +72,20 @@ export const HomeScreen = () => {
                     <Text style={{ color: 'white' }}>
                         12 incidentes esta semana
                     </Text>
+                    <View style={styles.sameRow}>
+                        <Button
+                            title="Cancelar"
+                            icon="close"
+                            variant="danger"
+                            onPress={() => console.log('Cancelar')}
+                        />
+                        <Button
+                            title="Confirmar"
+                            icon="check"
+                            variant="success"
+                            onPress={() => console.log('Confirmar')}
+                        />
+                    </View>
                 </Card>
             </View>
         </Container>
