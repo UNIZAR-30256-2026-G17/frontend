@@ -38,4 +38,12 @@ export const colors = {
   cardText: '#FFFFFF',
   cardIcon: '#FFFFFF',
 
+  // Input
+  inputBackground: '#FFFFFF',
+  inputBorder: '#D6D6D6',
+  inputBorderFocused: '#FFD100',
+  inputText: '#000000',
+  inputPlaceholder: '#B3B3B3',
+  inputLabel: '#FFFFFF',
+  inputIcon: '#FFFFFF',
 };

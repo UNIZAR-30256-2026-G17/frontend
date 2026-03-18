@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, SafeAreaView, Platform, StatusBar } from 'react-native';
+import { ScrollView, View, StyleSheet, SafeAreaView, Platform, StatusBar } from 'react-native';
 import { theme } from '../../theme';
 import { Header } from './Header';
 
@@ -8,9 +8,9 @@ export const Container = ({ children }) => {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <Header />
-        <View style={styles.content}>
+        <ScrollView style={styles.content}>
           {children}
-        </View>
+        </ScrollView>
       </View>
     </SafeAreaView>
   );

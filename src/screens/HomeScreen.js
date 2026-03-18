@@ -1,8 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+
 import { Container } from '../components/layout/Container';
+
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
+import Input from '../components/ui/Input';
 
 import { theme } from '../theme';
 
@@ -55,38 +58,58 @@ export const HomeScreen = () => {
                 <Text style={styles.text}>
                     Cards disponibles:
                 </Text>
-                <Card
-                    title="Zona segura"
-                    description="No se han reportado incidentes recientes"
-                />
-                <Card
-                    title="Zona peligrosa"
-                    description="Alta incidencia de robos"
-                    icon="warning"
-                />
-                <Card
-                    title="Estadísticas"
-                    description="Estadísticas de esta semana"
-                    icon="bar-chart"
-                >
-                    <Text style={{ color: 'white' }}>
-                        12 incidentes esta semana
-                    </Text>
-                    <View style={styles.sameRow}>
-                        <Button
-                            title="Cancelar"
-                            icon="close"
-                            variant="danger"
-                            onPress={() => console.log('Cancelar')}
-                        />
-                        <Button
-                            title="Confirmar"
-                            icon="check"
-                            variant="success"
-                            onPress={() => console.log('Confirmar')}
-                        />
-                    </View>
-                </Card>
+                <View style={styles.sameRow}>
+                    <Card
+                        title="Zona segura"
+                        description="No se han reportado incidentes recientes"
+                    />
+                    <Card
+                        title="Zona peligrosa"
+                        description="Alta incidencia de robos"
+                        icon="warning"
+                    />
+                    <Card
+                        title="Estadísticas"
+                        description="Estadísticas de esta semana"
+                        icon="bar-chart"
+                    >
+                        <Text style={{ color: 'white' }}>
+                            12 incidentes esta semana
+                        </Text>
+                        <View style={styles.sameRow}>
+                            <Button
+                                title="Cancelar"
+                                icon="close"
+                                variant="danger"
+                                onPress={() => console.log('Cancelar')}
+                            />
+                            <Button
+                                title="Confirmar"
+                                icon="check"
+                                variant="success"
+                                onPress={() => console.log('Confirmar')}
+                            />
+                        </View>
+                    </Card>
+                </View>
+
+                {/* INPUTS DISPONIBLES */}
+                <Text style={styles.text}>
+                    Inputs disponibles:
+                </Text>
+                <View style={styles.sameRow}>
+                    <Input
+                        label="Email"
+                        placeholder="Introduce tu email"
+                    />
+                    <Input
+                        label="Contraseña"
+                        icon="lock"
+                        placeholder="********"
+                        secureTextEntry
+                    />
+                </View>
+
             </View>
         </Container>
     );
