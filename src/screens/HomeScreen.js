@@ -7,6 +7,7 @@ import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import Input from '../components/ui/Input';
 import Dropdown from '../components/ui/Dropdown';
+import ToggleButton from '../components/ui/ToggleButton';
 
 import { theme } from '../theme';
 
@@ -135,6 +136,17 @@ export const HomeScreen = () => {
                         options={options}
                         selected={noSelectedOption}
                         onSelect={setNoSelectedOption}
+                    />
+                </View>
+
+                {/* TOGGLE BUTTONS */}
+                <Text style={styles.text}>
+                    ToggleButtons disponibles:
+                </Text>
+                <View style={styles.sameRow}>
+                    <ToggleButton
+                        title="Seleccionar opción"
+                        onToggle={(value) => console.log(value)}
                     />
                 </View>
 
