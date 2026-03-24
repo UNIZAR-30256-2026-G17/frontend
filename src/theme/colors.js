@@ -48,11 +48,11 @@ export const colors = {
   inputIcon: '#FFFFFF',
 
   // Dropdown
-  dropdownBackground: 'transparent',
+  dropdownBackground: '#333533',
   dropdownBorder: '#FFFFFF',
   dropdownText: '#FFFFFF',
   dropdownIcon: '#FFFFFF',
-  dropdownOptionBackground: 'transparent',
+  dropdownOptionBackground: '#333533',
   dropdownOptionText: '#FFFFFF',
   dropdownOptionBorder: '#FFFFFF',
 
