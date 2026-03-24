@@ -8,6 +8,7 @@ import Card from '../components/ui/Card';
 import Input from '../components/ui/Input';
 import Dropdown from '../components/ui/Dropdown';
 import ToggleButton from '../components/ui/ToggleButton';
+import Checkbox from '../components/ui/Checkbox';
 
 import { theme } from '../theme';
 
@@ -139,9 +140,9 @@ export const HomeScreen = () => {
                     />
                 </View>
 
-                {/* TOGGLE BUTTONS */}
+                {/* TOGGLE BUTTON */}
                 <Text style={styles.text}>
-                    ToggleButtons disponibles:
+                    ToggleButton disponible:
                 </Text>
                 <View style={styles.sameRow}>
                     <ToggleButton
@@ -150,6 +151,14 @@ export const HomeScreen = () => {
                     />
                 </View>
 
+                {/* CHECK BOX */}
+                <Text style={styles.text}>
+                    Checkbox disponible:
+                </Text>
+                <Checkbox
+                    label="Aceptar términos y condiciones"
+                    onChange={(value) => console.log(value)}
+                />
 
             </View>
         </Container>

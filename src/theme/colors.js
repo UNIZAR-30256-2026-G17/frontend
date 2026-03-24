@@ -55,4 +55,11 @@ export const colors = {
   dropdownOptionBackground: 'transparent',
   dropdownOptionText: '#FFFFFF',
   dropdownOptionBorder: '#FFFFFF',
+
+  // Checkbox
+  checkboxCheckedBackground: '#FFD100',
+  checkboxUncheckedBackground: 'transparent',
+  checkboxBorder: '#FFD100',
+  checkboxCheckIcon: '#000000',
+  checkboxText: '#FFFFFF',
 };
