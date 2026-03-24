@@ -9,6 +9,7 @@ import Input from '../components/ui/Input';
 import Dropdown from '../components/ui/Dropdown';
 import ToggleButton from '../components/ui/ToggleButton';
 import Checkbox from '../components/ui/Checkbox';
+import DateInput from '../components/ui/DateInput';
 
 import { theme } from '../theme';
 
@@ -21,6 +22,8 @@ export const HomeScreen = () => {
 
     const [selectedOption, setSelectedOption] = useState(options[0]);
     const [noSelectedOption, setNoSelectedOption] = useState(null);
+
+    const [date, setDate] = useState(null);
 
 
     return (
@@ -159,6 +162,18 @@ export const HomeScreen = () => {
                     label="Aceptar términos y condiciones"
                     onChange={(value) => console.log(value)}
                 />
+
+                {/* DATE INPUT */}
+                <Text style={styles.text}>
+                    DateInput disponible:
+                </Text>
+                <View style={styles.sameRow}>
+                    <DateInput
+                        label="Fecha de nacimiento"
+                        value={date}
+                        onChange={setDate}
+                    />
+                </View>
 
             </View>
         </Container>
