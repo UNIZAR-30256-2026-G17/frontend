@@ -10,20 +10,36 @@ import Dropdown from '../components/ui/Dropdown';
 import ToggleButton from '../components/ui/ToggleButton';
 import Checkbox from '../components/ui/Checkbox';
 import DateInput from '../components/ui/DateInput';
+import Table from '../components/ui/Table';
 
 import { theme } from '../theme';
 
 export const HomeScreen = () => {
+    // Para Dropdown
     const options = [
         { label: 'Madrid', value: 'madrid' },
         { label: 'Barcelona', value: 'barcelona' },
         { label: 'Valencia', value: 'valencia' },
     ];
-
     const [selectedOption, setSelectedOption] = useState(options[0]);
     const [noSelectedOption, setNoSelectedOption] = useState(null);
 
+    // Para DateInput
     const [date, setDate] = useState(null);
+
+    // Para Table
+    const columns = [
+        { header: 'Nombre', accessor: 'name' },
+        { header: 'Edad', accessor: 'age' },
+        { header: 'Ciudad', accessor: 'city' },
+    ];
+
+    const data = [
+        { name: 'Juan', age: 25, city: 'Madrid' },
+        { name: 'Ana', age: 30, city: 'Barcelona' },
+    ];
+
+
 
 
     return (
@@ -174,6 +190,12 @@ export const HomeScreen = () => {
                         onChange={setDate}
                     />
                 </View>
+
+                {/* TABLE */}
+                <Text style={styles.text}>
+                    Table disponible:
+                </Text>
+                <Table columns={columns} data={data} />
 
             </View>
         </Container>

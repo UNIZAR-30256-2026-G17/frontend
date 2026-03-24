@@ -62,4 +62,12 @@ export const colors = {
   checkboxBorder: '#FFD100',
   checkboxCheckIcon: '#000000',
   checkboxText: '#FFFFFF',
+
+  // Table
+  tableBorder: '#D6D6D6',
+  tableHeaderBackground: '#FFD100',
+  tableHeaderText: '#000000',
+  tableRowEven: '#FFFFFF',
+  tableRowOdd: '#F9FAFB',
+  tableText: '#000000',
 };
