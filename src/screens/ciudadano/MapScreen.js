@@ -13,6 +13,29 @@ export const MapScreen = () => {
     const { width } = useWindowDimensions();
     const isMobile = width < 768;
 
+    const alerts = [
+        {
+            description: 'Posible robo de un vehículo en el parking del supermercado Costco',
+            address: '206-202 Mt Vernon PI, Rockville, MD 20852, EE.UU.',
+        },
+        {
+            description: 'Posible robo de un vehículo en el parking del supermercado Costco',
+            address: '206-202 Mt Vernon PI, Rockville, MD 20852, EE.UU.',
+        },
+        {
+            description: 'Posible robo de un vehículo en el parking del supermercado Costco',
+            address: '206-202 Mt Vernon PI, Rockville, MD 20852, EE.UU.',
+        },
+        {
+            description: 'Posible robo de un vehículo en el parking del supermercado Costco',
+            address: '206-202 Mt Vernon PI, Rockville, MD 20852, EE.UU.',
+        },
+        {
+            description: 'Posible robo de un vehículo en el parking del supermercado Costco',
+            address: '206-202 Mt Vernon PI, Rockville, MD 20852, EE.UU.',
+        },
+    ];
+
     return (
         <Container>
             <View style={styles.container}>
@@ -40,31 +63,42 @@ export const MapScreen = () => {
                         styles.rightPanel,
                         isMobile && styles.fullWidth
                     ]}>
-                        <Card
-                            title="Alerta 1"
-                            icon="alert"
+                        <ScrollView
+                            // showsVerticalScrollIndicator={false}
+                            contentContainerStyle={styles.alertsContainer}
                         >
-                            <Text style={styles.cardText}>
-                                Posible robo de un vehículo en el parking del supermercado Costco
-                            </Text>
-                            <Text style={styles.cardText}>
-                                206-202 Mt Vernon PI, Rockville, MD 20852, EE.UU.
-                            </Text>
-                            <View style={styles.sameRow}>
-                                <Button
-                                    title="Descartar"
-                                    icon="trash"
-                                    variant="danger"
-                                    onPress={() => console.log('Descartar')}
-                                />
-                                <Button
-                                    title="Confirmar"
-                                    icon="check"
-                                    variant="success"
-                                    onPress={() => console.log('Confirmar')}
-                                />
-                            </View>
-                        </Card>
+                            {alerts.map((alert, index) => (
+                                <Card
+                                    key={index}
+                                    title={`Alerta ${index + 1}`}
+                                    icon="alert"
+                                >
+                                    <Text style={styles.cardText}>
+                                        {alert.description}
+                                    </Text>
+
+                                    <Text style={styles.cardText}>
+                                        <Text style={styles.cardTextTitle}>Dirección:</Text> {alert.address}
+                                    </Text>
+
+                                    <View style={styles.sameRow}>
+                                        <Button
+                                            title="Descartar"
+                                            icon="trash"
+                                            variant="danger"
+                                            onPress={() => console.log('Descartar', index)}
+                                        />
+
+                                        <Button
+                                            title="Confirmar"
+                                            icon="check"
+                                            variant="success"
+                                            onPress={() => console.log('Confirmar', index)}
+                                        />
+                                    </View>
+                                </Card>
+                            ))}
+                        </ScrollView>
                     </View>
                 </View>
 
@@ -103,7 +137,6 @@ const styles = StyleSheet.create({
     },
     rightPanel: {
         flex: 1,
-        backgroundColor: theme.colors.cardBackground, // BORRAR
     },
 
     sameRow: {
@@ -120,8 +153,14 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
     },
 
+    alertsContainer: {
+        marginRight: 10,
+    },
     cardText: {
         ...theme.typography.cardDescription,
         color: theme.colors.cardTextSecondary,
+    },
+    cardTextTitle: {
+        fontWeight: 'bold',
     },
 });
