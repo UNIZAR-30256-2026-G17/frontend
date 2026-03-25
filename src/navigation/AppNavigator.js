@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { theme } from '../theme';
 
 import { HomeScreen } from '../screens/HomeScreen';
+import { StatsScreen } from '../screens/ciudadano/StatsScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -16,6 +17,7 @@ export default function AppNavigator() {
             }}
         >
             <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Stats" component={StatsScreen} />
         </Stack.Navigator>
     );
 }

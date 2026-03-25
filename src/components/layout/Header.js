@@ -1,20 +1,29 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { theme } from '../../theme';
 
 import Button from '../ui/Button';
 
 export const Header = () => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.header}>
       <Text style={styles.title}>Montgomery SafetyMap</Text>
 
       <View style={styles.rightSection}>
         <View style={styles.tabs}>
-          <TouchableOpacity style={styles.tab}>
+          <TouchableOpacity
+            style={styles.tab}
+            onPress={() => navigation.navigate('Home')}
+          >
             <Text style={styles.tabText}>Mapa</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tab}>
+          <TouchableOpacity
+            style={styles.tab}
+            onPress={() => navigation.navigate('Stats')}
+          >
             <Text style={styles.tabText}>Estadísticas</Text>
           </TouchableOpacity>
         </View>
@@ -37,8 +46,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.headerBackground,
     paddingHorizontal: 20,
     paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0B800',
   },
   title: {
     fontSize: 24,
