@@ -62,7 +62,10 @@ export default function Dropdown({ options = [], selected, onSelect, placeholder
                         {options.map((option, index) => (
                             <TouchableOpacity
                                 key={index}
-                                style={styles.option}
+                                style={[
+                                    styles.option,
+                                    index === options.length - 1 && styles.lastOption
+                                ]}
                                 onPress={() => handleSelect(option)}
                             >
                                 <Text style={styles.optionText}>{option.label}</Text>
@@ -112,6 +115,9 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderBottomWidth: 1,
         borderBottomColor: theme.colors.dropdownOptionBorder,
+    },
+    lastOption: {
+        borderBottomWidth: 0,
     },
     optionText: {
         color: theme.colors.dropdownOptionText,
