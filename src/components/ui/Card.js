@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
         borderColor: theme.colors.cardBorder,
         borderRadius: 16,
         padding: 16,
-        marginVertical: 10,
+        // marginVertical: 10,
     },
     header: {
         flexDirection: 'row',
