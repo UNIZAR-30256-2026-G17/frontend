@@ -4,6 +4,7 @@ import { theme } from '../theme';
 
 import { HomeScreen } from '../screens/HomeScreen';
 import { StatsScreen } from '../screens/ciudadano/StatsScreen';
+import { MapScreen } from '../screens/ciudadano/MapScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -17,6 +18,7 @@ export default function AppNavigator() {
             }}
         >
             <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Map" component={MapScreen} />
             <Stack.Screen name="Stats" component={StatsScreen} />
         </Stack.Navigator>
     );

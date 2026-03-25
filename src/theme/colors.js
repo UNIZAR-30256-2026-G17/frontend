@@ -10,6 +10,10 @@ export const colors = {
   headerText: '#000000',
   headerIcon: '#000000',
 
+  headerTabText: '#000000',
+  headerTabActiveBackground: 'rgba(0, 0, 0, 0.1)',
+  headerTabActiveBorder: '#000000',
+
   headerButtonBackground: '#000000',
   headerButtonText: '#FFFFFF',
   headerButtonIcon: '#FFFFFF',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { theme } from '../../theme';
 
 import Button from '../ui/Button';
@@ -8,23 +8,39 @@ import Button from '../ui/Button';
 export const Header = () => {
   const navigation = useNavigation();
 
+  const currentRoute = useNavigationState(
+    (state) => state.routes[state.index].name
+  );
+
   return (
     <View style={styles.header}>
-      <Text style={styles.title}>Montgomery SafetyMap</Text>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('Home')}
+      >
+        <Text style={styles.title}>Montgomery SafetyMap</Text>
+      </TouchableOpacity>
+
+
 
       <View style={styles.rightSection}>
         <View style={styles.tabs}>
+
           <TouchableOpacity
-            style={styles.tab}
-            onPress={() => navigation.navigate('Home')}
+            style={[styles.tab, currentRoute === 'Map' && styles.activeTab]}
+            onPress={() => navigation.navigate('Map')}
           >
-            <Text style={styles.tabText}>Mapa</Text>
+            <Text style={[styles.tabText]}>
+              Mapa
+            </Text>
           </TouchableOpacity>
+
           <TouchableOpacity
-            style={styles.tab}
+            style={[styles.tab, currentRoute === 'Stats' && styles.activeTab]}
             onPress={() => navigation.navigate('Stats')}
           >
-            <Text style={styles.tabText}>Estadísticas</Text>
+            <Text style={[styles.tabText]}>
+              Estadísticas
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -66,12 +82,19 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 16,
-    color: theme.colors.headerText,
+    color: theme.colors.headerTabText,
     fontWeight: '600',
   },
   loginButton: {
     marginVertical: 0,
     paddingVertical: 8,
     paddingHorizontal: 16,
+  },
+
+  activeTab: {
+    borderBottomWidth: 3,
+    borderBottomColor: theme.colors.headerTabActiveBorder,
+    backgroundColor: theme.colors.headerTabActiveBackground,
+    borderRadius: 6,
   },
 });
