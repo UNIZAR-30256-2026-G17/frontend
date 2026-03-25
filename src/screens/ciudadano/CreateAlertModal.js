@@ -12,10 +12,19 @@ export default function CreateAlertModal({ visible, onClose, onConfirm }) {
     const [description, setDescription] = useState('');
     const [address, setAddress] = useState('');
 
+    const [error, setError] = useState('');
+
     const handleCreateAlertPressed = () => {
-        onConfirm(description, address);
+        if (!description.trim() || !address.trim()) {
+            setError('*Todos los campos son obligatorios');
+            return;
+        }
+
+        setError('');
+        onConfirm({ description, address });
         setDescription('');
         setAddress('');
+        onClose();
     };
 
     return (
@@ -36,7 +45,7 @@ export default function CreateAlertModal({ visible, onClose, onConfirm }) {
             <View style={styles.modalContainer}>
                 <Card title="Crear alerta">
                     <Text style={styles.text}>
-                        Informa sobre un posible delito en la zona
+                        Crea una alerta para informar sobre un posible delito
                     </Text>
 
                     <Input
@@ -52,6 +61,12 @@ export default function CreateAlertModal({ visible, onClose, onConfirm }) {
                         value={address}
                         onChangeText={setAddress}
                     />
+
+                    {error && (
+                        <Text style={styles.errorText}>
+                            {error}
+                        </Text>
+                    )}
 
                     <View style={styles.sameRow}>
                         <Button
@@ -85,17 +100,23 @@ const styles = StyleSheet.create({
         position: 'absolute',
         alignSelf: 'center',
         top: '20%',
-        width: '40%',
-        minWidth: 360,
+        width: '90%',
+        maxWidth: 800,
+    },
+    sameRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 4,
+        justifyContent: 'flex-end',
     },
     text: {
         ...theme.typography.body,
         color: theme.colors.cardText,
         marginBottom: 15,
     },
-    sameRow: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 4,
+    errorText: {
+        color: theme.colors.danger,
+        marginBottom: 10,
+        fontSize: 14,
     },
 });
