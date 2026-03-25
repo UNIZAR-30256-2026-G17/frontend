@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 
 import { Container } from '../../components/layout/Container';
 
@@ -9,6 +10,9 @@ import Dropdown from '../../components/ui/Dropdown';
 import { theme } from '../../theme';
 
 export const StatsScreen = () => {
+    const { width } = useWindowDimensions();
+    const isMobile = width < 768;
+
     const getColorByPercentage = (value) => {
         if (value >= 60) return theme.colors.danger;
         if (value >= 40) return theme.colors.warning;
@@ -44,8 +48,12 @@ export const StatsScreen = () => {
                         />
                     }
                 >
-
-                    <View style={styles.sameRow}>
+                    <View
+                        style={[
+                            styles.rowLayout,
+                            isMobile && styles.columnLayout
+                        ]}
+                    >
                         <Card
                             title="Robos y hurtos"
                         >
@@ -93,8 +101,12 @@ const styles = StyleSheet.create({
         ...theme.typography.pageTitle,
         color: theme.colors.text,
     },
-    sameRow: {
+    rowLayout: {
         flexDirection: 'row',
+        gap: 10,
+    },
+    columnLayout: {
+        flexDirection: 'column',
         gap: 10,
     },
 

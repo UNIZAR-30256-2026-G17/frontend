@@ -93,5 +93,6 @@ const styles = StyleSheet.create({
     },
     content: {
         marginTop: 5,
+        marginBottom: 10,
     },
 });
