@@ -57,7 +57,6 @@ export default function Card({
 
 const styles = StyleSheet.create({
     card: {
-        flex: 1,
         backgroundColor: theme.colors.cardBackground,
         borderWidth: 1,
         borderColor: theme.colors.cardBorder,

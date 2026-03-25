@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
-    marginVertical: 10,
+    marginVertical: 8,
   },
   text: {
     ...theme.typography.body,

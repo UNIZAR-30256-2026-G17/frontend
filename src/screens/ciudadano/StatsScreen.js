@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { useWindowDimensions } from 'react-native';
 
 import { Container } from '../../components/layout/Container';
 
@@ -10,9 +9,6 @@ import Dropdown from '../../components/ui/Dropdown';
 import { theme } from '../../theme';
 
 export const StatsScreen = () => {
-    const { width } = useWindowDimensions();
-    const isMobile = width < 768;
-
     const getColorByPercentage = (value) => {
         if (value >= 60) return theme.colors.danger;
         if (value >= 40) return theme.colors.warning;
@@ -38,56 +34,59 @@ export const StatsScreen = () => {
                     Estadísticas
                 </Text>
 
-                <Card
-                    title="Porcentaje de clasificación de los tipos de delitos"
-                    right={
-                        <Dropdown
-                            options={options}
-                            selected={selectedOption}
-                            onSelect={setSelectedOption}
-                        />
-                    }
-                >
-                    <View
-                        style={[
-                            styles.rowLayout,
-                            isMobile && styles.columnLayout
-                        ]}
+                <View style={styles.content}>
+                    <Card
+                        title="Porcentaje de clasificación de los tipos de delitos"
+                        right={
+                            <Dropdown
+                                options={options}
+                                selected={selectedOption}
+                                onSelect={setSelectedOption}
+                            />
+                        }
                     >
-                        <Card
-                            title="Robos y hurtos"
-                        >
-                            <Text style={[styles.percentage, { color: getColorByPercentage(percentageRobosHurtos) }]}>
-                                {percentageRobosHurtos}%
-                            </Text>
-                            <Text style={styles.secondaryText}>
-                                Robo con allanamiento, otros robos, robo de vehículos, robo desde vehículo, robo de partes o accesorios de vehículos, carterismo, robo de bolso, hurto en tiendas, robo en edificios, robo de máquinas o dispositivos operados con monedas
-                            </Text>
-                        </Card>
+                        <View style={styles.layout}>
+                            <View style={{ flex: 1 }}>
+                                <Card
+                                    title="Robos y hurtos"
+                                >
+                                    <Text style={[styles.percentage, { color: getColorByPercentage(percentageRobosHurtos) }]}>
+                                        {percentageRobosHurtos}%
+                                    </Text>
+                                    <Text style={styles.secondaryText}>
+                                        Robo con allanamiento, otros robos, robo de vehículos, robo desde vehículo, robo de partes o accesorios de vehículos, carterismo, robo de bolso, hurto en tiendas, robo en edificios, robo de máquinas o dispositivos operados con monedas
+                                    </Text>
+                                </Card>
+                            </View>
 
-                        <Card
-                            title="Violencia y delitos contra la persona"
-                        >
-                            <Text style={[styles.percentage, { color: getColorByPercentage(percentageViolenciaDelitosContraLaPersona) }]}>
-                                {percentageViolenciaDelitosContraLaPersona}%
-                            </Text>
-                            <Text style={styles.secondaryText}>
-                                Homicidio (todos), agresión agravada, agresión simple, robo con violencia o intimidación, secuestro / rapto, violación y abusos sexuales, trata de personas
-                            </Text>
-                        </Card>
+                            <View style={{ flex: 1 }}>
+                                <Card
+                                    title="Violencia y delitos contra la persona"
+                                >
+                                    <Text style={[styles.percentage, { color: getColorByPercentage(percentageViolenciaDelitosContraLaPersona) }]}>
+                                        {percentageViolenciaDelitosContraLaPersona}%
+                                    </Text>
+                                    <Text style={styles.secondaryText}>
+                                        Homicidio (todos), agresión agravada, agresión simple, robo con violencia o intimidación, secuestro / rapto, violación y abusos sexuales, trata de personas
+                                    </Text>
+                                </Card>
+                            </View>
 
-                        <Card
-                            title="Orden público y vandalismo"
-                        >
-                            <Text style={[styles.percentage, { color: getColorByPercentage(percentageOrdenPublicoVandalismo) }]}>
-                                {percentageOrdenPublicoVandalismo}%
-                            </Text>
-                            <Text style={styles.secondaryText}>
-                                Destrucción / daño / vandalismo de propiedad, conducta desordenada, violaciones de toque de queda / merodeo / vagancia, incendio provocado, allanamiento de propiedad privada
-                            </Text>
-                        </Card>
-                    </View>
-                </Card>
+                            <View style={{ flex: 1 }}>
+                                <Card
+                                    title="Orden público y vandalismo"
+                                >
+                                    <Text style={[styles.percentage, { color: getColorByPercentage(percentageOrdenPublicoVandalismo) }]}>
+                                        {percentageOrdenPublicoVandalismo}%
+                                    </Text>
+                                    <Text style={styles.secondaryText}>
+                                        Destrucción / daño / vandalismo de propiedad, conducta desordenada, violaciones de toque de queda / merodeo / vagancia, incendio provocado, allanamiento de propiedad privada
+                                    </Text>
+                                </Card>
+                            </View>
+                        </View>
+                    </Card>
+                </View>
             </View>
         </Container>
     );
@@ -100,13 +99,16 @@ const styles = StyleSheet.create({
     welcomeText: {
         ...theme.typography.pageTitle,
         color: theme.colors.text,
+        marginTop: 16,
+        alignSelf: 'center',
     },
-    rowLayout: {
+    content: {
+        flex: 1,
+        margin: 16,
+    },
+    layout: {
         flexDirection: 'row',
-        gap: 10,
-    },
-    columnLayout: {
-        flexDirection: 'column',
+        flexWrap: 'wrap',
         gap: 10,
     },
 

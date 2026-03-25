@@ -8,9 +8,9 @@ export const Container = ({ children }) => {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <Header />
-        <ScrollView style={styles.content}>
-          {children}
-        </ScrollView>
+        {/* <ScrollView style={styles.content}> */}
+        {children}
+        {/* </ScrollView> */}
       </View>
     </SafeAreaView>
   );
