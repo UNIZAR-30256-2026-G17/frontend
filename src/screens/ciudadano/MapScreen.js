@@ -76,8 +76,16 @@ export const MapScreen = () => {
                                     <Text style={styles.cardText}>{item.address}</Text>
 
                                     <View style={styles.sameRow}>
-                                        <Button title="Descartar" variant="danger" />
-                                        <Button title="Confirmar" variant="success" />
+                                        <Button
+                                            title="Descartar"
+                                            icon="trash"
+                                            variant="danger"
+                                        />
+                                        <Button
+                                            title="Confirmar"
+                                            icon="check"
+                                            variant="success"
+                                        />
                                     </View>
                                 </Card>
                             )}
