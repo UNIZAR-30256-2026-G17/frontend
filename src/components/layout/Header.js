@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { useWindowDimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -31,14 +31,9 @@ export const Header = () => {
       {/* LEFT SIDE */}
       <View style={styles.leftSection}>
 
-        {/* MOBILE MENU BUTTON */}
         {isMobile && (
           <TouchableOpacity
-            onPress={() => setMenuOpen(!menuOpen)}
-            onLayout={(e) => {
-              const { x, y, height } = e.nativeEvent.layout;
-              setMenuPosition({ x, y: y + height });
-            }}
+            onPress={() => setMenuOpen(true)}
             style={styles.menuButton}
           >
             <FontAwesome
@@ -49,9 +44,10 @@ export const Header = () => {
           </TouchableOpacity>
         )}
 
-        {/* LOGO */}
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.title}>Montgomery SafetyMap</Text>
+          <Text style={styles.title}>
+            Montgomery SafetyMap
+          </Text>
         </TouchableOpacity>
 
       </View>
@@ -59,7 +55,6 @@ export const Header = () => {
       {/* RIGHT SIDE */}
       <View style={styles.rightSection}>
 
-        {/* DESKTOP TABS */}
         {!isMobile && (
           <View style={styles.tabs}>
             {tabs.map((tab) => (
@@ -79,7 +74,6 @@ export const Header = () => {
           </View>
         )}
 
-        {/* LOGIN */}
         <Button
           title="Iniciar sesión"
           variant="header"
@@ -88,16 +82,21 @@ export const Header = () => {
       </View>
 
       {/* MOBILE MENU */}
-      {isMobile && menuOpen && (
-        <View
-          style={[
-            styles.mobileMenu,
-            {
-              top: menuPosition.y + 22 + 28,
-              left: menuPosition.x,
-            }
-          ]}
-        >
+      <Modal
+        visible={isMobile && menuOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setMenuOpen(false)}
+      >
+        {/* overlay */}
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setMenuOpen(false)}
+        />
+
+        {/* menu */}
+        <View style={styles.modalMenu}>
           {tabs.map((tab) => (
             <TouchableOpacity
               key={tab.route}
@@ -116,7 +115,8 @@ export const Header = () => {
             </TouchableOpacity>
           ))}
         </View>
-      )}
+
+      </Modal>
 
     </View>
   );
@@ -159,11 +159,6 @@ const styles = StyleSheet.create({
     color: theme.colors.headerTabText,
     fontWeight: '600',
   },
-  loginButton: {
-    marginVertical: 0,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
   activeTab: {
     borderBottomWidth: 3,
     borderBottomColor: theme.colors.headerTabActiveBorder,
@@ -174,15 +169,6 @@ const styles = StyleSheet.create({
     padding: 8,
     marginRight: 5,
   },
-  mobileMenu: {
-    position: 'absolute',
-    backgroundColor: theme.colors.headerBackground,
-    borderWidth: 1,
-    borderColor: theme.colors.cardBorder,
-    paddingVertical: 8,
-    minWidth: 160,
-    zIndex: 1000,
-  },
   mobileTab: {
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -191,5 +177,22 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.headerTabActiveBackground,
     borderLeftWidth: 3,
     borderLeftColor: theme.colors.headerTabActiveBorder,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalMenu: {
+    position: 'absolute',
+    top: 89,
+    left: 20,
+    backgroundColor: theme.colors.headerBackground,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    borderRadius: 10,
+    paddingVertical: 8,
+    minWidth: 160,
+    zIndex: 9999,
+    elevation: 30,
   },
 });
