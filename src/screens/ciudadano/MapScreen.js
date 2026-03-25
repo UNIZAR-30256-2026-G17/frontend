@@ -14,6 +14,9 @@ export const MapScreen = () => {
     const { width } = useWindowDimensions();
     const isMobile = width < 768;
 
+    const [ICSelected, setICSelected] = useState(true);
+    const [alertsSelected, setAlertsSelected] = useState(true);
+
     // Vector de alertas (SUSTITUIR por resultados de la API)
     const alerts = [
         {
@@ -38,6 +41,15 @@ export const MapScreen = () => {
         },
     ];
 
+    const ICs = [
+        { value: 5.6, color: theme.colors.ic1, },
+        { value: 4.3, color: theme.colors.ic2, },
+        { value: 2.6, color: theme.colors.ic3, },
+        { value: 1.8, color: theme.colors.ic4, },
+        { value: 0.9, color: theme.colors.ic5, },
+        { value: 0.3, color: theme.colors.ic6, },
+    ];
+
     return (
         <Container>
             <View style={styles.container}>
@@ -60,14 +72,15 @@ export const MapScreen = () => {
                             >
                                 <Checkbox
                                     label="Índice de criminalidad por distrito"
-                                    defaultValue={true}
-                                    onChange={(value) => console.log(value)}
+                                    defaultValue={ICSelected}
+                                    onChange={setICSelected}
                                 />
                                 <Checkbox
                                     label="Alertas activas"
-                                    defaultValue={true}
-                                    onChange={(value) => console.log(value)}
+                                    defaultValue={alertsSelected}
+                                    onChange={setAlertsSelected}
                                 />
+
                                 <View style={styles.sameRow}>
                                     <Button
                                         title="Crear alerta"
@@ -83,45 +96,68 @@ export const MapScreen = () => {
                             </Card>
                         </View>
 
-                        <Image
-                            source={require('../../../assets/mapa.png')}
-                            style={styles.mapImage}
-                        />
+                        <View style={styles.mapContainer}>
+                            <Image
+                                source={require('../../../assets/mapa.png')}
+                                style={styles.mapImage}
+                            />
+                        </View>
+
+                        {ICSelected && (
+                            <View style={styles.mapLegend}>
+                                <Card
+                                    title="Índice de criminalidad"
+                                >
+                                    <View style={styles.sameRow}>
+                                        {ICs.map((ic, index) => (
+                                            <View key={index} style={styles.sameRow}>
+                                                <View style={[styles.icBox, { backgroundColor: ic.color }]} />
+                                                <Text style={styles.cardText}>
+                                                    {ic.value}
+                                                </Text>
+                                            </View>
+                                        ))}
+                                    </View>
+                                </Card>
+                            </View>
+                        )}
                     </View>
 
                     {/* ALERTS (RIGHT SIDE) */}
-                    <View style={[
-                        styles.rightPanel,
-                        isMobile && styles.fullWidth
-                    ]}>
-                        <FlatList
-                            data={alerts}
-                            keyExtractor={(item, index) => index.toString()}
-                            contentContainerStyle={styles.alertsContainer}
-                            renderItem={({ item, index }) => (
-                                <Card
-                                    title={`Alerta ${index + 1}`}
-                                    icon="alert"
-                                >
-                                    <Text style={styles.cardText}>{item.description}</Text>
-                                    <Text style={styles.cardText}>{item.address}</Text>
+                    {alertsSelected && (
+                        <View style={[
+                            styles.rightPanel,
+                            isMobile && styles.fullWidth
+                        ]}>
+                            <FlatList
+                                data={alerts}
+                                keyExtractor={(item, index) => index.toString()}
+                                contentContainerStyle={styles.alertsContainer}
+                                renderItem={({ item, index }) => (
+                                    <Card
+                                        title={`Alerta ${index + 1}`}
+                                        icon="alert"
+                                    >
+                                        <Text style={styles.cardText}>{item.description}</Text>
+                                        <Text style={styles.cardText}>{item.address}</Text>
 
-                                    <View style={styles.sameRow}>
-                                        <Button
-                                            title="Descartar"
-                                            icon="trash"
-                                            variant="danger"
-                                        />
-                                        <Button
-                                            title="Confirmar"
-                                            icon="check"
-                                            variant="success"
-                                        />
-                                    </View>
-                                </Card>
-                            )}
-                        />
-                    </View>
+                                        <View style={styles.sameRow}>
+                                            <Button
+                                                title="Descartar"
+                                                icon="trash"
+                                                variant="danger"
+                                            />
+                                            <Button
+                                                title="Confirmar"
+                                                icon="check"
+                                                variant="success"
+                                            />
+                                        </View>
+                                    </Card>
+                                )}
+                            />
+                        </View>
+                    )}
                 </View>
             </View>
         </Container>
@@ -168,12 +204,23 @@ const styles = StyleSheet.create({
     },
     mapImage: {
         width: '100%',
-        height: '100%',
+        minHeight: 300,
+        flex: 1,
         resizeMode: 'cover',
     },
     mapControls: {
         position: 'absolute',
         zIndex: 1,
+    },
+    mapContainer: {
+        flex: 1,
+    },
+    mapLegend: {
+        marginTop: 8,
+    },
+    icBox: {
+        width: 30,
+        height: 20,
     },
 
     alertsContainer: {

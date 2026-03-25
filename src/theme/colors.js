@@ -80,4 +80,12 @@ export const colors = {
   danger: '#FA5856',
   warning: '#FFD100',
   success: '#BFE181',
+
+  // IC
+  ic1: '#A50C19',
+  ic2: '#CB2B39',
+  ic3: '#EA7F36',
+  ic4: '#ECB534',
+  ic5: '#C8CF3C',
+  ic6: '#95B854',
 };
