@@ -19,4 +19,8 @@ export const typography = {
     cardDescription: {
         fontSize: 14,
     },
+    statsPercentage: {
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
 };

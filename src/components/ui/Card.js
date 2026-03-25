@@ -8,24 +8,34 @@ export default function Card({
     description,
     children,
     icon,
+    right,
 }) {
     return (
         <View style={styles.card}>
-            {(title || icon) && (
+            {(title || icon || right) && (
                 <View style={styles.header}>
-                    {icon && (
-                        <FontAwesome
-                            name={icon}
-                            size={20}
-                            color={theme.colors.cardIcon}
-                            style={styles.icon}
-                        />
-                    )}
 
-                    {title && (
-                        <Text style={styles.title}>
-                            {title}
-                        </Text>
+                    <View style={styles.leftHeader}>
+                        {icon && (
+                            <FontAwesome
+                                name={icon}
+                                size={20}
+                                color={theme.colors.cardIcon}
+                                style={styles.icon}
+                            />
+                        )}
+
+                        {title && (
+                            <Text style={styles.title}>
+                                {title}
+                            </Text>
+                        )}
+                    </View>
+
+                    {right && (
+                        <View style={styles.rightHeader}>
+                            {right}
+                        </View>
                     )}
                 </View>
             )}
@@ -47,6 +57,7 @@ export default function Card({
 
 const styles = StyleSheet.create({
     card: {
+        flex: 1,
         backgroundColor: theme.colors.cardBackground,
         borderWidth: 1,
         borderColor: theme.colors.cardBorder,
@@ -57,7 +68,16 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         marginBottom: 8,
+    },
+    leftHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    rightHeader: {
+        marginLeft: 10,
     },
     icon: {
         marginRight: 10,

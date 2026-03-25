@@ -40,6 +40,7 @@ export const colors = {
   cardBackground: '#333533',
   cardBorder: '#D6D6D6',
   cardText: '#FFFFFF',
+  cardTextSecondary: '#D6D6D6',
   cardIcon: '#FFFFFF',
 
   // Input
@@ -74,4 +75,9 @@ export const colors = {
   tableRowEven: '#FFFFFF',
   tableRowOdd: '#F9FAFB',
   tableText: '#000000',
+
+  // Stats
+  danger: '#FA5856',
+  warning: '#FFD100',
+  success: '#BFE181',
 };
