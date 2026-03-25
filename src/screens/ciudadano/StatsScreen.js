@@ -30,7 +30,7 @@ export const StatsScreen = () => {
     return (
         <Container>
             <View style={styles.container}>
-                <Text style={styles.welcomeText}>
+                <Text style={styles.title}>
                     Estadísticas
                 </Text>
 
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    welcomeText: {
+    title: {
         ...theme.typography.pageTitle,
         color: theme.colors.text,
         marginTop: 16,
