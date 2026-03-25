@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
 import { useWindowDimensions } from 'react-native';
 
 import { Container } from '../../components/layout/Container';
@@ -63,47 +63,27 @@ export const MapScreen = () => {
                         styles.rightPanel,
                         isMobile && styles.fullWidth
                     ]}>
-                        <ScrollView
-                            // showsVerticalScrollIndicator={false}
+                        <FlatList
+                            data={alerts}
+                            keyExtractor={(item, index) => index.toString()}
                             contentContainerStyle={styles.alertsContainer}
-                        >
-                            {alerts.map((alert, index) => (
+                            renderItem={({ item, index }) => (
                                 <Card
-                                    key={index}
                                     title={`Alerta ${index + 1}`}
                                     icon="alert"
                                 >
-                                    <Text style={styles.cardText}>
-                                        {alert.description}
-                                    </Text>
-
-                                    <Text style={styles.cardText}>
-                                        <Text style={styles.cardTextTitle}>Dirección:</Text> {alert.address}
-                                    </Text>
+                                    <Text style={styles.cardText}>{item.description}</Text>
+                                    <Text style={styles.cardText}>{item.address}</Text>
 
                                     <View style={styles.sameRow}>
-                                        <Button
-                                            title="Descartar"
-                                            icon="trash"
-                                            variant="danger"
-                                            onPress={() => console.log('Descartar', index)}
-                                        />
-
-                                        <Button
-                                            title="Confirmar"
-                                            icon="check"
-                                            variant="success"
-                                            onPress={() => console.log('Confirmar', index)}
-                                        />
+                                        <Button title="Descartar" variant="danger" />
+                                        <Button title="Confirmar" variant="success" />
                                     </View>
                                 </Card>
-                            ))}
-                        </ScrollView>
+                            )}
+                        />
                     </View>
                 </View>
-
-
-
             </View>
         </Container>
     );
