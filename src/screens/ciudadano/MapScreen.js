@@ -7,6 +7,7 @@ import { Container } from '../../components/layout/Container';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Checkbox from '../../components/ui/Checkbox';
+import CreateAlertModal from './CreateAlertModal';
 
 import { theme } from '../../theme';
 
@@ -18,7 +19,7 @@ export const MapScreen = () => {
     const [alertsSelected, setAlertsSelected] = useState(true);
 
     // Vector de alertas (SUSTITUIR por resultados de la API)
-    const alerts = [
+    const [alerts, setAlerts] = useState([
         {
             description: 'Posible robo de un vehículo en el parking del supermercado Costco',
             address: '206-202 Mt Vernon PI, Rockville, MD 20852, EE.UU.',
@@ -39,8 +40,16 @@ export const MapScreen = () => {
             description: 'Posible robo de un vehículo en el parking del supermercado Costco',
             address: '206-202 Mt Vernon PI, Rockville, MD 20852, EE.UU.',
         },
-    ];
+    ]);
 
+    const handleCreateAlert = (newAlert) => {
+        // enviar aquí a la API
+
+        setAlerts(prev => [newAlert, ...prev]);
+        setModalCreateAlertVisible(false);
+    };
+
+    // Vector de ICs (SUSTITUIR por resultados de la API)
     const ICs = [
         { value: 5.6, color: theme.colors.ic1, },
         { value: 4.3, color: theme.colors.ic2, },
@@ -49,6 +58,8 @@ export const MapScreen = () => {
         { value: 0.9, color: theme.colors.ic5, },
         { value: 0.3, color: theme.colors.ic6, },
     ];
+
+    const [modalCreateAlertVisible, setModalCreateAlertVisible] = useState(false);
 
     return (
         <Container>
@@ -86,6 +97,7 @@ export const MapScreen = () => {
                                         title="Crear alerta"
                                         icon="alert"
                                         variant="primary"
+                                        onPress={() => setModalCreateAlertVisible(true)}
                                     />
                                     <Button
                                         title="Generar ruta"
@@ -159,6 +171,12 @@ export const MapScreen = () => {
                         </View>
                     )}
                 </View>
+
+                <CreateAlertModal
+                    visible={modalCreateAlertVisible}
+                    onClose={() => setModalCreateAlertVisible(false)}
+                    onConfirm={handleCreateAlert}
+                />
             </View>
         </Container>
     );
