@@ -1,11 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
+import { useWindowDimensions } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 
 import Button from '../ui/Button';
 
 export const Header = () => {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+
+  const tabs = [
+    { label: 'Mapa', route: 'Map' },
+    { label: 'Estadísticas', route: 'Stats' },
+  ];
+
   const navigation = useNavigation();
 
   const currentRoute = useNavigationState(
@@ -14,48 +27,104 @@ export const Header = () => {
 
   return (
     <View style={styles.header}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('Home')}
-      >
-        <Text style={styles.title}>Montgomery SafetyMap</Text>
-      </TouchableOpacity>
 
+      {/* LEFT SIDE */}
+      <View style={styles.leftSection}>
 
+        {/* MOBILE MENU BUTTON */}
+        {isMobile && (
+          <TouchableOpacity
+            onPress={() => setMenuOpen(!menuOpen)}
+            onLayout={(e) => {
+              const { x, y, height } = e.nativeEvent.layout;
+              setMenuPosition({ x, y: y + height });
+            }}
+            style={styles.menuButton}
+          >
+            <FontAwesome
+              name="bars"
+              size={22}
+              color={theme.colors.headerText}
+            />
+          </TouchableOpacity>
+        )}
 
+        {/* LOGO */}
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Text style={styles.title}>Montgomery SafetyMap</Text>
+        </TouchableOpacity>
+
+      </View>
+
+      {/* RIGHT SIDE */}
       <View style={styles.rightSection}>
-        <View style={styles.tabs}>
 
-          <TouchableOpacity
-            style={[styles.tab, currentRoute === 'Map' && styles.activeTab]}
-            onPress={() => navigation.navigate('Map')}
-          >
-            <Text style={[styles.tabText]}>
-              Mapa
-            </Text>
-          </TouchableOpacity>
+        {/* DESKTOP TABS */}
+        {!isMobile && (
+          <View style={styles.tabs}>
+            {tabs.map((tab) => (
+              <TouchableOpacity
+                key={tab.route}
+                style={[
+                  styles.tab,
+                  currentRoute === tab.route && styles.activeTab
+                ]}
+                onPress={() => navigation.navigate(tab.route)}
+              >
+                <Text style={styles.tabText}>
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
-          <TouchableOpacity
-            style={[styles.tab, currentRoute === 'Stats' && styles.activeTab]}
-            onPress={() => navigation.navigate('Stats')}
-          >
-            <Text style={[styles.tabText]}>
-              Estadísticas
-            </Text>
-          </TouchableOpacity>
-        </View>
-
+        {/* LOGIN */}
         <Button
           title="Iniciar sesión"
           variant="header"
-          onPress={() => navigation.navigate('')}
+          onPress={() => navigation.navigate('Login')}
         />
       </View>
+
+      {/* MOBILE MENU */}
+      {isMobile && menuOpen && (
+        <View
+          style={[
+            styles.mobileMenu,
+            {
+              top: menuPosition.y + 22 + 28,
+              left: menuPosition.x,
+            }
+          ]}
+        >
+          {tabs.map((tab) => (
+            <TouchableOpacity
+              key={tab.route}
+              style={[
+                styles.mobileTab,
+                currentRoute === tab.route && styles.activeMobileTab
+              ]}
+              onPress={() => {
+                setMenuOpen(false);
+                navigation.navigate(tab.route);
+              }}
+            >
+              <Text style={styles.tabText}>
+                {tab.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   header: {
+    position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -67,6 +136,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: theme.colors.headerText,
+  },
+  leftSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   rightSection: {
     flexDirection: 'row',
@@ -90,11 +164,32 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
-
   activeTab: {
     borderBottomWidth: 3,
     borderBottomColor: theme.colors.headerTabActiveBorder,
     backgroundColor: theme.colors.headerTabActiveBackground,
     borderRadius: 6,
+  },
+  menuButton: {
+    padding: 8,
+    marginRight: 5,
+  },
+  mobileMenu: {
+    position: 'absolute',
+    backgroundColor: theme.colors.headerBackground,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    paddingVertical: 8,
+    minWidth: 160,
+    zIndex: 1000,
+  },
+  mobileTab: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
+  activeMobileTab: {
+    backgroundColor: theme.colors.headerTabActiveBackground,
+    borderLeftWidth: 3,
+    borderLeftColor: theme.colors.headerTabActiveBorder,
   },
 });
