@@ -8,6 +8,8 @@ import { theme } from '../../theme';
 import Button from '../ui/Button';
 
 export const Header = () => {
+  const navigation = useNavigation();
+
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
 
@@ -17,9 +19,8 @@ export const Header = () => {
   const tabs = [
     { label: 'Mapa', route: 'Map' },
     { label: 'Estadísticas', route: 'Stats' },
+    { label: 'Rutas', route: 'Routes' },
   ];
-
-  const navigation = useNavigation();
 
   const currentRoute = useNavigationState(
     (state) => state.routes[state.index].name

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
 import { useWindowDimensions } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import { Container } from '../../components/layout/Container';
 
@@ -8,10 +9,13 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Checkbox from '../../components/ui/Checkbox';
 import CreateAlertModal from './CreateAlertModal';
+import GenerateRouteModal from './GenerateRouteModal';
 
 import { theme } from '../../theme';
 
 export const MapScreen = () => {
+    const navigation = useNavigation();
+
     const { width } = useWindowDimensions();
     const isMobile = width < 768;
 
@@ -42,13 +46,6 @@ export const MapScreen = () => {
         },
     ]);
 
-    const handleCreateAlert = (newAlert) => {
-        // enviar aquí a la API
-
-        setAlerts(prev => [newAlert, ...prev]);
-        setModalCreateAlertVisible(false);
-    };
-
     // Vector de ICs (SUSTITUIR por resultados de la API)
     const ICs = [
         { value: 5.6, color: theme.colors.ic1, },
@@ -60,6 +57,24 @@ export const MapScreen = () => {
     ];
 
     const [modalCreateAlertVisible, setModalCreateAlertVisible] = useState(false);
+    const [modalGenerateRouteVisible, setModalGenerateRouteVisible] = useState(false);
+
+    const handleCreateAlert = (newAlert) => {
+        // enviar aquí a la API
+
+        setAlerts(prev => [newAlert, ...prev]);
+        setModalCreateAlertVisible(false);
+    };
+
+    const handleGenerateRoute = (newRoute) => {
+        // enviar aquí a la API
+
+        setModalGenerateRouteVisible(false);
+        navigation.navigate('Routes', {
+            routeData: newRoute
+        });
+    };
+
 
     return (
         <Container>
@@ -103,6 +118,7 @@ export const MapScreen = () => {
                                         title="Generar ruta"
                                         icon="plus"
                                         variant="primary"
+                                        onPress={() => setModalGenerateRouteVisible(true)}
                                     />
                                 </View>
                             </Card>
@@ -176,6 +192,12 @@ export const MapScreen = () => {
                     visible={modalCreateAlertVisible}
                     onClose={() => setModalCreateAlertVisible(false)}
                     onConfirm={handleCreateAlert}
+                />
+
+                <GenerateRouteModal
+                    visible={modalGenerateRouteVisible}
+                    onClose={() => setModalGenerateRouteVisible(false)}
+                    onConfirm={handleGenerateRoute}
                 />
             </View>
         </Container>
