@@ -28,7 +28,7 @@ export const LoginScreen = () => {
           <View style={styles.institutionHeader}>
             <Text style={styles.institutionName}>Policía de Montgomery</Text>
             <Image
-              source={require('../../../assets/icon.png')}
+              source={require('../../../assets/montgomery-icon.png')}
               style={styles.logo}
               resizeMode="contain"
             />
