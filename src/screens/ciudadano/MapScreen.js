@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { Container } from '../../components/layout/Container';
@@ -10,6 +10,7 @@ import Button from '../../components/ui/Button';
 import Checkbox from '../../components/ui/Checkbox';
 import CreateAlertModal from './CreateAlertModal';
 import GenerateRouteModal from './GenerateRouteModal';
+import Map from '../../components/map/Map';
 
 import { theme } from '../../theme';
 
@@ -96,39 +97,39 @@ export const MapScreen = () => {
                             <Card
                                 title="Condado de Montgomery, Maryland, EE.UU."
                             >
-                                <Checkbox
-                                    label="Índice de criminalidad por distrito"
-                                    defaultValue={ICSelected}
-                                    onChange={setICSelected}
-                                />
-                                <Checkbox
-                                    label="Alertas activas"
-                                    defaultValue={alertsSelected}
-                                    onChange={setAlertsSelected}
-                                />
-
-                                <View style={styles.sameRow}>
-                                    <Button
-                                        title="Crear alerta"
-                                        icon="alert"
-                                        variant="primary"
-                                        onPress={() => setModalCreateAlertVisible(true)}
-                                    />
-                                    <Button
-                                        title="Generar ruta"
-                                        icon="plus"
-                                        variant="primary"
-                                        onPress={() => setModalGenerateRouteVisible(true)}
-                                    />
+                                <View style={[styles.sameRow, { justifyContent: 'space-between' }]}>
+                                    <View style={styles.sameRow}>
+                                        <Checkbox
+                                            label="Índice de criminalidad por distrito"
+                                            defaultValue={ICSelected}
+                                            onChange={setICSelected}
+                                        />
+                                        <Checkbox
+                                            label="Alertas activas"
+                                            defaultValue={alertsSelected}
+                                            onChange={setAlertsSelected}
+                                        />
+                                    </View>
+                                    <View style={styles.sameRow}>
+                                        <Button
+                                            title="Crear alerta"
+                                            icon="alert"
+                                            variant="primary"
+                                            onPress={() => setModalCreateAlertVisible(true)}
+                                        />
+                                        <Button
+                                            title="Generar ruta"
+                                            icon="plus"
+                                            variant="primary"
+                                            onPress={() => setModalGenerateRouteVisible(true)}
+                                        />
+                                    </View>
                                 </View>
                             </Card>
                         </View>
 
                         <View style={styles.mapContainer}>
-                            <Image
-                                source={require('../../../assets/mapa.png')}
-                                style={styles.mapImage}
-                            />
+                            <Map />
                         </View>
 
                         {ICSelected && (
@@ -242,15 +243,12 @@ const styles = StyleSheet.create({
     fullWidth: {
         flex: 1,
     },
-    mapImage: {
-        width: '100%',
-        minHeight: 300,
-        flex: 1,
-        resizeMode: 'cover',
-    },
     mapControls: {
-        position: 'absolute',
-        zIndex: 1,
+        marginBottom: 8,
+    },
+    map: {
+        flex: 1,
+        minHeight: 300,
     },
     mapContainer: {
         flex: 1,

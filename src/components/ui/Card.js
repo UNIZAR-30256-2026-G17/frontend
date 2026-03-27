@@ -47,7 +47,7 @@ export default function Card({
             )}
 
             {children && (
-                <View style={styles.content}>
+                <View>
                     {children}
                 </View>
             )}
@@ -62,7 +62,6 @@ const styles = StyleSheet.create({
         borderColor: theme.colors.cardBorder,
         borderRadius: 16,
         padding: 16,
-        // marginVertical: 10,
     },
     header: {
         flexDirection: 'row',
@@ -88,10 +87,6 @@ const styles = StyleSheet.create({
     description: {
         ...theme.typography.cardDescription,
         color: theme.colors.cardText,
-        marginBottom: 10,
-    },
-    content: {
-        marginTop: 5,
         marginBottom: 10,
     },
 });
