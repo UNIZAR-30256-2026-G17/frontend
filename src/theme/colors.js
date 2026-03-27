@@ -28,6 +28,10 @@ export const colors = {
   secondaryButtonIcon: '#FFD100',
   secondaryButtonBorder: '#FFD100',
 
+  tertiaryButtonBackground: 'transparent',
+  tertiaryButtonText: '#FFD100',
+  tertiaryButtonIcon: '#FFD100',
+
   dangerButtonBackground: '#FA5856',
   dangerButtonText: '#000000',
   dangerButtonIcon: '#000000',

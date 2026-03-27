@@ -26,6 +26,11 @@ export default function Button({
       iconColor: theme.colors.secondaryButtonIcon,
       borderColor: theme.colors.secondaryButtonBorder,
     },
+    tertiary: {
+      backgroundColor: theme.colors.tertiaryButtonBackground,
+      textColor: theme.colors.tertiaryButtonText,
+      iconColor: theme.colors.tertiaryButtonIcon,
+    },
     header: {
       backgroundColor: theme.colors.headerButtonBackground,
       textColor: theme.colors.headerButtonText,
@@ -69,7 +74,7 @@ export default function Button({
       )}
 
       {title && (
-        <Text style={[styles.text, { color: current.textColor }]}>
+        <Text style={[styles.text, { color: current.textColor, textDecorationLine: variant === 'tertiary' ? 'underline' : 'none', }]}>
           {title}
         </Text>
       )}
