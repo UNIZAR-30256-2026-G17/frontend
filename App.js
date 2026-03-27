@@ -10,6 +10,8 @@ const linking = {
       Home: '',
       Map: 'map',
       Stats: 'stats',
+      Login: 'login',
+      Register: 'register',
     },
   },
 };
