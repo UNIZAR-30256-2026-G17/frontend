@@ -82,10 +82,11 @@ export const colors = {
   success: '#BFE181',
 
   // IC
-  ic1: '#A50C19',
-  ic2: '#CB2B39',
-  ic3: '#EA7F36',
-  ic4: '#ECB534',
-  ic5: '#C8CF3C',
-  ic6: '#95B854',
+  ic1: '#7B0000',
+  ic2: '#B22222',
+  ic3: '#FF4500',
+  ic4: '#FF8C00',
+  ic5: '#FFD700',
+  ic6: '#BFE181',
+  ic7: '#8caa56ff',
 };

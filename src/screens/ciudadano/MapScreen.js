@@ -51,10 +51,11 @@ export const MapScreen = () => {
     const ICs = [
         { value: 5.6, color: theme.colors.ic1, },
         { value: 4.3, color: theme.colors.ic2, },
-        { value: 2.6, color: theme.colors.ic3, },
-        { value: 1.8, color: theme.colors.ic4, },
-        { value: 0.9, color: theme.colors.ic5, },
-        { value: 0.3, color: theme.colors.ic6, },
+        { value: 3.8, color: theme.colors.ic3, },
+        { value: 2.6, color: theme.colors.ic4, },
+        { value: 1.8, color: theme.colors.ic5, },
+        { value: 0.9, color: theme.colors.ic6, },
+        { value: 0.3, color: theme.colors.ic7, },
     ];
 
     const [modalCreateAlertVisible, setModalCreateAlertVisible] = useState(false);
@@ -97,7 +98,7 @@ export const MapScreen = () => {
                             <Card
                                 title="Condado de Montgomery, Maryland, EE.UU."
                             >
-                                <View style={[styles.sameRow, { justifyContent: 'space-between' }]}>
+                                <View style={[styles.sameRow, { justifyContent: 'space-between', alignItems: 'center' }]}>
                                     <View style={styles.sameRow}>
                                         <Checkbox
                                             label="Índice de criminalidad por distrito"
