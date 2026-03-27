@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, FlatList } from 'react-native';
 import { useWindowDimensions, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -114,7 +114,7 @@ export const MapScreen = () => {
                                     <View style={styles.sameRow}>
                                         <Button
                                             title="Crear alerta"
-                                            icon="alert"
+                                            icon="exclamation"
                                             variant="primary"
                                             onPress={() => setModalCreateAlertVisible(true)}
                                         />
@@ -169,7 +169,7 @@ export const MapScreen = () => {
                                 renderItem={({ item, index }) => (
                                     <Card
                                         title={`Alerta ${index + 1}`}
-                                        icon="alert"
+                                        icon="exclamation"
                                     >
                                         <Text style={styles.cardText}>{item.description}</Text>
                                         <Text style={styles.cardText}>{item.address}</Text>
