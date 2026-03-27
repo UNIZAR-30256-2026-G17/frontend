@@ -130,7 +130,10 @@ export const MapScreen = () => {
                         </View>
 
                         <View style={styles.mapContainer}>
-                            <Map />
+                            <Map
+                                showMarkers={true}
+                                showDistricts={true}
+                            />
                         </View>
 
                         {ICSelected && (

@@ -4,6 +4,7 @@ import { useRoute } from '@react-navigation/native';
 
 import { Container } from '../../components/layout/Container';
 import Card from '../../components/ui/Card';
+import Map from '../../components/map/Map';
 
 import { theme } from '../../theme';
 
@@ -34,9 +35,9 @@ export const RoutesScreen = () => {
                     </View>
 
                     <View style={styles.mapContainer}>
-                        <Image
-                            source={require('../../../assets/mapa.png')}
-                            style={styles.mapImage}
+                        <Map
+                            showMarkers={false}
+                            showDistricts={false}
                         />
                     </View>
 
@@ -65,15 +66,7 @@ const styles = StyleSheet.create({
         margin: 16,
     },
     mapControls: {
-        position: 'absolute',
-        zIndex: 1,
-    },
-    mapImage: {
-        width: '100%',
-        height: '100%',
-        // minHeight: 300,
-        flex: 1,
-        resizeMode: 'cover',
+        marginBottom: 8,
     },
     mapContainer: {
         flex: 1,

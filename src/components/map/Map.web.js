@@ -14,7 +14,10 @@ L.Icon.Default.mergeOptions({
 
 import { theme } from '../../theme';
 
-export default function Map() {
+export default function Map({
+    showMarkers = true,
+    showDistricts = true,
+}) {
     const markers = [
         { id: 1, position: [39.2700, -77.3000], title: 'Clarksburg (norte)' },
         { id: 2, position: [39.2500, -77.2700], title: 'Germantown norte' },
@@ -51,13 +54,13 @@ export default function Map() {
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-                {markers.map((marker) => (
+                {showMarkers && markers.map((marker) => (
                     <Marker key={marker.id} position={marker.position}>
                         <Popup>{marker.title}</Popup>
                     </Marker>
                 ))}
 
-                {districts.map((district, index) => (
+                {showDistricts && districts.map((district, index) => (
                     <React.Fragment key={index}>
                         <Circle
                             center={district.coords}
