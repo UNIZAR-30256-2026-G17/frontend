@@ -19,7 +19,7 @@ export const Header = () => {
   const tabs = [
     { label: 'Mapa', route: 'Map' },
     { label: 'Estadísticas', route: 'Stats' },
-    { label: 'Rutas', route: 'Routes' },
+    // { label: 'Rutas', route: 'Routes' },
   ];
 
   const currentRoute = useNavigationState(
