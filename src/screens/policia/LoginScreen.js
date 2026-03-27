@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
@@ -8,6 +9,8 @@ import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 
 export const LoginScreen = () => {
+  const navigation = useNavigation();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -59,6 +62,18 @@ export const LoginScreen = () => {
               variant="primary"
               onPress={handleLogin}
             />
+
+            <Button
+              title="Registrarse"
+              variant="secondary"
+              onPress={() => navigation.navigate('Register')}
+            />
+
+            <Button
+              title="Soy administrador"
+              variant="tertiary"
+              onPress={() => navigation.navigate('LoginAdmin')}
+            />
           </Card>
         </View>
       </ScrollView>
@@ -75,7 +90,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   pageTitle: {
-    ...theme.typography.title,
+    ...theme.typography.pageTitle,
     color: theme.colors.text,
     marginBottom: 32,
   },

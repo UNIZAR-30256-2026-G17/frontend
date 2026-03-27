@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../../theme';
 
+import { Container } from '../../components/layout/Container';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
@@ -20,62 +21,64 @@ export const RegisterScreen = () => {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="handled"
-    >
-      <Text style={styles.pageTitle}>Registrarse</Text>
+    <Container>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text style={styles.pageTitle}>Registrarse</Text>
 
-      <View style={styles.cardWrapper}>
-        <Card>
-          <View style={styles.institutionHeader}>
-            <Text style={styles.institutionName}>Policía de Montgomery</Text>
-            <Image
-              source={require('../../../assets/montgomery-icon.png')}
-              style={styles.logo}
-              resizeMode="contain"
+        <View style={styles.cardWrapper}>
+          <Card>
+            <View style={styles.institutionHeader}>
+              <Text style={styles.institutionName}>Policía de Montgomery</Text>
+              <Image
+                source={require('../../../assets/montgomery-icon.png')}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+            </View>
+
+            <Input
+              label="Correo"
+              placeholder="ejemplo@gmail.com"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
             />
-          </View>
 
-          <Input
-            label="Correo"
-            placeholder="ejemplo@gmail.com"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
+            <Input
+              label="Contraseña"
+              placeholder="Ejemplo123@"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
 
-          <Input
-            label="Contraseña"
-            placeholder="Ejemplo123@"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
+            <Input
+              label="Número de placa"
+              placeholder="1234"
+              value={badgeNumber}
+              onChangeText={setBadgeNumber}
+              keyboardType="numeric"
+            />
 
-          <Input
-            label="Número de placa"
-            placeholder="1234"
-            value={badgeNumber}
-            onChangeText={setBadgeNumber}
-            keyboardType="numeric"
-          />
+            <Button
+              title="Registrarse"
+              variant="primary"
+              onPress={handleRegister}
+            />
 
-          <Button
-            title="Registrarse"
-            variant="primary"
-            onPress={handleRegister}
-          />
-
-          <Button
-            title="Iniciar sesión"
-            variant="secondary"
-            onPress={() => navigation.navigate('Login')}
-          />
-        </Card>
-      </View>
-    </ScrollView>
+            <Button
+              title="Iniciar sesión"
+              variant="secondary"
+              onPress={() => navigation.navigate('Login')}
+            />
+          </Card>
+        </View>
+      </ScrollView>
+    </Container>
   );
 }
 
@@ -88,7 +91,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   pageTitle: {
-    ...theme.typography.title,
+    ...theme.typography.pageTitle,
     color: theme.colors.text,
     marginBottom: 32,
   },
