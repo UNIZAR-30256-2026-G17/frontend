@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
-import { useWindowDimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, FlatList } from 'react-native';
+import { useWindowDimensions, Platform } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import { Container } from '../../components/layout/Container';
 
@@ -8,10 +9,14 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Checkbox from '../../components/ui/Checkbox';
 import CreateAlertModal from './CreateAlertModal';
+import GenerateRouteModal from './GenerateRouteModal';
+import Map from '../../components/map/Map';
 
 import { theme } from '../../theme';
 
 export const MapScreen = () => {
+    const navigation = useNavigation();
+
     const { width } = useWindowDimensions();
     const isMobile = width < 768;
 
@@ -42,6 +47,20 @@ export const MapScreen = () => {
         },
     ]);
 
+    // Vector de ICs (SUSTITUIR por resultados de la API)
+    const ICs = [
+        { value: 5.6, color: theme.colors.ic1, },
+        { value: 4.3, color: theme.colors.ic2, },
+        { value: 3.8, color: theme.colors.ic3, },
+        { value: 2.6, color: theme.colors.ic4, },
+        { value: 1.8, color: theme.colors.ic5, },
+        { value: 0.9, color: theme.colors.ic6, },
+        { value: 0.3, color: theme.colors.ic7, },
+    ];
+
+    const [modalCreateAlertVisible, setModalCreateAlertVisible] = useState(false);
+    const [modalGenerateRouteVisible, setModalGenerateRouteVisible] = useState(false);
+
     const handleCreateAlert = (newAlert) => {
         // enviar aquí a la API
 
@@ -49,17 +68,15 @@ export const MapScreen = () => {
         setModalCreateAlertVisible(false);
     };
 
-    // Vector de ICs (SUSTITUIR por resultados de la API)
-    const ICs = [
-        { value: 5.6, color: theme.colors.ic1, },
-        { value: 4.3, color: theme.colors.ic2, },
-        { value: 2.6, color: theme.colors.ic3, },
-        { value: 1.8, color: theme.colors.ic4, },
-        { value: 0.9, color: theme.colors.ic5, },
-        { value: 0.3, color: theme.colors.ic6, },
-    ];
+    const handleGenerateRoute = (newRoute) => {
+        // enviar aquí a la API
 
-    const [modalCreateAlertVisible, setModalCreateAlertVisible] = useState(false);
+        setModalGenerateRouteVisible(false);
+        navigation.navigate('Routes', {
+            routeData: newRoute
+        });
+    };
+
 
     return (
         <Container>
@@ -81,37 +98,41 @@ export const MapScreen = () => {
                             <Card
                                 title="Condado de Montgomery, Maryland, EE.UU."
                             >
-                                <Checkbox
-                                    label="Índice de criminalidad por distrito"
-                                    defaultValue={ICSelected}
-                                    onChange={setICSelected}
-                                />
-                                <Checkbox
-                                    label="Alertas activas"
-                                    defaultValue={alertsSelected}
-                                    onChange={setAlertsSelected}
-                                />
-
-                                <View style={styles.sameRow}>
-                                    <Button
-                                        title="Crear alerta"
-                                        icon="alert"
-                                        variant="primary"
-                                        onPress={() => setModalCreateAlertVisible(true)}
-                                    />
-                                    <Button
-                                        title="Generar ruta"
-                                        icon="plus"
-                                        variant="primary"
-                                    />
+                                <View style={[styles.sameRow, { justifyContent: 'space-between', alignItems: 'center' }]}>
+                                    <View style={styles.sameRow}>
+                                        <Checkbox
+                                            label="Índice de criminalidad por distrito"
+                                            defaultValue={ICSelected}
+                                            onChange={setICSelected}
+                                        />
+                                        <Checkbox
+                                            label="Alertas activas"
+                                            defaultValue={alertsSelected}
+                                            onChange={setAlertsSelected}
+                                        />
+                                    </View>
+                                    <View style={styles.sameRow}>
+                                        <Button
+                                            title="Crear alerta"
+                                            icon="exclamation"
+                                            variant="primary"
+                                            onPress={() => setModalCreateAlertVisible(true)}
+                                        />
+                                        <Button
+                                            title="Generar ruta"
+                                            icon="plus"
+                                            variant="primary"
+                                            onPress={() => setModalGenerateRouteVisible(true)}
+                                        />
+                                    </View>
                                 </View>
                             </Card>
                         </View>
 
                         <View style={styles.mapContainer}>
-                            <Image
-                                source={require('../../../assets/mapa.png')}
-                                style={styles.mapImage}
+                            <Map
+                                showMarkers={true}
+                                showDistricts={true}
                             />
                         </View>
 
@@ -148,7 +169,7 @@ export const MapScreen = () => {
                                 renderItem={({ item, index }) => (
                                     <Card
                                         title={`Alerta ${index + 1}`}
-                                        icon="alert"
+                                        icon="exclamation"
                                     >
                                         <Text style={styles.cardText}>{item.description}</Text>
                                         <Text style={styles.cardText}>{item.address}</Text>
@@ -176,6 +197,12 @@ export const MapScreen = () => {
                     visible={modalCreateAlertVisible}
                     onClose={() => setModalCreateAlertVisible(false)}
                     onConfirm={handleCreateAlert}
+                />
+
+                <GenerateRouteModal
+                    visible={modalGenerateRouteVisible}
+                    onClose={() => setModalGenerateRouteVisible(false)}
+                    onConfirm={handleGenerateRoute}
                 />
             </View>
         </Container>
@@ -220,15 +247,12 @@ const styles = StyleSheet.create({
     fullWidth: {
         flex: 1,
     },
-    mapImage: {
-        width: '100%',
-        minHeight: 300,
-        flex: 1,
-        resizeMode: 'cover',
-    },
     mapControls: {
-        position: 'absolute',
-        zIndex: 1,
+        marginBottom: 8,
+    },
+    map: {
+        flex: 1,
+        minHeight: 300,
     },
     mapContainer: {
         flex: 1,
