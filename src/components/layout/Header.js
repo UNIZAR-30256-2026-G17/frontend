@@ -77,7 +77,7 @@ export const Header = () => {
         <Button
           title="Iniciar sesión"
           variant="header"
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => navigation.navigate('Crimes')}
         />
       </View>
 

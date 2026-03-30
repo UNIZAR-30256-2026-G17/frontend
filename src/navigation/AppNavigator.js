@@ -7,6 +7,7 @@ import { StatsScreen } from '../screens/ciudadano/StatsScreen';
 import { MapScreen } from '../screens/ciudadano/MapScreen';
 import { LoginScreen } from '../screens/policia/LoginScreen';
 import { RegisterScreen } from '../screens/policia/RegisterScreen';
+import { CrimesScreen } from '../screens/policia/CrimesScreen';
 import { RoutesScreen } from '../screens/ciudadano/RoutesScreen';
 
 
@@ -26,6 +27,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Routes" component={RoutesScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Crimes" component={CrimesScreen} />
         </Stack.Navigator>
     );
 }
