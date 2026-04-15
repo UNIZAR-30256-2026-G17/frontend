@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, FlatList } from 'react-native';
 import { useWindowDimensions, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { v4 as uuidv4 } from 'uuid';
 import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
@@ -20,6 +22,9 @@ export const MapScreen = () => {
     const { width } = useWindowDimensions();
     const isMobile = width < 768;
 
+    const [userId, setUserId] = useState(null);
+    const [token, setToken] = useState(null);
+
     const [ICSelected, setICSelected] = useState(true);
     const [alertsSelected, setAlertsSelected] = useState(true);
 
@@ -37,17 +42,61 @@ export const MapScreen = () => {
     ];
 
     useEffect(() => {
-        fetchAlerts();
+        initAnonymousLogin();
     }, []);
+
+    const initAnonymousLogin = async () => {
+        try {
+            const storedToken = await AsyncStorage.getItem('token');
+            if (storedToken) {
+                setToken(storedToken);
+                return;
+            }
+
+            const deviceId = await AsyncStorage.getItem('deviceId');
+            let finalDeviceId = deviceId;
+            if (!finalDeviceId) {
+                finalDeviceId = uuidv4();
+                await AsyncStorage.setItem('deviceId', finalDeviceId);
+            }
+
+            const response = await fetch(`${API_URL}/auth/login/anonymous`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ deviceId: finalDeviceId })
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Error en login anónimo');
+            }
+
+            await AsyncStorage.setItem('token', data.token);
+            setToken(data.token);
+
+        } catch (error) {
+            console.error('Error anonymous login:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchAlerts();
+    }, [token]);
 
     const fetchAlerts = async () => {
         try {
-            const token = localStorage.getItem('token');
+            if (!token) return;
+
             const today = new Date().toISOString().split('T')[0];
 
             const response = await fetch(
                 `${API_URL}/alerts?from=${today}&to=${today}`,
-                { headers: { 'Authorization': `Bearer ${token}`, } }
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
             );
 
             const data = await response.json();
@@ -56,12 +105,77 @@ export const MapScreen = () => {
                 throw new Error(data.message || 'Error obteniendo alertas');
             }
 
-            console.log('Alertas:', data);
+            const normalized = data.alerts.map(alert => ({
+                ...alert,
+                confirmations: alert.confirmations.length,
+                discards: alert.discards.length,
+            }));
 
-            setAlerts(data.alerts);
+            setAlerts(normalized);
 
         } catch (error) {
             console.error(error);
+        }
+    };
+
+    const confirmAlert = async (id) => {
+        try {
+
+            const response = await fetch(`${API_URL}/alerts/${id}/confirmations`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) throw new Error('Error confirmando alerta');
+
+            setAlerts(prev =>
+                prev.map(alert =>
+                    alert._id === id
+                        ? {
+                            ...alert,
+                            confirmations: alert.confirmations + 1,
+                            discards: alert.discards,
+                            confirmedByMe: true,
+                            discardedByMe: false,
+                        }
+                        : alert
+                )
+            );
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const discardAlert = async (id) => {
+        try {
+            const response = await fetch(`${API_URL}/alerts/${id}/discards`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) throw new Error('Error descartando alerta');
+
+            setAlerts(prev =>
+                prev.map(alert =>
+                    alert._id === id
+                        ? {
+                            ...alert,
+                            confirmations: alert.confirmations,
+                            discards: alert.discards + 1,
+                            confirmedByMe: false,
+                            discardedByMe: true,
+                        }
+                        : alert
+                )
+            );
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -83,6 +197,8 @@ export const MapScreen = () => {
             routeData: newRoute
         });
     };
+
+
 
 
     return (
@@ -174,42 +290,43 @@ export const MapScreen = () => {
                                 data={alerts}
                                 keyExtractor={(item, index) => index.toString()}
                                 contentContainerStyle={styles.alertsContainer}
-                                renderItem={({ item, index }) => (
-                                    <Card
-                                        title={`Alerta ${index + 1}`}
-                                        icon="exclamation"
-                                        description={item.description}
-                                    >
-                                        <Text style={styles.cardText}>Dirección: {item.address}</Text>
+                                renderItem={({ item, index }) => {
+                                    const isLocked = item.confirmedByMe || item.discardedByMe;
+                                    return (
+                                        <Card
+                                            title={`Alerta ${index + 1}`}
+                                            icon="exclamation"
+                                            description={item.description}
+                                        >
+                                            <Text style={styles.cardText}>Dirección: {item.address}</Text>
 
-                                        {/* EXTRA  */}
-                                        <Text style={styles.cardText}>
-                                            Estado: {item.status}
-                                        </Text>
+                                            <Text style={styles.cardText}>
+                                                Confirmaciones: {item.confirmations}
+                                            </Text>
 
-                                        <Text style={styles.cardText}>
-                                            Confirmaciones: {item.confirmations.length}
-                                        </Text>
+                                            <Text style={styles.cardText}>
+                                                Descartes: {item.discards}
+                                            </Text>
 
-                                        <Text style={styles.cardText}>
-                                            Descartes: {item.discards.length}
-                                        </Text>
-                                        {/* //  */}
-
-                                        <View style={styles.sameRow}>
-                                            <Button
-                                                title="Descartar"
-                                                icon="trash"
-                                                variant="danger"
-                                            />
-                                            <Button
-                                                title="Confirmar"
-                                                icon="check"
-                                                variant="success"
-                                            />
-                                        </View>
-                                    </Card>
-                                )}
+                                            <View style={styles.sameRow}>
+                                                <Button
+                                                    title="Descartar"
+                                                    icon="trash"
+                                                    variant="danger"
+                                                    disabled={isLocked}
+                                                    onPress={() => discardAlert(item._id)}
+                                                />
+                                                <Button
+                                                    title="Confirmar"
+                                                    icon="check"
+                                                    variant="success"
+                                                    disabled={isLocked}
+                                                    onPress={() => confirmAlert(item._id)}
+                                                />
+                                            </View>
+                                        </Card>
+                                    )
+                                }}
                             />
                         </View>
                     )}

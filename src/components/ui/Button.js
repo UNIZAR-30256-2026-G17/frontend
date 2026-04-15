@@ -64,6 +64,7 @@ export default function Button({
       ]}
       onPress={!disabled ? onPress : null}
       activeOpacity={disabled ? 1 : 0.8}
+      disabled={disabled}
     >
       {icon && (
         <FontAwesome
