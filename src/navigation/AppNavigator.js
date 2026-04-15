@@ -10,6 +10,7 @@ import { RegisterScreen } from '../screens/policia/RegisterScreen';
 import { CrimesScreen } from '../screens/policia/CrimesScreen';
 import { RoutesScreen } from '../screens/ciudadano/RoutesScreen';
 import { LoginAdminScreen } from '../screens/admin/LoginAdminScreen';
+import { UsersScreen } from '../screens/admin/UsersScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -29,7 +30,9 @@ export default function AppNavigator() {
             <Stack.Screen name="LoginPolice" component={LoginPoliceScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="Crimes" component={CrimesScreen} />
+
             <Stack.Screen name="LoginAdmin" component={LoginAdminScreen} />
+            <Stack.Screen name="UsersAdmin" component={UsersScreen} />
 
         </Stack.Navigator>
     );

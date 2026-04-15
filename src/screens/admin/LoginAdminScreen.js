@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../../theme';
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
 import { Container } from '../../components/layout/Container';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+
+import { API_URL } from '../../config/api';
 
 export const LoginAdminScreen = () => {
   const navigation = useNavigation();
@@ -15,9 +17,43 @@ export const LoginAdminScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // TODO: lógica de autenticación
-    console.log('Login:', email, password);
+  const handleLogin = async () => {
+    try {
+      if (!email.trim() || !password.trim()) {
+        Alert.alert('Error', 'Todos los campos son obligatorios');
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          role: 'admin',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al iniciar sesión');
+      }
+
+      const token = data.token;
+
+      await AsyncStorage.setItem('token', token);
+
+      Alert.alert('Éxito', 'Inicio de sesión correcto');
+
+      navigation.navigate('UsersAdmin');
+
+    } catch (error) {
+      console.error('Login error:', error);
+      Alert.alert('Error', error.message);
+    }
   };
 
   return (
@@ -123,7 +159,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.headerBackground, // Color de fondo del círculo
     justifyContent: 'center',   // Centra el icono verticalmente
     alignItems: 'center',       // Centra el icono horizontalmente
-    marginTo: 20,    
+    marginTo: 20,
     // Opcional: Sombreado para darle volumen (como en tu imagen)
     elevation: 4,               // Sombra en Android
     shadowColor: '#000',        // Sombra en iOS
