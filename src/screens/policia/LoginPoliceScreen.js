@@ -32,7 +32,7 @@ export const LoginPoliceScreen = () => {
         throw new Error(data.message || 'Credenciales incorrectas');
       }
 
-      console.log('Usuario logueado correctamente');
+      console.log('Usuario logueado correctamente:', data);
 
       // Guardar token en localStorage
       localStorage.setItem('token', data.token);

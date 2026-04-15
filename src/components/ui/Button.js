@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
-    marginVertical: 8,
+    marginVertical: 4,
   },
   text: {
     ...theme.typography.body,

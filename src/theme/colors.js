@@ -41,8 +41,8 @@ export const colors = {
   successButtonIcon: '#000000',
 
   // Card
-  cardBackground: '#333533',
-  cardBorder: '#D6D6D6',
+  cardBackground: '#1A1A1A',
+  cardBorder: '#4c4c4c',
   cardText: '#FFFFFF',
   cardTextSecondary: '#D6D6D6',
   cardIcon: '#FFFFFF',

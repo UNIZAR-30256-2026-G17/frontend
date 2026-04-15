@@ -17,23 +17,8 @@ import { theme } from '../../theme';
 export default function Map({
     showMarkers = true,
     showDistricts = true,
+    alerts = [],
 }) {
-    const markers = [
-        { id: 1, position: [39.2700, -77.3000], title: 'Clarksburg (norte)' },
-        { id: 2, position: [39.2500, -77.2700], title: 'Germantown norte' },
-        { id: 3, position: [39.2000, -77.2300], title: 'Montgomery Village' },
-        { id: 4, position: [39.1800, -77.2600], title: 'Germantown centro' },
-        { id: 5, position: [39.1547, -77.2405], title: 'Gaithersburg' },
-        { id: 6, position: [39.1300, -77.2100], title: 'Derwood' },
-        { id: 7, position: [39.1000, -77.3000], title: 'Potomac' },
-        { id: 8, position: [39.1200, -77.3200], title: 'North Potomac' },
-        { id: 9, position: [39.1200, -77.0500], title: 'Olney' },
-        { id: 10, position: [39.1000, -77.0300], title: 'Norbeck' },
-        { id: 11, position: [38.9900, -77.1000], title: 'Bethesda' },
-        { id: 12, position: [38.9906, -77.0261], title: 'Silver Spring' },
-        { id: 13, position: [38.9800, -77.0000], title: 'Takoma Park' },
-        { id: 14, position: [39.0400, -77.0500], title: 'Wheaton' },
-    ];
 
     const districts = [
         { name: 'Rockville', coords: [39.083997, -77.152758], ic: 5.6, color: theme.colors.ic1, },
@@ -54,11 +39,23 @@ export default function Map({
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-                {showMarkers && markers.map((marker) => (
-                    <Marker key={marker.id} position={marker.position}>
-                        <Popup>{marker.title}</Popup>
-                    </Marker>
-                ))}
+                {showMarkers && alerts
+                    .filter(a => a.location?.coordinates?.length === 2)
+                    .map(alert => (
+                        <Marker
+                            key={alert._id}
+                            position={[
+                                alert.location.coordinates[1], // lat
+                                alert.location.coordinates[0], // lng
+                            ]}
+                        >
+                            <Popup>
+                                <strong>{alert.description}</strong><br />
+                                {alert.address}
+                            </Popup>
+                        </Marker>
+                    ))
+                }
 
                 {showDistricts && districts.map((district, index) => (
                     <React.Fragment key={index}>

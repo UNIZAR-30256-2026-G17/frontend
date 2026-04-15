@@ -59,7 +59,7 @@ export const RegisterScreen = () => {
         throw new Error(loginData.message || 'Error al iniciar sesión');
       }
 
-      console.log('Usuario logueado correctamente');
+      console.log('Usuario logueado correctamente:', loginData);
 
       // Guardar token
       localStorage.setItem('token', loginData.token);
