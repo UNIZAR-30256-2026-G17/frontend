@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, FlatList } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, FlatList, Alert } from 'react-native';
 import { useWindowDimensions, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -25,10 +25,12 @@ export const MapScreen = () => {
     const [userId, setUserId] = useState(null);
     const [token, setToken] = useState(null);
 
+    const [districtICs, setDistrictICs] = useState([]);
     const [ICSelected, setICSelected] = useState(true);
-    const [alertsSelected, setAlertsSelected] = useState(true);
 
     const [alerts, setAlerts] = useState([]);
+    const [alertsSelected, setAlertsSelected] = useState(true);
+
 
     // Vector de ICs (SUSTITUIR por resultados de la API)
     const ICs = [
@@ -81,8 +83,35 @@ export const MapScreen = () => {
     };
 
     useEffect(() => {
+        fetchBeatsICsLastDay();
         fetchAlerts();
     }, [token]);
+
+    const fetchBeatsICsLastDay = async () => {
+        try {
+            if (!token) return;
+
+            const response = await fetch(
+                `${API_URL}/ic_district?time=day`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Error obteniendo ICs');
+            }
+
+            setDistrictICs(data.districtsICs);
+
+        } catch (error) {
+            console.error('Error ICs:', error);
+        }
+    };
 
     const fetchAlerts = async () => {
         try {
@@ -281,6 +310,7 @@ export const MapScreen = () => {
                                 showMarkers={alertsSelected}
                                 showDistricts={ICSelected}
                                 markers={alerts}
+                                districtICs={districtICs}
                             />
                         </View>
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
+import { theme } from '../../theme';
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -12,23 +13,54 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-import { theme } from '../../theme';
+const districtsCoordinates = [
+    { name: 'ROCKVILLE', coords: [39.083997, -77.152758] },
+    { name: 'SILVER SPRING', coords: [38.990665, -77.026088] },
+    { name: 'MONTGOMERY VILLAGE', coords: [39.1765, -77.1953] },
+    { name: 'GERMANTOWN', coords: [39.1732, -77.2717] },
+    { name: 'BETHESDA', coords: [38.9847, -77.0947] },
+    { name: 'TAKOMA PARK', coords: [38.9779, -77.0075] },
+    { name: 'WHEATON', coords: [39.0398, -77.0511] },
+];
+
+const colors = [
+    theme.colors.ic1,
+    theme.colors.ic2,
+    theme.colors.ic3,
+    theme.colors.ic4,
+    theme.colors.ic5,
+    theme.colors.ic6,
+    theme.colors.ic7,
+];
 
 export default function Map({
     showMarkers = true,
     showDistricts = true,
     markers = [],
+    districtICs = [],
 }) {
 
-    const districts = [
-        { name: 'Rockville', coords: [39.083997, -77.152758], ic: 5.6, color: theme.colors.ic1, },
-        { name: 'Silver Spring', coords: [38.990665, -77.026088], ic: 4.3, color: theme.colors.ic2, },
-        { name: 'Montgomery Village', coords: [39.1765, -77.1953], ic: 3.8, color: theme.colors.ic3, },
-        { name: 'Germantown', coords: [39.1732, -77.2717], ic: 2.6, color: theme.colors.ic4, },
-        { name: 'Bethesda', coords: [38.9847, -77.0947], ic: 1.8, color: theme.colors.ic5, },
-        { name: 'Takoma Park', coords: [38.9779, -77.0075], ic: 0.9, color: theme.colors.ic6, },
-        { name: 'Wheaton', coords: [39.0398, -77.0511], ic: 0.3, color: theme.colors.ic7, },
-    ];
+    const normalize = (str) =>
+        str?.toUpperCase().replace(/\s+/g, ' ').trim();
+
+    const processedDistricts = districtICs
+        .map(d => {
+            const coord = districtsCoordinates.find(
+                c => normalize(c.name) === normalize(d.district)
+            );
+
+            return {
+                name: d.district,
+                coords: coord?.coords,
+                value: d.id,
+            };
+        })
+        .filter(d => d.coords) // evita nulls
+        .sort((a, b) => b.value - a.value) // mayor → menor
+        .map((d, index) => ({
+            ...d,
+            color: colors[index] || theme.colors.ic7,
+        }));
 
     return (
         <View style={{ flex: 1, minHeight: 300 }}>
@@ -57,7 +89,7 @@ export default function Map({
                     ))
                 }
 
-                {showDistricts && districts.map((district, index) => (
+                {showDistricts && processedDistricts.map((district, index) => (
                     <React.Fragment key={index}>
                         <Circle
                             center={district.coords}
