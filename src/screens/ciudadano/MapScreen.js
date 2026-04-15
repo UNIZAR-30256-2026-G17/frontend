@@ -182,11 +182,35 @@ export const MapScreen = () => {
     const [modalCreateAlertVisible, setModalCreateAlertVisible] = useState(false);
     const [modalGenerateRouteVisible, setModalGenerateRouteVisible] = useState(false);
 
-    const handleCreateAlert = (newAlert) => {
-        // enviar aquí a la API
+    const handleCreateAlert = async ({ description, address }) => {
+        try {
+            const response = await fetch(`${API_URL}/alerts`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    description,
+                    address,
+                }),
+            });
 
-        setAlerts(prev => [newAlert, ...prev]);
-        setModalCreateAlertVisible(false);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Error creando alerta');
+            }
+
+            // actualizar estado local
+            setAlerts(prev => [...prev, data.alert]);
+
+            return data.alert;
+
+        } catch (error) {
+            console.error('Error creando alerta:', error.message);
+            throw error;
+        }
     };
 
     const handleGenerateRoute = (newRoute) => {
