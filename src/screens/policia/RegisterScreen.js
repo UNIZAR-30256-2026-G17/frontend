@@ -8,6 +8,8 @@ import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 
+import { API_URL } from '../../config/api';
+
 export const RegisterScreen = () => {
   const navigation = useNavigation();
 
@@ -15,9 +17,60 @@ export const RegisterScreen = () => {
   const [password, setPassword] = useState('');
   const [badgeNumber, setBadgeNumber] = useState('');
 
-  const handleRegister = () => {
-    // TODO: lógica de registro
-    console.log('Register:', email, password, badgeNumber);
+  const handleRegister = async () => {
+    try {
+      // 1. REGISTRO
+      const registerResponse = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          role: 'police',
+          badge_number: badgeNumber,
+        }),
+      });
+
+      const registerData = await registerResponse.json();
+
+      if (!registerResponse.ok) {
+        throw new Error(registerData.message || 'Error en registro');
+      }
+
+      console.log('Usuario creado correctamente');
+
+      // 2. LOGIN AUTOMÁTICO
+      const loginResponse = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const loginData = await loginResponse.json();
+
+      if (!loginResponse.ok) {
+        throw new Error(loginData.message || 'Error al iniciar sesión');
+      }
+
+      console.log('Usuario logueado correctamente');
+
+      // Guardar token
+      localStorage.setItem('token', loginData.token);
+
+      // Redirigir
+      navigation.navigate('Home');
+
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
   };
 
   return (

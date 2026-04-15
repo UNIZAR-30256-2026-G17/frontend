@@ -8,15 +8,42 @@ import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 
+import { API_URL } from '../../config/api';
+
 export const LoginPoliceScreen = () => {
   const navigation = useNavigation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // TODO: lógica de autenticación
-    console.log('Login:', email, password);
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Credenciales incorrectas');
+      }
+
+      console.log('Usuario logueado correctamente');
+
+      // Guardar token en localStorage
+      localStorage.setItem('token', data.token);
+
+      // Redirigir
+      navigation.navigate('Home');
+
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
   };
 
   return (
