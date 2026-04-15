@@ -17,7 +17,7 @@ import { theme } from '../../theme';
 export default function Map({
     showMarkers = true,
     showDistricts = true,
-    alerts = [],
+    markers = [],
 }) {
 
     const districts = [
@@ -39,7 +39,7 @@ export default function Map({
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-                {showMarkers && alerts
+                {showMarkers && markers
                     .filter(a => a.location?.coordinates?.length === 2)
                     .map(alert => (
                         <Marker

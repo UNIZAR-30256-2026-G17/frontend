@@ -138,9 +138,9 @@ export const MapScreen = () => {
 
                         <View style={styles.mapContainer}>
                             <Map
-                                showMarkers={true}
-                                showDistricts={true}
-                                alerts={alerts}
+                                showMarkers={alertsSelected}
+                                showDistricts={ICSelected}
+                                markers={alerts}
                             />
                         </View>
 
