@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { theme } from '../../theme';
 import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { getRoutePath } from '../../utils/getRoutePath';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -58,6 +59,28 @@ export default function Map({
     districtICs = [],
     routePoints = null,
 }) {
+    const [routePath, setRoutePath] = useState([]);
+
+    useEffect(() => {
+        const fetchRoute = async () => {
+            if (routePoints?.origin && routePoints?.destination) {
+                const path = await getRoutePath(routePoints.origin, routePoints.destination);
+                if (path) {
+                    setRoutePath(path);
+                } else {
+                    // Fallback to straight line if API fails
+                    setRoutePath([
+                        [routePoints.origin.latitude, routePoints.origin.longitude],
+                        [routePoints.destination.latitude, routePoints.destination.longitude]
+                    ]);
+                }
+            } else {
+                setRoutePath([]);
+            }
+        };
+
+        fetchRoute();
+    }, [routePoints]);
 
     const normalize = (str) =>
         str?.toUpperCase().replace(/\s+/g, ' ').trim();
@@ -124,14 +147,13 @@ export default function Map({
                             <Popup><strong>Destino de la ruta</strong></Popup>
                         </Marker>
 
-                        {/* Opcional: Una línea simple que conecte ambos puntos */}
-                        <Polyline
-                            positions={[
-                                [routePoints.origin.latitude, routePoints.origin.longitude],
-                                [routePoints.destination.latitude, routePoints.destination.longitude]
-                            ]}
-                            pathOptions={{ color: theme.colors.primary, dashArray: '10, 10' }}
-                        />
+                        {/* Ruta real obtenida de OSM (o línea recta como fallback) */}
+                        {routePath.length > 0 && (
+                            <Polyline
+                                positions={routePath}
+                                pathOptions={{ color: theme.colors.primary, weight: 4 }}
+                            />
+                        )}
                     </>
                 )}
 
