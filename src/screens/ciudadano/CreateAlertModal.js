@@ -19,6 +19,8 @@ export default function CreateAlertModal({ visible, onClose, onConfirm }) {
             setError('*Todos los campos son obligatorios');
             return;
         }
+        console.log("DESCRIPTION: ", description);
+        console.log("ADDRESS: ", address);
 
         setError('');
         onConfirm({ description, address });

@@ -231,10 +231,16 @@ export const MapScreen = () => {
                 throw new Error(data.message || 'Error creando alerta');
             }
 
-            // actualizar estado local
-            setAlerts(prev => [...prev, data.alert]);
+            const newAlert = {
+                ...data.alert,
+                confirmations: 0,
+                discards: 0,
+                confirmedByMe: false,
+                discardedByMe: false,
+            };
+            setAlerts(prev => [...prev, newAlert]);
 
-            return data.alert;
+            return newAlert;
 
         } catch (error) {
             console.error('Error creando alerta:', error.message);
