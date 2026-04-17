@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { theme } from '../../theme';
-import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 

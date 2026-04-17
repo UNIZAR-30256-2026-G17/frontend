@@ -3,6 +3,7 @@
 export const colors = {
   // Background
   background: '#000000',
+  primary: '#FFD100',
   text: '#FFFFFF',
 
   // Header

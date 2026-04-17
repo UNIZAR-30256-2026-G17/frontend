@@ -288,8 +288,17 @@ export const MapScreen = () => {
                 destination: destCoords
             });
 
-            // 3. Cerrar modal
+            // 3. Cerrar modal y navegar a la pantalla de rutas
             setModalGenerateRouteVisible(false);
+            
+            navigation.navigate('Routes', {
+                routeData: {
+                    initialAddress,
+                    finalAddress,
+                    originCoords,
+                    destCoords
+                }
+            });
 
         } catch (error) {
             console.error('Error generando ruta:', error);

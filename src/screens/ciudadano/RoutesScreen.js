@@ -11,7 +11,13 @@ import { theme } from '../../theme';
 export const RoutesScreen = () => {
     const route = useRoute();
 
-    const { routeData } = route.params || {};
+    const { routeData = {} } = route.params || {};
+    const { initialAddress, finalAddress, originCoords, destCoords } = routeData;
+
+    const routePoints = originCoords && destCoords ? {
+        origin: originCoords,
+        destination: destCoords
+    } : null;
 
     return (
         <Container>
@@ -19,17 +25,19 @@ export const RoutesScreen = () => {
                 <Text style={styles.title}>
                     Rutas
                 </Text>
+[diff_block_end]
 
+[diff_block_start]
                 <View style={styles.content}>
                     <View style={styles.mapControls}>
                         <Card
                             title="Ruta generada"
                         >
                             <Text style={styles.cardText}>
-                                <Text style={styles.cardTextTitle}>Dirección de partida:</Text> {routeData.initialAddress}
+                                <Text style={styles.cardTextTitle}>Dirección de partida:</Text> {initialAddress || 'No especificada'}
                             </Text>
                             <Text style={styles.cardText}>
-                                <Text style={styles.cardTextTitle}>Dirección de destino:</Text> {routeData.finalAddress}
+                                <Text style={styles.cardTextTitle}>Dirección de destino:</Text> {finalAddress || 'No especificada'}
                             </Text>
                         </Card>
                     </View>
@@ -38,6 +46,7 @@ export const RoutesScreen = () => {
                         <Map
                             showMarkers={false}
                             showDistricts={false}
+                            routePoints={routePoints}
                         />
                     </View>
 
