@@ -14,6 +14,8 @@ import CreateAlertModal from './CreateAlertModal';
 import GenerateRouteModal from './GenerateRouteModal';
 import Map from '../../components/map/Map';
 
+import { geocodeAddress } from '../../utils/geocodeAddress';
+
 import { API_URL } from '../../config/api';
 
 export const MapScreen = () => {
@@ -30,6 +32,8 @@ export const MapScreen = () => {
 
     const [alerts, setAlerts] = useState([]);
     const [alertsSelected, setAlertsSelected] = useState(true);
+
+    const [routePoints, setRoutePoints] = useState(null);
 
 
     // Vector de ICs (SUSTITUIR por resultados de la API)
@@ -258,15 +262,42 @@ export const MapScreen = () => {
         }
     };
 
-    const handleGenerateRoute = (newRoute) => {
-        // enviar aquí a la API
+    const handleGenerateRoute = async (routeData) => {
+        try {
+            // routeData trae { initialAddress, finalAddress } desde el modal
+            const { initialAddress, finalAddress } = routeData;
 
-        setModalGenerateRouteVisible(false);
-        navigation.navigate('Routes', {
-            routeData: newRoute
-        });
+            if (!initialAddress || !finalAddress) {
+                throw new Error("Debes introducir origen y destino");
+            }
+
+            // 1. Obtener coordenadas
+            const originCoords = await geocodeAddress(initialAddress);
+            console.log("tras codificar originCoords:", originCoords);
+            const destCoords = await geocodeAddress(finalAddress);
+            console.log("tras codificar destCoords:", destCoords);
+
+            if (!originCoords || !destCoords) {
+                const missing = !originCoords ? 'origen' : 'destino';
+                throw new Error(`No se pudieron encontrar coordenadas para el ${missing}`);
+            }
+
+            // 2. Actualizar estado local para que el Mapa lo pinte
+            setRoutePoints({
+                origin: originCoords,
+                destination: destCoords
+            });
+
+            // 3. Cerrar modal
+            setModalGenerateRouteVisible(false);
+
+        } catch (error) {
+            console.error('Error generando ruta:', error);
+            const errorMsg = error.message || 'Error desconocido';
+
+            alert("Error en las direcciones de la ruta: " + errorMsg);
+        }
     };
-
 
 
 
@@ -327,6 +358,7 @@ export const MapScreen = () => {
                                 showDistricts={ICSelected}
                                 markers={alerts}
                                 districtICs={districtICs}
+                                routePoints={routePoints}
                             />
                         </View>
 
