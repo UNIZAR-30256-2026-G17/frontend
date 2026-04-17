@@ -12,7 +12,7 @@ export const RoutesScreen = () => {
     const route = useRoute();
 
     const { routeData = {} } = route.params || {};
-    const { initialAddress, finalAddress, originCoords, destCoords } = routeData;
+    const { initialAddress, finalAddress, originCoords, destCoords, districtICs } = routeData;
 
     const routePoints = originCoords && destCoords ? {
         origin: originCoords,
@@ -47,6 +47,7 @@ export const RoutesScreen = () => {
                             showMarkers={false}
                             showDistricts={false}
                             routePoints={routePoints}
+                            districtICs={districtICs}
                         />
                     </View>
 

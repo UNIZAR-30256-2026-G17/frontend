@@ -28,6 +28,7 @@ export const MapScreen = () => {
     const [token, setToken] = useState(null);
 
     const [districtICs, setDistrictICs] = useState([]);
+    const [monthlyDistrictICs, setMonthlyDistrictICs] = useState([]);
     const [ICSelected, setICSelected] = useState(true);
 
     const [alerts, setAlerts] = useState([]);
@@ -88,6 +89,7 @@ export const MapScreen = () => {
 
     useEffect(() => {
         fetchBeatsICsLastDay();
+        fetchBeatsICsLastMonth();
         fetchAlerts();
     }, [token]);
 
@@ -114,6 +116,32 @@ export const MapScreen = () => {
 
         } catch (error) {
             console.error('Error ICs:', error);
+        }
+    };
+
+    const fetchBeatsICsLastMonth = async () => {
+        try {
+            if (!token) return;
+
+            const response = await fetch(
+                `${API_URL}/ic_district?time=month`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Error obteniendo ICs mensuales');
+            }
+
+            setMonthlyDistrictICs(data.districtsICs);
+
+        } catch (error) {
+            console.error('Error ICs mensuales:', error);
         }
     };
 
@@ -296,7 +324,8 @@ export const MapScreen = () => {
                     initialAddress,
                     finalAddress,
                     originCoords,
-                    destCoords
+                    destCoords,
+                    districtICs: monthlyDistrictICs
                 }
             });
 
