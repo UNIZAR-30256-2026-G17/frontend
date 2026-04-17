@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../context/AuthContext';
 import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
@@ -12,6 +13,7 @@ import { API_URL } from '../../config/api';
 
 export const LoginPoliceScreen = () => {
   const navigation = useNavigation();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,7 +25,7 @@ export const LoginPoliceScreen = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, role: 'police' }),
       });
 
       const data = await response.json();
@@ -34,15 +36,19 @@ export const LoginPoliceScreen = () => {
 
       console.log('Usuario logueado correctamente:', data);
 
-      // Guardar token en localStorage
-      localStorage.setItem('token', data.token);
+      // Guardar token y usuario en el context
+      await login({ role: 'police', email: data.user?.email || email }, data.token);
 
-      // Redirigir
-      navigation.navigate('Home');
+      // Redirigir a la pantalla policial
+      navigation.navigate('MapPolice');
 
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      if (Platform.OS === 'web') {
+        alert(error.message);
+      } else {
+        Alert.alert('Error', error.message);
+      }
     }
   };
 

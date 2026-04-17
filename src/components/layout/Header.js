@@ -7,14 +7,17 @@ import { theme } from '../../theme';
 
 import Button from '../ui/Button';
 
+import { useAuth } from '../../context/AuthContext';
+
 export const Header = () => {
   const navigation = useNavigation();
+  const { user, logout } = useAuth();
 
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const tabs = [
     { label: 'Mapa', route: 'Map' },
@@ -24,6 +27,12 @@ export const Header = () => {
   const currentRoute = useNavigationState(
     (state) => state.routes[state.index].name
   );
+
+  const handleLogout = async () => {
+    await logout();
+    setShowUserMenu(false);
+    navigation.navigate('Home');
+  };
 
   return (
     <View style={styles.header}>
@@ -74,11 +83,34 @@ export const Header = () => {
           </View>
         )}
 
-        <Button
-          title="Iniciar sesión"
-          variant="header"
-          onPress={() => navigation.navigate('LoginPolice')}
-        />
+        {user ? (
+          <View style={styles.userContainer}>
+            <TouchableOpacity
+              style={styles.avatar}
+              onPress={() => setShowUserMenu(!showUserMenu)}
+            >
+              <Text style={styles.avatarText}>P</Text>
+            </TouchableOpacity>
+
+            {showUserMenu && (
+              <View style={styles.userDropdown}>
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={handleLogout}
+                >
+                  <FontAwesome name="sign-out" size={16} color={theme.colors.text} />
+                  <Text style={styles.dropdownItemText}>Cerrar sesión</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        ) : (
+          <Button
+            title="Iniciar sesión"
+            variant="header"
+            onPress={() => navigation.navigate('LoginPolice')}
+          />
+        )}
       </View>
 
       {/* MOBILE MENU */}
@@ -194,5 +226,49 @@ const styles = StyleSheet.create({
     minWidth: 160,
     zIndex: 9999,
     elevation: 30,
+  },
+  userContainer: {
+    position: 'relative',
+    marginLeft: 10,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: theme.colors.headerButtonBackground,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: theme.colors.headerButtonText,
+  },
+  avatarText: {
+    color: theme.colors.headerButtonText,
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  userDropdown: {
+    position: 'absolute',
+    top: 50,
+    right: 0,
+    backgroundColor: theme.colors.cardBackground,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    paddingVertical: 8,
+    minWidth: 150,
+    zIndex: 10000,
+    elevation: 5,
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 10,
+  },
+  dropdownItemText: {
+    color: theme.colors.cardText,
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
