@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Platform } from 'react-native';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { useWindowDimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -19,19 +19,35 @@ export const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
-  const tabs = [
-    { label: 'Mapa', route: 'Map' },
-    { label: 'Estadísticas', route: 'Stats' },
-  ];
+  const tabs = React.useMemo(() => {
+    if (user?.role === 'police') {
+      return [
+        { label: 'Mapa', route: 'MapPolice' },
+        { label: 'Alertas', route: 'Alerts' },
+        { label: 'Delitos', route: 'Crimes' },
+        { label: 'Estadísticas', route: 'StatsPolice' },
+      ];
+    }
+    // Ciudadano o sin login
+    return [
+      { label: 'Mapa', route: 'Map' },
+      { label: 'Estadísticas', route: 'Stats' },
+    ];
+  }, [user]);
 
   const currentRoute = useNavigationState(
-    (state) => state.routes[state.index].name
+    (state) => state ? state.routes[state.index]?.name : null
   );
 
   const handleLogout = async () => {
-    await logout();
+    console.log("DENTRO");
     setShowUserMenu(false);
-    navigation.navigate('Home');
+    try {
+      await logout();
+      navigation.navigate('Home');
+    } catch (error) {
+      console.error('Error during logout navigation:', error);
+    }
   };
 
   return (
@@ -173,6 +189,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+      default: {},
+    }),
   },
   rightSection: {
     flexDirection: 'row',
@@ -185,6 +205,10 @@ const styles = StyleSheet.create({
   tab: {
     paddingHorizontal: 15,
     paddingVertical: 8,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+      default: {},
+    }),
   },
   tabText: {
     fontSize: 16,
@@ -196,19 +220,35 @@ const styles = StyleSheet.create({
     borderBottomColor: theme.colors.headerTabActiveBorder,
     backgroundColor: theme.colors.headerTabActiveBackground,
     borderRadius: 6,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+      default: {},
+    }),
   },
   menuButton: {
     padding: 8,
     marginRight: 5,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+      default: {},
+    }),
   },
   mobileTab: {
     paddingVertical: 10,
     paddingHorizontal: 15,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+      default: {},
+    }),
   },
   activeMobileTab: {
     backgroundColor: theme.colors.headerTabActiveBackground,
     borderLeftWidth: 3,
     borderLeftColor: theme.colors.headerTabActiveBorder,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+      default: {},
+    }),
   },
   modalOverlay: {
     flex: 1,
@@ -240,6 +280,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: theme.colors.headerButtonText,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+      default: {},
+    }),
   },
   avatarText: {
     color: theme.colors.headerButtonText,
@@ -265,6 +309,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     gap: 10,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+      default: {},
+    }),
   },
   dropdownItemText: {
     color: theme.colors.cardText,

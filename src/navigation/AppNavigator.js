@@ -10,6 +10,8 @@ import { RegisterScreen } from '../screens/policia/RegisterScreen';
 import { CrimesScreen } from '../screens/policia/CrimesScreen';
 import { RoutesScreen } from '../screens/ciudadano/RoutesScreen';
 import { MapPoliceScreen } from '../screens/policia/MapPoliceScreen';
+import { AlertsScreen } from '../screens/policia/AlertsScreen';
+import { StatsPoliceScreen } from '../screens/policia/StatsPoliceScreen';
 import { LoginAdminScreen } from '../screens/admin/LoginAdminScreen';
 import { UsersScreen } from '../screens/admin/UsersScreen';
 
@@ -32,6 +34,8 @@ export default function AppNavigator() {
             <Stack.Screen name="LoginPolice" component={LoginPoliceScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="Crimes" component={CrimesScreen} />
+            <Stack.Screen name="Alerts" component={AlertsScreen} />
+            <Stack.Screen name="StatsPolice" component={StatsPoliceScreen} />
 
             <Stack.Screen name="LoginAdmin" component={LoginAdminScreen} />
             <Stack.Screen name="UsersAdmin" component={UsersScreen} />
