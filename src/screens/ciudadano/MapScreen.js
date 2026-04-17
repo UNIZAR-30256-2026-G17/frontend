@@ -239,11 +239,21 @@ export const MapScreen = () => {
                 discardedByMe: false,
             };
             setAlerts(prev => [...prev, newAlert]);
+            if (Platform.OS === 'web') {
+                alert('La alerta ha sido creada correctamente');
+            } else {
+                Alert.alert('Éxito', 'La alerta ha sido creada correctamente');
+            }
 
             return newAlert;
 
         } catch (error) {
             console.error('Error creando alerta:', error.message);
+            if (Platform.OS === 'web') {
+                alert('Ha habido un error creando la alerta: ' + error.message);
+            } else {
+                Alert.alert('Error', 'Ha habido un error creando la alerta: ' + error.message);
+            }
             throw error;
         }
     };
