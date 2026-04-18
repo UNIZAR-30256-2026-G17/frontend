@@ -1,23 +1,83 @@
-import React, { useState } from 'react';
-import { Text, ScrollView, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../../theme';
 
-// Importa tu AdminContainer actualizado
 import { AdminContainer } from '../../components/layout/AdminContainer'; 
 import { DelitosTable } from './DelitosTable';
-import { SAMPLE_DELITOS } from './delitos.constants';
+import { API_URL } from '../../config/api';
 
 export function AdminDelitosScreen() {
-  const [delitos, setDelitos] = useState(SAMPLE_DELITOS);
+  const [delitos, setDelitos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const toggleDelito = (id) => {
-    setDelitos((prev) =>
-      prev.map((d) =>
-        d.id === id
-          ? { ...d, estado: d.estado === 'Disponible' ? 'Eliminado' : 'Disponible' }
-          : d
-      )
-    );
+  // Se ejecuta al entrar a la pantalla
+  useEffect(() => {
+    fetchDelitos();
+  }, []);
+
+  const fetchDelitos = async () => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem('token');
+      
+      const response = await fetch(`${API_URL}/crimes?limit=50`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al obtener los delitos');
+      }
+
+      // Accedemos a la lista de delitos usando data.crimes (y le ponemos [] por si acaso viene vacío)
+      setDelitos(data.crimes || []); 
+
+    } catch (error) {
+      console.error('Error fetching delitos:', error);
+      Alert.alert('Error', 'No se pudieron cargar los delitos desde el servidor');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleDelito = async (id, currentStatus) => {
+    try {
+      // Tu backend espera 'available' o 'deleted'
+      const newStatus = currentStatus === 'available' ? 'deleted' : 'available';
+      const token = await AsyncStorage.getItem('token');
+
+      // IMPORTANTE: Revisa en tu backend si esta es la ruta correcta para actualizar
+      // Si tu archivo de rutas dice router.put('/:id', ...), entonces quítale el "/status" del final.
+      const response = await fetch(`${API_URL}/crimes/${id}/status`, {
+        method: 'PUT', 
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      if (!response.ok) {
+        throw new Error('No se pudo actualizar el estado en el servidor');
+      }
+
+      // Si el backend lo guardó bien, actualizamos la tabla en pantalla
+      setDelitos((prev) =>
+        prev.map((d) =>
+          d._id === id ? { ...d, status: newStatus } : d
+        )
+      );
+
+    } catch (error) {
+      console.error('Error toggling delito:', error);
+      Alert.alert('Error', 'Hubo un problema al cambiar el estado del delito.');
+    }
   };
 
   return (
@@ -28,7 +88,13 @@ export function AdminDelitosScreen() {
         scrollEventThrottle={16}
       >
         <Text style={styles.pageTitle}>Delitos</Text>
-        <DelitosTable delitos={delitos} onToggle={toggleDelito} />
+        
+        {loading ? (
+          <ActivityIndicator size="large" color={theme.colors.primary} style={{ marginTop: 50 }} />
+        ) : (
+          <DelitosTable delitos={delitos} onToggle={toggleDelito} />
+        )}
+        
       </ScrollView>
     </AdminContainer>
   );
