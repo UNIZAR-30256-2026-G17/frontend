@@ -10,8 +10,11 @@ import { RegisterScreen } from '../screens/policia/RegisterScreen';
 import { CrimesScreen } from '../screens/policia/CrimesScreen';
 import { RoutesScreen } from '../screens/ciudadano/RoutesScreen';
 import { LoginAdminScreen } from '../screens/admin/LoginAdminScreen';
-import { UsersScreen } from '../screens/admin/UsersScreen';
 
+import { EstadisticasScreen } from '../screens/policia/EstadisticasScreen';
+import { AdminUsuariosScreen } from '../screens/admin/AdminUsuariosScreen';
+import { AdminDelitosScreen } from '../screens/admin/AdminDelitosScreen';
+import { AdminAlertasScreen } from '../screens/admin/AdminAlertasScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,7 +35,12 @@ export default function AppNavigator() {
             <Stack.Screen name="Crimes" component={CrimesScreen} />
 
             <Stack.Screen name="LoginAdmin" component={LoginAdminScreen} />
-            <Stack.Screen name="UsersAdmin" component={UsersScreen} />
+            <Stack.Screen name="EstadisticasPolice" component={EstadisticasScreen} />
+            <Stack.Screen name="UsersAdmin" component={AdminUsuariosScreen} />
+            <Stack.Screen name="DelitosAdmin" component={AdminDelitosScreen} />
+            <Stack.Screen name="AlertasAdmin" component={AdminAlertasScreen} />
+
+
 
         </Stack.Navigator>
     );

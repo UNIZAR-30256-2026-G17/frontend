@@ -1,0 +1,37 @@
+// ── Datos de prueba ───────────────────────────────────────────────────────────
+export const SAMPLE_USERS = [
+  { id: '1',  correo: 'ejemplo1@gmail.com',  numeroPlaca: '1234', estado: 'Activo'    },
+  { id: '2',  correo: 'ejemplo2@gmail.com',  numeroPlaca: '1254', estado: 'Activo'    },
+  { id: '3',  correo: 'ejemplo3@gmail.com',  numeroPlaca: '1745', estado: 'Activo'    },
+  { id: '4',  correo: 'ejemplo4@gmail.com',  numeroPlaca: '5646', estado: 'Activo'    },
+  { id: '5',  correo: 'ejemplo5@gmail.com',  numeroPlaca: '8435', estado: 'Bloqueado' },
+  { id: '6',  correo: 'ejemplo6@gmail.com',  numeroPlaca: '1546', estado: 'Bloqueado' },
+  { id: '7',  correo: 'ejemplo7@gmail.com',  numeroPlaca: '1548', estado: 'Bloqueado' },
+  { id: '8',  correo: 'ejemplo8@gmail.com',  numeroPlaca: '7815', estado: 'Activo'    },
+  { id: '9',  correo: 'ejemplo9@gmail.com',  numeroPlaca: '1581', estado: 'Bloqueado' },
+  { id: '10', correo: 'ejemplo10@gmail.com', numeroPlaca: '6548', estado: 'Activo'    },
+  { id: '11', correo: 'ejemplo11@gmail.com', numeroPlaca: '1356', estado: 'Activo'    },
+  { id: '12', correo: 'ejemplo12@gmail.com', numeroPlaca: '6549', estado: 'Bloqueado' },
+  { id: '13', correo: 'ejemplo13@gmail.com', numeroPlaca: '6841', estado: 'Activo'    },
+  { id: '14', correo: 'ejemplo14@gmail.com', numeroPlaca: '4652', estado: 'Activo'    },
+  { id: '15', correo: 'ejemplo15@gmail.com', numeroPlaca: '4898', estado: 'Activo'    },
+  { id: '16', correo: 'ejemplo16@gmail.com', numeroPlaca: '2138', estado: 'Bloqueado' },
+  { id: '17', correo: 'ejemplo17@gmail.com', numeroPlaca: '2664', estado: 'Bloqueado' },
+  { id: '18', correo: 'ejemplo18@gmail.com', numeroPlaca: '4812', estado: 'Activo'    },
+];
+
+export const COLORS = {
+  sidebarBg: '#1a1a1a',
+  headerBg: '#2a2a2a',
+  rowEven: '#ffffff',
+  rowOdd: '#f8f8f8',
+  tableBorder: '#e5e5e5',
+  tableHeader: '#f0f0f0',
+  tableHeaderText: '#555',
+  blockRed: '#e53935',
+  unblockGreen: '#43a047',
+  activeGreen: '#388e3c',
+  blockedRed: '#c62828',
+  activeBg: '#e8f5e9',
+  blockedBg: '#ffebee',
+};
