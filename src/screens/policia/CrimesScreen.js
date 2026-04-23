@@ -11,7 +11,7 @@ import DateInput from '../../components/ui/DateInput';
 import FilterPopover from './FilterPopover';
 import { CreateCrimesTable } from './CreateCrimesTable';
 import { UseCrimesFilter } from './UseCrimesFilter';
-import EmptyState from './EmptyState';
+import EmptyState from '../../components/ui/EmptyState';
 import {
   ORDER_OPTIONS,
   TIPO_OPTIONS,

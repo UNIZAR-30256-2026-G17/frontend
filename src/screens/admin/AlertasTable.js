@@ -5,21 +5,27 @@ import { theme } from '../../theme';
 import Button from '../../components/ui/Button';
 
 const COLS_DESKTOP = [
-  { key: 'id', header: '#', flex: 0.5 },
-  { key: 'descripcion', header: 'Descripción', flex: 2.2 },
-  { key: 'direccion', header: 'Dirección', flex: 2.5 },
-  { key: 'fecha', header: 'Fecha', flex: 1 },
-  { key: 'confirmaciones', header: 'Confirm...', flex: 0.8 }, // Truncado como en tu foto
-  { key: 'descartes', header: 'Descartes', flex: 0.8 },
-  { key: 'estado', header: 'Estado', flex: 1 },
+  { key: '_id', header: '#', flex: 0.6 },
+  { key: 'description', header: 'Descripción', flex: 2.5 },
+  { key: 'address', header: 'Dirección', flex: 2.5 },
+  { key: 'createdAt', header: 'Fecha', flex: 1 },
+  { key: 'confirmations', header: 'Conf.', flex: 0.6 }, 
+  { key: 'discards', header: 'Desc.', flex: 0.6 },
+  { key: 'status', header: 'Estado', flex: 1 },
 ];
 
-export function AlertasTable({ alertas, onToggle }) {
+export function AlertasTable({ alertas = [], onToggle }) {
   const { width } = useWindowDimensions();
   const isMobile = width < 900; 
   const [expandedRow, setExpandedRow] = useState(null);
 
   const rowStyle = (i) => [styles.row, i % 2 === 0 ? styles.rowEven : styles.rowOdd];
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
 
   // ─── VISTA DESKTOP ───
   if (!isMobile) {
@@ -32,8 +38,8 @@ export function AlertasTable({ alertas, onToggle }) {
               style={[
                 styles.headerCell, 
                 { flex: col.flex },
-                (col.key === 'id' || col.key === 'descripcion' || col.key === 'direccion') && styles.desktopLeftAlign,
-                col.key === 'id' && { paddingLeft: 16 }
+                (col.key === '_id' || col.key === 'description' || col.key === 'address') && styles.desktopLeftAlign,
+                col.key === '_id' && { paddingLeft: 16 }
               ]}
             >
               {col.header}
@@ -42,25 +48,40 @@ export function AlertasTable({ alertas, onToggle }) {
           <View style={styles.headerBtnSpace} /> 
         </View>
 
-        {alertas.map((row, i) => {
-          const isEliminada = row.estado === 'Eliminada';
+        {alertas?.map((row, i) => {
+          const isEliminada = row.status === 'deleted';
+          const statusText = isEliminada ? 'Eliminada' : 'Pendiente';
+
           return (
-            <View key={row.id} style={rowStyle(i)}>
-              <Text style={[styles.cell, { flex: COLS_DESKTOP[0].flex }, styles.desktopLeftAlign, { paddingLeft: 16 }]}>{row.id}</Text>
-              <Text style={[styles.cell, { flex: COLS_DESKTOP[1].flex }, styles.desktopLeftAlign]} numberOfLines={1}>{row.descripcion}</Text>
-              <Text style={[styles.cell, { flex: COLS_DESKTOP[2].flex }, styles.desktopLeftAlign]} numberOfLines={1}>{row.direccion}</Text>
-              <Text style={[styles.cell, { flex: COLS_DESKTOP[3].flex }]}>{row.fecha}</Text>
-              <Text style={[styles.cell, { flex: COLS_DESKTOP[4].flex }]}>{row.confirmaciones}</Text>
-              <Text style={[styles.cell, { flex: COLS_DESKTOP[5].flex }]}>{row.descartes}</Text>
-              <Text style={[styles.cell, { flex: COLS_DESKTOP[6].flex }]}>{row.estado}</Text>
+            <View key={row._id} style={rowStyle(i)}>
+              <Text style={[styles.cell, { flex: COLS_DESKTOP[0].flex }, styles.desktopLeftAlign, { paddingLeft: 16 }]} numberOfLines={1}>
+                {row._id.slice(-5)}
+              </Text>
+              <Text style={[styles.cell, { flex: COLS_DESKTOP[1].flex }, styles.desktopLeftAlign]}>
+                {row.description}
+              </Text>
+              <Text style={[styles.cell, { flex: COLS_DESKTOP[2].flex }, styles.desktopLeftAlign]}>
+                {row.address}
+              </Text>
+              <Text style={[styles.cell, { flex: COLS_DESKTOP[3].flex }]}>{formatDate(row.createdAt)}</Text>
+              
+              {/* Mostramos el conteo numérico de los arrays */}
+              <Text style={[styles.cell, { flex: COLS_DESKTOP[4].flex }]}>
+                {Array.isArray(row.confirmations) ? row.confirmations.length : 0}
+              </Text>
+              <Text style={[styles.cell, { flex: COLS_DESKTOP[5].flex }]}>
+                {Array.isArray(row.discards) ? row.discards.length : 0}
+              </Text>
+              
+              <Text style={[styles.cell, { flex: COLS_DESKTOP[6].flex }]}>{statusText}</Text>
               
               <View style={styles.actionCellDesktop}>
                 <Button
-                  title={isEliminada ? 'Restaurar' : 'Eliminar'} 
+                  title={isEliminada ? 'Restaurar' : 'Eliminar'}
                   icon={isEliminada ? 'check' : 'times'}
                   variant={isEliminada ? 'success' : 'danger'}
                   size="small"
-                  onPress={() => onToggle(row.id)}
+                  onPress={() => onToggle(row._id, row.status)}
                 />
               </View>
             </View>
@@ -70,38 +91,38 @@ export function AlertasTable({ alertas, onToggle }) {
     );
   }
 
-  // ─── VISTA MÓVIL (Acordeón) ───
+  // ─── VISTA MÓVIL ───
   return (
     <View style={styles.table}>
       <View style={styles.headerRow}>
         <Text style={[styles.headerCell, styles.mId]}>#</Text>
-        <Text style={[styles.headerCell, styles.mDesc]}>Descripción</Text>
+        <Text style={[styles.headerCell, styles.mDesc]}>Alerta</Text>
         <Text style={[styles.headerCell, styles.mEstado]}>Estado</Text>
-        <View style={styles.mActionsContainer} /> 
+        <View style={styles.mActionsContainer} />
       </View>
       
-      {alertas.map((row, i) => {
-        const expanded = expandedRow === row.id;
-        const isEliminada = row.estado === 'Eliminada';
+      {alertas?.map((row, i) => {
+        const expanded = expandedRow === row._id;
+        const isEliminada = row.status === 'deleted';
+        const statusText = isEliminada ? 'Eliminada' : 'Pendiente';
         
         return (
-          <View key={row.id}>
+          <View key={row._id}>
             <View style={rowStyle(i)}>
-              <Text style={[styles.cell, styles.mId]} numberOfLines={1}>{row.id}</Text>
-              <Text style={[styles.cell, styles.mDesc]} numberOfLines={1}>{row.descripcion}</Text>
-              <Text style={[styles.cell, styles.mEstado]}>{row.estado}</Text>
+              <Text style={[styles.cell, styles.mId]} numberOfLines={1}>{row._id.slice(-4)}</Text>
+              <Text style={[styles.cell, styles.mDesc]} numberOfLines={1}>{row.description}</Text>
+              <Text style={[styles.cell, styles.mEstado]}>{statusText}</Text>
               
               <View style={styles.mActionsContainer}>
                 <Button
                   icon={isEliminada ? 'check' : 'times'}
                   variant={isEliminada ? 'success' : 'danger'}
                   size="small"
-                  onPress={() => onToggle(row.id)}
+                  onPress={() => onToggle(row._id, row.status)}
                 />
-                
                 <TouchableOpacity
                   style={styles.expandButton}
-                  onPress={() => setExpandedRow(expanded ? null : row.id)}
+                  onPress={() => setExpandedRow(expanded ? null : row._id)}
                 >
                   <FontAwesome
                     name={expanded ? 'minus-circle' : 'plus-circle'}
@@ -114,10 +135,10 @@ export function AlertasTable({ alertas, onToggle }) {
             
             {expanded && (
               <View style={[styles.expandedRow, i % 2 === 0 ? styles.rowEven : styles.rowOdd]}>
-                <Text style={styles.expText}><Text style={styles.expLabel}>Dirección: </Text>{row.direccion}</Text>
-                <Text style={styles.expText}><Text style={styles.expLabel}>Fecha: </Text>{row.fecha}</Text>
-                <Text style={styles.expText}><Text style={styles.expLabel}>Confirmaciones: </Text>{row.confirmaciones}</Text>
-                <Text style={styles.expText}><Text style={styles.expLabel}>Descartes: </Text>{row.descartes}</Text>
+                <Text style={styles.expText}><Text style={styles.expLabel}>Dirección: </Text>{row.address}</Text>
+                <Text style={styles.expText}><Text style={styles.expLabel}>Fecha: </Text>{formatDate(row.createdAt)}</Text>
+                <Text style={styles.expText}><Text style={styles.expLabel}>Confirmaciones: </Text>{row.confirmations?.length || 0}</Text>
+                <Text style={styles.expText}><Text style={styles.expLabel}>Descartes: </Text>{row.discards?.length || 0}</Text>
               </View>
             )}
           </View>
@@ -135,13 +156,13 @@ const styles = StyleSheet.create({
   },
   headerRow: { 
     flexDirection: 'row', 
-    backgroundColor: theme.colors.tableHeaderBackground || '#000', 
-    paddingVertical: 10, 
+    backgroundColor: theme.colors.tableHeaderBackground || '#F7C343', 
+    paddingVertical: 12, 
     alignItems: 'center' 
   },
   headerCell: { 
     ...theme.typography.body, 
-    color: theme.colors.tableHeaderText || '#fff', 
+    color: theme.colors.tableHeaderText || '#000', 
     fontWeight: 'bold', 
     textAlign: 'center',
     fontSize: 12, 
@@ -152,35 +173,34 @@ const styles = StyleSheet.create({
   row: { 
     flexDirection: 'row', 
     alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: 10,
   },
-  rowEven: { backgroundColor: theme.colors.tableRowEven || '#f0f0f0' },
-  rowOdd:  { backgroundColor: theme.colors.tableRowOdd || '#e6e6e6' },
+  rowEven: { backgroundColor: theme.colors.tableRowEven || '#fff' },
+  rowOdd:  { backgroundColor: theme.colors.tableRowOdd || '#f9f9f9' },
   
   cell: { 
     textAlign: 'center', 
     ...theme.typography.body, 
     color: theme.colors.tableText || '#333', 
     fontSize: 12,
+    paddingHorizontal: 4,
   },
   
-  // ── Ajustes Escritorio ──
-  desktopLeftAlign: {
-    textAlign: 'left',
-  },
   actionCellDesktop: {
     flex: 1.2,
     alignItems: 'center',
     justifyContent: 'center',
     paddingRight: 8,
   },
+  desktopLeftAlign: {
+    textAlign: 'left'
+  },
   
-  // ── Ajustes Móvil ──
   mId: { flex: 0.6, textAlign: 'left', paddingLeft: 12, fontSize: 11 },
-  mDesc: { flex: 2.4, textAlign: 'left', fontSize: 11 },
+  mDesc: { flex: 2.2, textAlign: 'left', fontSize: 11 },
   mEstado: { flex: 1.2, fontSize: 11 },
   mActionsContainer: { 
-    width: 75, 
+    width: 80, 
     flexDirection: 'row',
     alignItems: 'center', 
     justifyContent: 'flex-end',
@@ -191,7 +211,6 @@ const styles = StyleSheet.create({
     padding: 4, 
   },
   
-  // ── Acordeón (Móvil) ──
   expandedRow: { 
     paddingHorizontal: 16, 
     paddingVertical: 12, 

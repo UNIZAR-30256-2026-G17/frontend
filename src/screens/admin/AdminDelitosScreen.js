@@ -54,8 +54,8 @@ export function AdminDelitosScreen() {
 
       // IMPORTANTE: Revisa en tu backend si esta es la ruta correcta para actualizar
       // Si tu archivo de rutas dice router.put('/:id', ...), entonces quítale el "/status" del final.
-      const response = await fetch(`${API_URL}/crimes/${id}/status`, {
-        method: 'PUT', 
+      const response = await fetch(`${API_URL}/crimes/${id}`, {
+        method: 'PATCH', 
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
