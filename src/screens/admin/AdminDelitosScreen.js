@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Text, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../../theme';
 
+import { useAuth } from '../../context/AuthContext';
 import { AdminContainer } from '../../components/layout/AdminContainer'; 
 import { DelitosTable } from './DelitosTable';
 import { API_URL } from '../../config/api';
 
 export function AdminDelitosScreen() {
+  const { user } = useAuth();
   const [delitos, setDelitos] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Se ejecuta al entrar a la pantalla
   useEffect(() => {
-    fetchDelitos();
-  }, []);
+    if (user?.token) fetchDelitos();
+  }, [user]);
 
   const fetchDelitos = async () => {
     try {
       setLoading(true);
-      const token = await AsyncStorage.getItem('token');
+      const token = user?.token; 
       
       const response = await fetch(`${API_URL}/crimes?limit=50`, {
         method: 'GET',
@@ -50,7 +51,7 @@ export function AdminDelitosScreen() {
     try {
       // Tu backend espera 'available' o 'deleted'
       const newStatus = currentStatus === 'available' ? 'deleted' : 'available';
-      const token = await AsyncStorage.getItem('token');
+      const token = user?.token;
 
       // IMPORTANTE: Revisa en tu backend si esta es la ruta correcta para actualizar
       // Si tu archivo de rutas dice router.put('/:id', ...), entonces quítale el "/status" del final.
