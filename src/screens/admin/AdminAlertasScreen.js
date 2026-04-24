@@ -7,7 +7,7 @@ import {
   Alert, 
   RefreshControl 
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../../context/AuthContext';
 import { theme } from '../../theme';
 
 import { AdminContainer } from '../../components/layout/AdminContainer'; 
@@ -19,15 +19,17 @@ export function AdminAlertasScreen() {
   const [alertas, setAlertas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
+  const { user } = useAuth();
   useEffect(() => {
-    fetchAlertas();
-  }, []);
+    if (user?.token) {
+      fetchAlertas();
+    }
+  }, [user]);
 
   const fetchAlertas = async () => {
     try {
       setLoading(true);
-      const token = await AsyncStorage.getItem('token');
+      const token = user?.token;
       
       const response = await fetch(`${API_URL}/alerts`, {
         method: 'GET',
@@ -63,7 +65,7 @@ export function AdminAlertasScreen() {
 
   const toggleAlerta = async (id, currentStatus) => {
     try {
-      const token = await AsyncStorage.getItem('token');
+      const token = user?.token;
       
       // Mapeo de estados de tu back: pending -> deleted
       const newStatus = currentStatus === 'deleted' ? 'pending' : 'deleted';
@@ -90,35 +92,35 @@ export function AdminAlertasScreen() {
   };
 
   return (
-    <AdminContainer>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.container}
-        refreshControl={
-          <RefreshControl 
-            refreshing={refreshing} 
-            onRefresh={onRefresh} 
-            colors={[theme.colors.primary]}
-          />
-        }
-      >
-        <Text style={styles.pageTitle}>Panel de Alertas</Text>
-        
-        {loading && !refreshing ? (
-          <ActivityIndicator size="large" color={theme.colors.primary} style={styles.loader} />
-        ) : alertas.length === 0 ? (
-          <EmptyState
-            icon="bell-slash"
-            title="No hay alertas registradas"
-            subtitle="El sistema no tiene reportes actuales. Tira hacia abajo para refrescar."
-            buttonText="Buscar nuevas alertas"
-            onButtonPress={fetchAlertas}
-          />
-        ) : (
-          <AlertasTable alertas={alertas} onToggle={toggleAlerta} />
-        )}
-      </ScrollView>
-    </AdminContainer>
+      <AdminContainer>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.container}
+          refreshControl={
+            <RefreshControl 
+              refreshing={refreshing} 
+              onRefresh={onRefresh} 
+              colors={[theme.colors.primary]}
+            />
+          }
+        >
+          <Text style={styles.pageTitle}>Panel de Alertas</Text>
+          
+          {loading && !refreshing ? (
+            <ActivityIndicator size="large" color={theme.colors.primary} style={styles.loader} />
+          ) : alertas.length === 0 ? (
+            <EmptyState
+              icon="bell-slash"
+              title="No hay alertas registradas"
+              subtitle="El sistema no tiene reportes actuales. Tira hacia abajo para refrescar."
+              buttonText="Buscar nuevas alertas"
+              onButtonPress={fetchAlertas}
+            />
+          ) : (
+            <AlertasTable alertas={alertas} onToggle={toggleAlerta} />
+          )}
+        </ScrollView>
+      </AdminContainer>
   );
 }
 

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../../theme';
+import { useAuth } from '../../context/AuthContext';
 
 import { Container } from '../../components/layout/Container';
 import Card from '../../components/ui/Card';
@@ -13,48 +13,54 @@ import { API_URL } from '../../config/api';
 
 export const LoginAdminScreen = () => {
   const navigation = useNavigation();
+  const { user, login, logout } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    try {
-      if (!email.trim() || !password.trim()) {
-        Alert.alert('Error', 'Todos los campos son obligatorios');
-        return;
-      }
-
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          role: 'admin',
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Error al iniciar sesión');
-      }
-
-      const token = data.token;
-
-      await AsyncStorage.setItem('token', token);
-
-      Alert.alert('Éxito', 'Inicio de sesión correcto');
-
-      navigation.navigate('UsersAdmin');
-
-    } catch (error) {
-      console.error('Login error:', error);
-      Alert.alert('Error', error.message);
+  try {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Error', 'Todos los campos son obligatorios');
+      return;
     }
-  };
+
+    // 1. Login para obtener el token
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, role: 'admin' }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Error al iniciar sesión');
+
+    // 2. Con el token, pide los datos del usuario
+    const meResponse = await fetch(`${API_URL}/auth/me`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${data.token}`
+      }
+    });
+
+    const meData = await meResponse.json();
+    if (!meResponse.ok) throw new Error('Error obteniendo datos del usuario');
+
+    // 3. Guarda en contexto con datos reales del servidor
+    await login({
+      email: meData.user.email,
+      role: meData.user.role,
+      token: data.token,
+    });
+
+    navigation.navigate('AlertasAdmin');
+
+  } catch (error) {
+    console.error('Login error:', error);
+    Alert.alert('Error', error.message);
+  }
+};
 
   return (
     <Container>
