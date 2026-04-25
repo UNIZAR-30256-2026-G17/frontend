@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     priorityText: {
-        color: '#FFF',
+        color: theme.colors.tagText,
         fontSize: 10,
         fontWeight: 'bold',
         textTransform: 'uppercase',

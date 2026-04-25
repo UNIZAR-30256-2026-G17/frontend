@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline } from 'react-
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { getRoutePath } from '../../utils/getRoutePath';
-import { districtsCoordinates } from '../../config/districts';
+import { beatsCoordinates } from '../../config/beats';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -15,15 +15,16 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-const getColorForDistrictIC = (value) => {
-    if (value >= 28) return theme.colors.ic1;
-    if (value >= 24) return theme.colors.ic2;
-    if (value >= 19) return theme.colors.ic3;
-    if (value >= 15) return theme.colors.ic4;
-    if (value >= 10) return theme.colors.ic5;
-    if (value >= 5) return theme.colors.ic6;
-    return theme.colors.ic7;
-};
+
+const colors = [
+    theme.colors.ic1,
+    theme.colors.ic2,
+    theme.colors.ic3,
+    theme.colors.ic4,
+    theme.colors.ic5,
+    theme.colors.ic6,
+    theme.colors.ic7,
+];
 
 const originIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
@@ -43,50 +44,58 @@ const destinationIcon = new L.Icon({
     shadowSize: [41, 41]
 });
 
-export default function Map({
-    showMarkers = true,
-    showDistricts = true,
-    markers = [],
-    districtICs = [],
-    routePoints = null,
+const getColorForBeatIC = (value) => {
+    if (value >= 5) return theme.colors.ic1;
+    if (value >= 4) return theme.colors.ic2;
+    if (value >= 3.5) return theme.colors.ic3;
+    if (value >= 3) return theme.colors.ic4;
+    if (value >= 2.5) return theme.colors.ic5;
+    if (value >= 2) return theme.colors.ic6;
+    return theme.colors.ic7;
+};
+
+export default function MapBeats({
+    showBeats = true,
+    beatICs = [],
+    // routePoints = null,
 }) {
-    const [routePath, setRoutePath] = useState([]);
+    // const [routePath, setRoutePath] = useState([]);
 
-    useEffect(() => {
-        const fetchRoute = async () => {
-            if (routePoints?.origin && routePoints?.destination) {
-                const path = await getRoutePath(routePoints.origin, routePoints.destination, districtICs);
-                if (path) {
-                    setRoutePath(path);
-                } else {
-                    // Fallback to straight line if API fails
-                    setRoutePath([
-                        [routePoints.origin.latitude, routePoints.origin.longitude],
-                        [routePoints.destination.latitude, routePoints.destination.longitude]
-                    ]);
-                }
-            } else {
-                setRoutePath([]);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchRoute = async () => {
+    //         if (routePoints?.origin && routePoints?.destination) {
+    //             const path = await getRoutePath(routePoints.origin, routePoints.destination, districtICs);
+    //             if (path) {
+    //                 setRoutePath(path);
+    //             } else {
+    //                 // Fallback to straight line if API fails
+    //                 setRoutePath([
+    //                     [routePoints.origin.latitude, routePoints.origin.longitude],
+    //                     [routePoints.destination.latitude, routePoints.destination.longitude]
+    //                 ]);
+    //             }
+    //         } else {
+    //             setRoutePath([]);
+    //         }
+    //     };
 
-        fetchRoute();
-    }, [routePoints]);
+    //     fetchRoute();
+    // }, [routePoints]);
 
     const normalize = (str) =>
         str?.toUpperCase().replace(/\s+/g, ' ').trim();
 
-    const processedDistricts = districtICs
+    const processedBeats = beatICs
         .map(d => {
-            const coord = districtsCoordinates.find(
-                c => normalize(c.name) === normalize(d.district)
+            const coord = beatsCoordinates.find(
+                c => normalize(c.name) === normalize(d.beat)
             );
 
             return {
-                name: d.district,
+                name: d.beat,
                 coords: coord?.coords,
                 value: d.id,
-                color: getColorForDistrictIC(d.id),
+                color: getColorForBeatIC(d.id),
             };
         })
         .filter(d => d.coords) // evita nulls
@@ -100,25 +109,7 @@ export default function Map({
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-                {showMarkers && markers
-                    .filter(a => a.location?.coordinates?.length === 2)
-                    .map(alert => (
-                        <Marker
-                            key={alert._id}
-                            position={[
-                                alert.location.coordinates[1], // lat
-                                alert.location.coordinates[0], // lng
-                            ]}
-                        >
-                            <Popup>
-                                <strong>{alert.description}</strong><br />
-                                {alert.address}
-                            </Popup>
-                        </Marker>
-                    ))
-                }
-
-                {routePoints && (
+                {/* {routePoints && (
                     <>
                         <Marker
                             position={[routePoints.origin.latitude, routePoints.origin.longitude]}
@@ -134,7 +125,6 @@ export default function Map({
                             <Popup><strong>Destino de la ruta</strong></Popup>
                         </Marker>
 
-                        {/* Ruta real obtenida de OSM (o línea recta como fallback) */}
                         {routePath.length > 0 && (
                             <Polyline
                                 positions={routePath}
@@ -142,16 +132,16 @@ export default function Map({
                             />
                         )}
                     </>
-                )}
+                )} */}
 
-                {showDistricts && processedDistricts.map((district, index) => (
+                {showBeats && processedBeats.map((beat, index) => (
                     <React.Fragment key={index}>
                         <Circle
-                            center={district.coords}
-                            radius={2700} // metros
+                            center={beat.coords}
+                            radius={700} // metros
                             pathOptions={{
-                                color: district.color,
-                                fillColor: district.color,
+                                color: beat.color,
+                                fillColor: beat.color,
                                 fillOpacity: 0.3,
                             }}
                         />

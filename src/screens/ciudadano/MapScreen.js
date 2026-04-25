@@ -18,6 +18,17 @@ import { geocodeAddress } from '../../utils/geocodeAddress';
 
 import { API_URL } from '../../config/api';
 
+const ICs = [
+    { label: '> 28', color: theme.colors.ic1 },
+    { label: '24 - 28', color: theme.colors.ic2 },
+    { label: '19 - 24', color: theme.colors.ic3 },
+    { label: '15 - 19', color: theme.colors.ic4 },
+    { label: '10 - 15', color: theme.colors.ic5 },
+    { label: '5 - 10', color: theme.colors.ic6 },
+    { label: '< 5', color: theme.colors.ic7 },
+];
+
+
 export const MapScreen = () => {
     const navigation = useNavigation();
 
@@ -35,18 +46,6 @@ export const MapScreen = () => {
     const [alertsSelected, setAlertsSelected] = useState(true);
 
     const [routePoints, setRoutePoints] = useState(null);
-
-
-    // Vector de ICs (SUSTITUIR por resultados de la API)
-    const ICs = [
-        { value: 5.6, color: theme.colors.ic1, },
-        { value: 4.3, color: theme.colors.ic2, },
-        { value: 3.8, color: theme.colors.ic3, },
-        { value: 2.6, color: theme.colors.ic4, },
-        { value: 1.8, color: theme.colors.ic5, },
-        { value: 0.9, color: theme.colors.ic6, },
-        { value: 0.3, color: theme.colors.ic7, },
-    ];
 
     useEffect(() => {
         initAnonymousLogin();
@@ -88,12 +87,12 @@ export const MapScreen = () => {
     };
 
     useEffect(() => {
-        fetchBeatsICsLastDay();
-        fetchBeatsICsLastMonth();
+        fetchDistrictsICsLastDay();
+        fetchDistrictsICsLastMonth();
         fetchAlerts();
     }, [token]);
 
-    const fetchBeatsICsLastDay = async () => {
+    const fetchDistrictsICsLastDay = async () => {
         try {
             if (!token) return;
 
@@ -107,6 +106,7 @@ export const MapScreen = () => {
             );
 
             const data = await response.json();
+            console.log("DATA DISTRICTS:", data);
 
             if (!response.ok) {
                 throw new Error(data.message || 'Error obteniendo ICs');
@@ -119,7 +119,7 @@ export const MapScreen = () => {
         }
     };
 
-    const fetchBeatsICsLastMonth = async () => {
+    const fetchDistrictsICsLastMonth = async () => {
         try {
             if (!token) return;
 
@@ -403,14 +403,14 @@ export const MapScreen = () => {
                         {ICSelected && (
                             <View style={styles.mapLegend}>
                                 <Card
-                                    title="Índice de criminalidad"
+                                    title="Índice de criminalidad por distrito"
                                 >
                                     <View style={styles.sameRow}>
                                         {ICs.map((ic, index) => (
                                             <View key={index} style={styles.sameRow}>
                                                 <View style={[styles.icBox, { backgroundColor: ic.color }]} />
                                                 <Text style={styles.cardText}>
-                                                    {ic.value}
+                                                    {ic.label}
                                                 </Text>
                                             </View>
                                         ))}
@@ -503,10 +503,11 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         margin: 16,
-        gap: 12,
+        gap: 8,
     },
     layoutContainerMobile: {
         flexDirection: 'column',
+        gap: 8,
     },
 
     leftPanel: {

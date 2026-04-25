@@ -48,6 +48,8 @@ export const colors = {
   cardTextSecondary: '#D6D6D6',
   cardIcon: '#FFFFFF',
 
+  tagText: '#000000',
+
   // Input
   inputBackground: '#FFFFFF',
   inputBorder: '#D6D6D6',
