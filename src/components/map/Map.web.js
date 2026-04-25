@@ -138,7 +138,10 @@ export default function Map({
                         {routePath.length > 0 && (
                             <Polyline
                                 positions={routePath}
-                                pathOptions={{ color: theme.colors.primary, weight: 4 }}
+                                pathOptions={{
+                                    color: theme.colors.routeColor,
+                                    weight: 4,
+                                }}
                             />
                         )}
                     </>
