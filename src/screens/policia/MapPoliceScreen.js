@@ -94,6 +94,7 @@ export const MapPoliceScreen = () => {
             });
 
         } catch (error) {
+            setModalGenerateRoutesVisible(false);
             console.error("Error al generar patrullas:", error);
             Alert.alert("Error", "No se pudieron generar las rutas de patrullaje.");
         }

@@ -15,17 +15,6 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-
-const colors = [
-    theme.colors.ic1,
-    theme.colors.ic2,
-    theme.colors.ic3,
-    theme.colors.ic4,
-    theme.colors.ic5,
-    theme.colors.ic6,
-    theme.colors.ic7,
-];
-
 const originIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -86,14 +75,14 @@ export default function MapBeats({
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-                {routes.map((route, index) => (
+                {Array.isArray(routes) && routes.map((route, index) => (
                     <React.Fragment key={`route-${index}`}>
                         {/* 1. Dibujar la línea del camino (path) */}
-                        {route.path && (
+                        {route && route.path && (
                             <Polyline
                                 positions={route.path} // Debe ser [[lat, lng], [lat, lng]...]
                                 pathOptions={{
-                                    color: theme.colors.primary,
+                                    color: theme.colors.routeColor,
                                     weight: 5,
                                     opacity: 0.7
                                 }}
@@ -103,23 +92,8 @@ export default function MapBeats({
                         )}
 
                         {/* 2. Marcador de Origen (Verde) */}
-                        {route.origin && (
-                            <Marker
-                                position={[route.origin.latitude, route.origin.longitude]}
-                                icon={originIcon}
-                            >
-                                <Popup>Inicio Patrulla {index + 1}</Popup>
-                            </Marker>
-                        )}
-
-                        {/* 3. Marcador de Destino (Rojo) */}
-                        {route.destination && (
-                            <Marker
-                                position={[route.destination.latitude, route.destination.longitude]}
-                                icon={destinationIcon}
-                            >
-                                <Popup>Punto de interés (Destino) {index + 1}</Popup>
-                            </Marker>
+                        {route?.origin?.latitude && (
+                            <Marker position={[route.origin.latitude, route.origin.longitude]} icon={originIcon} />
                         )}
                     </React.Fragment>
                 ))}

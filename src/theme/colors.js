@@ -96,4 +96,7 @@ export const colors = {
   ic5: '#FFD700',
   ic6: '#BFE181',
   ic7: '#8caa56ff',
+
+  // Routes
+  routeColor: '#0800ffff',
 };
