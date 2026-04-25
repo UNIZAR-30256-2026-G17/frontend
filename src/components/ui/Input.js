@@ -10,6 +10,7 @@ export default function Input({
     value,
     onChangeText,
     secureTextEntry = false,
+    keyboardType = 'default',
 }) {
     const [isFocused, setIsFocused] = useState(false);
 
@@ -56,6 +57,7 @@ export default function Input({
                     value={value}
                     onChangeText={onChangeText}
                     secureTextEntry={secureTextEntry}
+                    keyboardType={keyboardType}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                 />

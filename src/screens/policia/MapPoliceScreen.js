@@ -12,6 +12,9 @@ import Button from '../../components/ui/Button';
 import Checkbox from '../../components/ui/Checkbox';
 import MapBeats from '../../components/map/Map.beat.web';
 
+import GenerateRoutesModal from './GenerateRoutesModal';
+import { generatePatrolRoutes } from '../../utils/routeGenerator';
+
 import { API_URL } from '../../config/api';
 
 const ICs = [
@@ -33,6 +36,9 @@ export const MapPoliceScreen = () => {
 
     const [ICSelected, setICSelected] = useState(true);
     const [beatICs, setBeatICs] = useState([]);
+
+    const [modalGenerateRoutesVisible, setModalGenerateRoutesVisible] = useState(false);
+    const [patrolRoutes, setPatrolRoutes] = useState([]);
 
     useEffect(() => {
         if (user && user.token) {
@@ -66,6 +72,33 @@ export const MapPoliceScreen = () => {
         }
     };
 
+    const handleGenerateRoutes = async (data) => {
+        const n = parseInt(data.numPatrullas);
+
+        try {
+            if (beatICs.length === 0) throw new Error("No hay datos de IC cargados");
+
+            // Generamos las rutas basadas en los top N beats
+            const routes = await generatePatrolRoutes(n, beatICs);
+
+            // Filtramos las que fallaron (path null)
+            const validRoutes = routes.filter(r => r.path !== null);
+
+            setModalGenerateRoutesVisible(false);
+
+            // Navegamos a la pantalla de visualización enviando el array de rutas
+            navigation.navigate('RoutesPolice', {
+                isMultiple: true,
+                routes: validRoutes,
+                count: n
+            });
+
+        } catch (error) {
+            console.error("Error al generar patrullas:", error);
+            Alert.alert("Error", "No se pudieron generar las rutas de patrullaje.");
+        }
+    };
+
     if (loading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', backgroundColor: theme.colors.background }}>
@@ -85,10 +118,10 @@ export const MapPoliceScreen = () => {
                 ]}>
                     <View style={styles.buttonRightContainer}>
                         <Button
-                            title="Generar ruta"
+                            title="Generar rutas de patrullaje"
                             icon="plus"
                             variant="primary"
-                        // onPress={() => setModalGenerateRouteVisible(true)}
+                            onPress={() => setModalGenerateRoutesVisible(true)}
                         />
                     </View>
 
@@ -133,6 +166,11 @@ export const MapPoliceScreen = () => {
                     )}
                 </View>
 
+                <GenerateRoutesModal
+                    visible={modalGenerateRoutesVisible}
+                    onClose={() => setModalGenerateRoutesVisible(false)}
+                    onConfirm={handleGenerateRoutes}
+                />
             </View>
         </Container>
     );

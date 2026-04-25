@@ -19,6 +19,7 @@ const linking = {
       StatsPolice: 'policia/estadisticas',
       MapPolice: 'policia/map',
       AlertsPolice: 'policia/alerts',
+      RoutesPolice: 'policia/routes',
       AlertasAdmin: 'admin/alertas',
       DelitosAdmin: 'admin/delitos',
       UsersAdmin: 'admin/usuarios',

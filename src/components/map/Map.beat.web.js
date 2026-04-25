@@ -57,31 +57,8 @@ const getColorForBeatIC = (value) => {
 export default function MapBeats({
     showBeats = true,
     beatICs = [],
-    // routePoints = null,
+    routes = [],
 }) {
-    // const [routePath, setRoutePath] = useState([]);
-
-    // useEffect(() => {
-    //     const fetchRoute = async () => {
-    //         if (routePoints?.origin && routePoints?.destination) {
-    //             const path = await getRoutePath(routePoints.origin, routePoints.destination, districtICs);
-    //             if (path) {
-    //                 setRoutePath(path);
-    //             } else {
-    //                 // Fallback to straight line if API fails
-    //                 setRoutePath([
-    //                     [routePoints.origin.latitude, routePoints.origin.longitude],
-    //                     [routePoints.destination.latitude, routePoints.destination.longitude]
-    //                 ]);
-    //             }
-    //         } else {
-    //             setRoutePath([]);
-    //         }
-    //     };
-
-    //     fetchRoute();
-    // }, [routePoints]);
-
     const normalize = (str) =>
         str?.toUpperCase().replace(/\s+/g, ' ').trim();
 
@@ -109,30 +86,43 @@ export default function MapBeats({
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-                {/* {routePoints && (
-                    <>
-                        <Marker
-                            position={[routePoints.origin.latitude, routePoints.origin.longitude]}
-                            icon={originIcon}
-                        >
-                            <Popup><strong>Origen de la ruta</strong></Popup>
-                        </Marker>
-
-                        <Marker
-                            position={[routePoints.destination.latitude, routePoints.destination.longitude]}
-                            icon={destinationIcon}
-                        >
-                            <Popup><strong>Destino de la ruta</strong></Popup>
-                        </Marker>
-
-                        {routePath.length > 0 && (
+                {routes.map((route, index) => (
+                    <React.Fragment key={`route-${index}`}>
+                        {/* 1. Dibujar la línea del camino (path) */}
+                        {route.path && (
                             <Polyline
-                                positions={routePath}
-                                pathOptions={{ color: theme.colors.primary, weight: 4 }}
-                            />
+                                positions={route.path} // Debe ser [[lat, lng], [lat, lng]...]
+                                pathOptions={{
+                                    color: theme.colors.primary,
+                                    weight: 5,
+                                    opacity: 0.7
+                                }}
+                            >
+                                <Popup>Ruta de Patrulla {index + 1}</Popup>
+                            </Polyline>
                         )}
-                    </>
-                )} */}
+
+                        {/* 2. Marcador de Origen (Verde) */}
+                        {route.origin && (
+                            <Marker
+                                position={[route.origin.latitude, route.origin.longitude]}
+                                icon={originIcon}
+                            >
+                                <Popup>Inicio Patrulla {index + 1}</Popup>
+                            </Marker>
+                        )}
+
+                        {/* 3. Marcador de Destino (Rojo) */}
+                        {route.destination && (
+                            <Marker
+                                position={[route.destination.latitude, route.destination.longitude]}
+                                icon={destinationIcon}
+                            >
+                                <Popup>Punto de interés (Destino) {index + 1}</Popup>
+                            </Marker>
+                        )}
+                    </React.Fragment>
+                ))}
 
                 {showBeats && processedBeats.map((beat, index) => (
                     <React.Fragment key={index}>

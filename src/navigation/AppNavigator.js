@@ -20,6 +20,7 @@ import { EstadisticasScreen } from '../screens/policia/EstadisticasScreen';
 import { AdminUsuariosScreen } from '../screens/admin/AdminUsuariosScreen';
 import { AdminDelitosScreen } from '../screens/admin/AdminDelitosScreen';
 import { AdminAlertasScreen } from '../screens/admin/AdminAlertasScreen';
+import { RoutesPoliceScreen } from '../screens/policia/RoutesPoliceScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,7 @@ const EstadisticasProtected = withProtection(EstadisticasScreen, ['police']);
 const CrimesProtected = withProtection(CrimesScreen, ['police']);
 const MapPoliceProtected = withProtection(MapPoliceScreen, ['police']);
 const AlertsPoliceProtected = withProtection(AlertsScreen, ['police']);
+const RoutesPoliceProtected = withProtection(RoutesPoliceScreen, ['police']);
 
 export default function AppNavigator() {
   const { user, loading } = useContext(AuthContext);
@@ -76,6 +78,7 @@ export default function AppNavigator() {
           <Stack.Screen name="StatsPolice" component={EstadisticasProtected} />
           <Stack.Screen name="CrimesPolice" component={CrimesProtected} />
           <Stack.Screen name="AlertsPolice" component={AlertsPoliceProtected} />
+          <Stack.Screen name="RoutesPolice" component={RoutesPoliceProtected} />
         </>
       )}
     </Stack.Navigator>
