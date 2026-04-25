@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../context/AuthContext';
 import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
@@ -12,18 +13,28 @@ import { API_URL } from '../../config/api';
 
 export const LoginPoliceScreen = () => {
   const navigation = useNavigation();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
     try {
+      if (!email.trim() || !password.trim()) {
+        if (Platform.OS === 'web') {
+          alert('Todos los campos son obligatorios');
+        } else {
+          Alert.alert('Error', 'Todos los campos son obligatorios');
+        }
+        return;
+      }
+
       const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, role: 'police' }),
       });
 
       const data = await response.json();
@@ -32,17 +43,36 @@ export const LoginPoliceScreen = () => {
         throw new Error(data.message || 'Credenciales incorrectas');
       }
 
-      console.log('Usuario logueado correctamente:', data);
+      console.log('Policía logueado correctamente:', data);
 
-      // Guardar token en localStorage
-      localStorage.setItem('token', data.token);
+      // 2. Con el token, pide los datos del usuario
+      const meResponse = await fetch(`${API_URL}/auth/me`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${data.token}`
+        }
+      });
 
-      // Redirigir
-      navigation.navigate('Home');
+      const meData = await meResponse.json();
+      if (!meResponse.ok) throw new Error('Error obteniendo datos del usuario');
+
+      // 3. Guarda en contexto con datos reales del servidor
+      await login({
+        email: meData.user.email,
+        role: meData.user.role,
+        token: data.token,
+      });
+
+      navigation.navigate('MapPolice');
 
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      if (Platform.OS === 'web') {
+        alert(error.message);
+      } else {
+        Alert.alert('Error', error.message);
+      }
     }
   };
 

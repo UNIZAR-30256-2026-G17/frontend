@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
@@ -13,54 +13,62 @@ import { API_URL } from '../../config/api';
 
 export const LoginAdminScreen = () => {
   const navigation = useNavigation();
-  const { user, login, logout } = useAuth();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-  try {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert('Error', 'Todos los campos son obligatorios');
-      return;
-    }
-
-    // 1. Login para obtener el token
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, role: 'admin' }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Error al iniciar sesión');
-
-    // 2. Con el token, pide los datos del usuario
-    const meResponse = await fetch(`${API_URL}/auth/me`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${data.token}`
+    console.log("DENTRO");
+    try {
+      if (!email.trim() || !password.trim()) {
+        const msg = 'Todos los campos son obligatorios';
+        Platform.OS === 'web' ? alert(msg) : Alert.alert('Error', msg);
+        return;
       }
-    });
 
-    const meData = await meResponse.json();
-    if (!meResponse.ok) throw new Error('Error obteniendo datos del usuario');
+      // 1. Login para obtener el token
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, role: 'admin' }),
+      });
 
-    // 3. Guarda en contexto con datos reales del servidor
-    await login({
-      email: meData.user.email,
-      role: meData.user.role,
-      token: data.token,
-    });
+      const data = await response.json();
+      if (!response.ok) {
+        const msg = 'Credenciales incorrectas';
+        Platform.OS === 'web' ? alert(msg) : Alert.alert('Error', msg);
+        return;
+      }
 
-    navigation.navigate('AlertasAdmin');
+      console.log('Admin logueado correctamente');
 
-  } catch (error) {
-    console.error('Login error:', error);
-    Alert.alert('Error', error.message);
-  }
-};
+      // 2. Con el token, pide los datos del usuario
+      const meResponse = await fetch(`${API_URL}/auth/me`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${data.token}`
+        }
+      });
+
+      const meData = await meResponse.json();
+      if (!meResponse.ok) throw new Error('Error obteniendo datos del usuario');
+
+      // 3. Guarda en contexto con datos reales del servidor
+      await login({
+        email: meData.user.email,
+        role: meData.user.role,
+        token: data.token,
+      });
+
+      navigation.navigate('AlertasAdmin');
+
+    } catch (error) {
+      console.error('Login error:', error);
+      Alert.alert('Error', error.message);
+    }
+  };
 
   return (
     <Container>
@@ -155,22 +163,17 @@ const styles = StyleSheet.create({
     height: 60,
   },
   imageContainer: {
-    position: 'relative', // Importante para que el badge se posicione respecto a este View
+    position: 'relative',
     marginBottom: 8,
   },
   adminIconContainer: {
-    width: 100,           // Ancho del círculo
-    height: 100,          // Alto del círculo (debe ser igual al ancho)
-    borderRadius: 50,     // Exactamente la mitad del width/height para que sea redondo
-    backgroundColor: theme.colors.headerBackground, // Color de fondo del círculo
-    justifyContent: 'center',   // Centra el icono verticalmente
-    alignItems: 'center',       // Centra el icono horizontalmente
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: theme.colors.headerBackground,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTo: 20,
-    // Opcional: Sombreado para darle volumen (como en tu imagen)
-    elevation: 4,               // Sombra en Android
-    shadowColor: '#000',        // Sombra en iOS
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
+    elevation: 4,
   },
 });

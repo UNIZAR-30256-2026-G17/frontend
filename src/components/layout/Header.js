@@ -1,7 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity,
-  Modal, Pressable
+  View, Text, StyleSheet, TouchableOpacity, Modal, Pressable, Platform,
 } from 'react-native';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { useWindowDimensions } from 'react-native';
@@ -12,11 +11,13 @@ import Button from '../ui/Button';
 
 export const Header = () => {
   const navigation = useNavigation();
+
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const { user, logout } = useAuth();
 
   const [menuOpen, setMenuOpen] = useState(false);
+
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   const isLogged = !!user;
@@ -27,13 +28,13 @@ export const Header = () => {
   const tabs = isAdmin
     ? []
     : isPolice
-    ? [
-        { label: 'Alertas', route: 'AlertasPolice' },
-        { label: 'Delitos', route: 'DelitosPolice' },
-        { label: 'Estadísticas', route: 'EstadisticasPolice' },
-        { label: 'Mapa', route: 'Map' },
+      ? [
+        { label: 'Alertas', route: 'AlertsPolice' },
+        { label: 'Delitos', route: 'CrimesPolice' },
+        { label: 'Estadísticas', route: 'StatsPolice' },
+        { label: 'Mapa', route: 'MapPolice' },
       ]
-    : [
+      : [
         { label: 'Mapa', route: 'Map' },
         { label: 'Estadísticas', route: 'Stats' },
       ];
@@ -81,50 +82,51 @@ export const Header = () => {
             ))}
           </View>
         )}
-
         {/* AVATAR o BOTÓN según si está logueado */}
-        {isLogged ? (
-          <View style={styles.avatarWrapper}>
-            <TouchableOpacity
-              style={styles.avatar}
-              onPress={() => setProfileMenuOpen(!profileMenuOpen)}
-            >
-              <Text style={styles.avatarLetter}>{getUserInitial()}</Text>
-              <FontAwesome
-                name={profileMenuOpen ? 'chevron-up' : 'chevron-down'}
-                size={10}
-                color="#fff"
-                style={{ marginLeft: 6 }}
-              />
-            </TouchableOpacity>
+        {
+          isLogged ? (
+            <View style={styles.avatarWrapper}>
+              <TouchableOpacity
+                style={styles.avatar}
+                onPress={() => setProfileMenuOpen(!profileMenuOpen)}
+              >
+                <Text style={styles.avatarText}>{getUserInitial()}</Text>
+                <FontAwesome
+                  name={profileMenuOpen ? 'chevron-up' : 'chevron-down'}
+                  size={10}
+                  color="#fff"
+                  style={{ marginLeft: 6 }}
+                />
+              </TouchableOpacity>
 
-            <Modal
-              visible={profileMenuOpen}
-              transparent
-              animationType="none"
-              onRequestClose={() => setProfileMenuOpen(false)}
-            >
-              <Pressable style={styles.modalOverlay} onPress={() => setProfileMenuOpen(false)}>
-                <Pressable style={styles.dropdown} onPress={(e) => e.stopPropagation()}>
-                  <View style={styles.dropdownInfo}>
-                    <Text style={styles.userEmail} numberOfLines={1}>{user.email}</Text>
-                    <Text style={styles.userRole}>{user.role}</Text>
-                  </View>
-                  <TouchableOpacity style={styles.logoutItem} onPress={handleLogout}>
-                    <FontAwesome name="sign-out" size={16} color={theme.colors.danger} />
-                    <Text style={styles.logoutText}>Cerrar sesión</Text>
-                  </TouchableOpacity>
+              <Modal
+                visible={profileMenuOpen}
+                transparent
+                animationType="none"
+                onRequestClose={() => setProfileMenuOpen(false)}
+              >
+                <Pressable style={styles.modalOverlay} onPress={() => setProfileMenuOpen(false)}>
+                  <Pressable style={styles.dropdown} onPress={(e) => e.stopPropagation()}>
+                    <View style={styles.dropdownInfo}>
+                      <Text style={styles.userEmail} numberOfLines={1}>{user.email}</Text>
+                      <Text style={styles.userRole}>{user.role}</Text>
+                    </View>
+                    <TouchableOpacity style={styles.logoutItem} onPress={handleLogout}>
+                      <FontAwesome name="sign-out" size={16} color={theme.colors.danger} />
+                      <Text style={styles.logoutText}>Cerrar sesión</Text>
+                    </TouchableOpacity>
+                  </Pressable>
                 </Pressable>
-              </Pressable>
-            </Modal>
-          </View>
-        ) : (
-          <Button
-            title="Iniciar sesión"
-            variant="header"
-            onPress={() => navigation.navigate('LoginAdmin')}
-          />
-        )}
+              </Modal>
+            </View>
+          ) : (
+            <Button
+              title="Iniciar sesión"
+              variant="header"
+              onPress={() => navigation.navigate('LoginPolice')}
+            />
+          )
+        }
       </View>
 
       {/* MOBILE MENU */}
@@ -158,7 +160,7 @@ export const Header = () => {
         </View>
       </Modal>
 
-    </View>
+    </View >
   );
 };
 
@@ -173,40 +175,77 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: theme.colors.headerText,
   },
-  leftSection: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  rightSection: { flexDirection: 'row', alignItems: 'center' },
-  tabs: { flexDirection: 'row', marginRight: 20 },
-  tab: { paddingHorizontal: 15, paddingVertical: 8 },
-  tabText: { fontSize: 16, color: theme.colors.headerTabText, fontWeight: '600' },
+  leftSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  rightSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tabs: {
+    flexDirection: 'row',
+    marginRight: 20,
+  },
+  tab: {
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+  },
+  tabText: {
+    fontSize: 16,
+    color: theme.colors.headerTabText,
+    fontWeight: '600',
+  },
+
   activeTab: {
     borderBottomWidth: 3,
     borderBottomColor: theme.colors.headerTabActiveBorder,
     backgroundColor: theme.colors.headerTabActiveBackground,
     borderRadius: 6,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+      default: {},
+    }),
   },
-  menuButton: { padding: 8, marginRight: 5 },
+  menuButton: {
+    padding: 8,
+    marginRight: 5,
+  },
 
   // Avatar
-  avatarWrapper: { position: 'relative' },
+  avatarWrapper: {
+    position: 'relative',
+  },
   avatar: {
-    width: 40,
+    flexDirection: 'row',
+    width: 48,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#333',
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: theme.colors.headerButtonBackground,
     justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 2,
-    borderColor: theme.colors.headerTabActiveBorder,
+    borderColor: theme.colors.headerButtonText,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+      default: {},
+    }),
   },
-  avatarLetter: { color: '#fff', fontWeight: 'bold', fontSize: 18 },
+  avatarText: {
+    color: theme.colors.headerButtonText,
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 
   // Dropdown
-  modalOverlay: { flex: 1 },
+  modalOverlay: {
+    flex: 1,
+  },
   dropdown: {
     position: 'absolute',
     top: 65,
@@ -230,19 +269,46 @@ const styles = StyleSheet.create({
     borderBottomColor: '#eee',
     marginBottom: 5,
   },
-  userEmail: { fontSize: 13, fontWeight: 'bold', color: '#333' },
-  userRole: { fontSize: 11, color: '#666', textTransform: 'uppercase' },
+  userEmail: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  userRole: {
+    fontSize: 11,
+    color: '#666',
+    textTransform: 'uppercase',
+  },
   logoutItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 10,
     gap: 10,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+      default: {},
+    }),
   },
-  logoutText: { color: theme.colors.danger, fontWeight: '600' },
+  activeMobileTab: {
+    backgroundColor: theme.colors.headerTabActiveBackground,
+    borderLeftWidth: 3,
+    borderLeftColor: theme.colors.headerTabActiveBorder,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+      default: {},
+    }),
+  },
+  logoutText: {
+    color: theme.colors.danger,
+    fontWeight: '600',
+  },
 
   // Mobile menu
-  mobileOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
+  mobileOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
   modalMenu: {
     position: 'absolute',
     top: 89,
@@ -256,11 +322,9 @@ const styles = StyleSheet.create({
     zIndex: 9999,
     elevation: 30,
   },
-  mobileTab: { paddingVertical: 10, paddingHorizontal: 15 },
-  activeMobileTab: {
-    backgroundColor: theme.colors.headerTabActiveBackground,
-    borderLeftWidth: 3,
-    borderLeftColor: theme.colors.headerTabActiveBorder,
+  mobileTab: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
   },
   mobileLogout: {
     flexDirection: 'row',
@@ -271,5 +335,39 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#eee',
     marginTop: 5,
+  },
+  userContainer: {
+    position: 'relative',
+    marginLeft: 10,
+  },
+
+  userDropdown: {
+    position: 'absolute',
+    top: 50,
+    right: 0,
+    backgroundColor: theme.colors.cardBackground,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    paddingVertical: 8,
+    minWidth: 150,
+    zIndex: 10000,
+    elevation: 5,
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 10,
+    ...Platform.select({
+      web: { cursor: 'pointer' },
+      default: {},
+    }),
+  },
+  dropdownItemText: {
+    color: theme.colors.cardText,
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

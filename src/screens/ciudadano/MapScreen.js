@@ -318,7 +318,7 @@ export const MapScreen = () => {
 
             // 3. Cerrar modal y navegar a la pantalla de rutas
             setModalGenerateRouteVisible(false);
-            
+
             navigation.navigate('Routes', {
                 routeData: {
                     initialAddress,

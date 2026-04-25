@@ -1,9 +1,8 @@
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 
-import { AuthProvider } from './src/context/AuthContext';
-
 import AppNavigator from './src/navigation/AppNavigator';
+import { AuthProvider } from './src/context/AuthContext';
 
 const linking = {
   prefixes: ['http://localhost:8081', 'http://localhost:3000'],
@@ -16,8 +15,10 @@ const linking = {
       LoginAdmin: 'login/admin',
       LoginPolice: 'login/policia',
       Register: 'register',
-      Crimes: 'policia/delitos',
-      EstadisticasPolice: 'policia/estadisticas',
+      CrimesPolice: 'policia/delitos',
+      StatsPolice: 'policia/estadisticas',
+      MapPolice: 'policia/map',
+      AlertsPolice: 'policia/alerts',
       AlertasAdmin: 'admin/alertas',
       DelitosAdmin: 'admin/delitos',
       UsersAdmin: 'admin/usuarios',

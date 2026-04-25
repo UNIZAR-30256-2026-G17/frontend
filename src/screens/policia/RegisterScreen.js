@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../context/AuthContext';
 import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
@@ -12,6 +13,7 @@ import { API_URL } from '../../config/api';
 
 export const RegisterScreen = () => {
   const navigation = useNavigation();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -50,6 +52,7 @@ export const RegisterScreen = () => {
         body: JSON.stringify({
           email,
           password,
+          role: 'police',
         }),
       });
 
@@ -61,15 +64,19 @@ export const RegisterScreen = () => {
 
       console.log('Usuario logueado correctamente:', loginData);
 
-      // Guardar token
-      localStorage.setItem('token', loginData.token);
+      // Guardar en context
+      await login({ role: 'police', email: loginData.user?.email || email }, loginData.token);
 
-      // Redirigir
-      navigation.navigate('Home');
+      // Redirigir a pantalla policial
+      navigation.navigate('MapPolice');
 
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      if (Platform.OS === 'web') {
+        alert(error.message);
+      } else {
+        Alert.alert('Error', error.message);
+      }
     }
   };
 
