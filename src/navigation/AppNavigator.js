@@ -33,7 +33,7 @@ const MapPoliceProtected = withProtection(MapPoliceScreen, ['police']);
 const AlertsPoliceProtected = withProtection(AlertsScreen, ['police']);
 
 export default function AppNavigator() {
-  const { loading } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
 
   if (loading) {
     return (
@@ -50,26 +50,34 @@ export default function AppNavigator() {
         contentStyle: { backgroundColor: theme.colors.background },
       }}
     >
-      {/* Públicas */}
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Map" component={MapScreen} />
-      <Stack.Screen name="Stats" component={StatsScreen} />
-      <Stack.Screen name="Routes" component={RoutesScreen} />
+      {!user ? (
+        <>
+          {/* Públicas */}
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Map" component={MapScreen} />
+          <Stack.Screen name="Stats" component={StatsScreen} />
+          <Stack.Screen name="Routes" component={RoutesScreen} />
 
-      <Stack.Screen name="LoginAdmin" component={LoginAdminScreen} />
-      <Stack.Screen name="LoginPolice" component={LoginPoliceScreen} />
-      <Stack.Screen name="Register" component={RegisterScreen} />
-
-      {/* Protegidas admin */}
-      <Stack.Screen name="AlertasAdmin" component={AlertasAdminProtected} />
-      <Stack.Screen name="DelitosAdmin" component={DelitosAdminProtected} />
-      <Stack.Screen name="UsersAdmin" component={UsersAdminProtected} />
-
-      {/* Protegidas policía */}
-      <Stack.Screen name="MapPolice" component={MapPoliceProtected} />
-      <Stack.Screen name="StatsPolice" component={EstadisticasProtected} />
-      <Stack.Screen name="CrimesPolice" component={CrimesProtected} />
-      <Stack.Screen name="AlertsPolice" component={AlertsPoliceProtected} />
+          <Stack.Screen name="LoginAdmin" component={LoginAdminScreen} />
+          <Stack.Screen name="LoginPolice" component={LoginPoliceScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+        </>
+      ) : user.role === 'admin' ? (
+        <>
+          {/* Protegidas admin */}
+          <Stack.Screen name="AlertasAdmin" component={AlertasAdminProtected} />
+          <Stack.Screen name="DelitosAdmin" component={DelitosAdminProtected} />
+          <Stack.Screen name="UsersAdmin" component={UsersAdminProtected} />
+        </>
+      ) : (
+        <>
+          {/* Protegidas policía */}
+          <Stack.Screen name="MapPolice" component={MapPoliceProtected} />
+          <Stack.Screen name="StatsPolice" component={EstadisticasProtected} />
+          <Stack.Screen name="CrimesPolice" component={CrimesProtected} />
+          <Stack.Screen name="AlertsPolice" component={AlertsPoliceProtected} />
+        </>
+      )}
     </Stack.Navigator>
   );
 }
