@@ -105,7 +105,7 @@ export function CrimesScreen() {
         <View style={styles.threeColRow}>
           {[
             { label: 'Distrito', options: DISTRITO_OPTIONS, selected: distritoFilter, onSelect: setDistritoFilter },
-            { label: 'Beat',     options: BEAT_OPTIONS,     selected: beatFilter,     onSelect: setBeatFilter },
+            { label: 'Beat', options: BEAT_OPTIONS, selected: beatFilter, onSelect: setBeatFilter },
           ].map(({ label, options, selected, onSelect }) => (
             <View key={label} style={styles.col}>
               <Text style={styles.filterGroupTitle}>{label}</Text>
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   pageTitle: {
-    ...theme.typography.pageTitle, 
+    ...theme.typography.pageTitle,
     color: theme.colors.text,
     textAlign: 'center',
     marginBottom: 24,
@@ -157,18 +157,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
     gap: 25,
-    marginBottom: 10,
   },
   orderContainer: {
-    width: 350,
+    width: 320,
   },
   orderLabel: {
-    ...theme.typography.body, 
+    ...theme.typography.body,
     color: theme.colors.text,
     marginBottom: 4,
   },
   filterGroupTitle: {
-    ...theme.typography.cardTitle, 
+    ...theme.typography.cardTitle,
     color: theme.colors.cardText,
     marginBottom: 8,
     marginTop: 18,
@@ -189,7 +188,7 @@ const styles = StyleSheet.create({
     width: 160,
   },
   resultsText: {
-    ...theme.typography.body, 
+    ...theme.typography.body,
     color: theme.colors.text,
     marginBottom: 8,
   },

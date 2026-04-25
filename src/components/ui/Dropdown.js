@@ -80,7 +80,7 @@ export default function Dropdown({ options = [], selected, onSelect, placeholder
 
 const styles = StyleSheet.create({
     wrapper: {
-        marginVertical: 10,
+        // marginVertical: 10,
     },
     button: {
         flexDirection: 'row',

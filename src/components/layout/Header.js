@@ -29,10 +29,10 @@ export const Header = () => {
     ? []
     : isPolice
       ? [
-        { label: 'Alertas', route: 'AlertsPolice' },
-        { label: 'Delitos', route: 'CrimesPolice' },
-        { label: 'Estadísticas', route: 'StatsPolice' },
         { label: 'Mapa', route: 'MapPolice' },
+        { label: 'Delitos', route: 'CrimesPolice' },
+        { label: 'Alertas', route: 'AlertsPolice' },
+        { label: 'Estadísticas', route: 'StatsPolice' },
       ]
       : [
         { label: 'Mapa', route: 'Map' },

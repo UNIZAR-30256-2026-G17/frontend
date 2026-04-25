@@ -58,13 +58,13 @@ export const colors = {
   inputIcon: '#FFFFFF',
 
   // Dropdown
-  dropdownBackground: '#333533',
-  dropdownBorder: '#FFFFFF',
+  dropdownBackground: '#1A1A1A',
+  dropdownBorder: '#4c4c4c',
   dropdownText: '#FFFFFF',
   dropdownIcon: '#FFFFFF',
-  dropdownOptionBackground: '#333533',
+  dropdownOptionBackground: '#1A1A1A',
   dropdownOptionText: '#FFFFFF',
-  dropdownOptionBorder: '#FFFFFF',
+  dropdownOptionBorder: '#4c4c4c',
 
   // Checkbox
   checkboxCheckedBackground: '#FFD100',

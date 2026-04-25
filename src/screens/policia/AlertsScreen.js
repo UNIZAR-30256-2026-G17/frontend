@@ -25,7 +25,7 @@ export const AlertsScreen = () => {
         <Container>
             <ScrollView style={styles.container} contentContainerStyle={styles.content}>
                 <Text style={styles.title}>Centro de Alertas</Text>
-                
+
                 <View style={styles.statsRow}>
                     <View style={styles.statItem}>
                         <Text style={styles.statValue}>12</Text>
@@ -41,31 +41,33 @@ export const AlertsScreen = () => {
                     </View>
                 </View>
 
-                {alerts.map((alert) => (
-                    <Card key={alert.id} style={styles.alertCard}>
-                        <View style={styles.alertHeader}>
-                            <View style={[styles.priorityBadge, { backgroundColor: getPriorityColor(alert.priority) }]}>
-                                <Text style={styles.priorityText}>{alert.priority}</Text>
+                <View style={styles.alertsContainer}>
+                    {alerts.map((alert) => (
+                        <Card key={alert.id}>
+                            <View style={styles.alertHeader}>
+                                <View style={[styles.priorityBadge, { backgroundColor: getPriorityColor(alert.priority) }]}>
+                                    <Text style={styles.priorityText}>{alert.priority}</Text>
+                                </View>
+                                <Text style={styles.timeText}>{alert.time}</Text>
                             </View>
-                            <Text style={styles.timeText}>{alert.time}</Text>
-                        </View>
-                        
-                        <View style={styles.alertBody}>
-                            <Text style={styles.alertType}>{alert.type}</Text>
-                            <View style={styles.locationRow}>
-                                <FontAwesome name="map-marker" size={14} color={theme.colors.cardTextSecondary} />
-                                <Text style={styles.locationText}>{alert.location}</Text>
-                            </View>
-                        </View>
 
-                        <View style={styles.alertFooter}>
-                            <TouchableOpacity style={styles.actionButton}>
-                                <Text style={styles.actionButtonText}>Gestionar</Text>
-                                <FontAwesome name="chevron-right" size={12} color={theme.colors.primary} />
-                            </TouchableOpacity>
-                        </View>
-                    </Card>
-                ))}
+                            <View style={styles.alertBody}>
+                                <Text style={styles.alertType}>{alert.type}</Text>
+                                <View style={styles.locationRow}>
+                                    <FontAwesome name="map-marker" size={14} color={theme.colors.cardTextSecondary} />
+                                    <Text style={styles.locationText}>{alert.location}</Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.alertFooter}>
+                                <TouchableOpacity style={styles.actionButton}>
+                                    <Text style={styles.actionButtonText}>Gestionar</Text>
+                                    <FontAwesome name="chevron-right" size={12} color={theme.colors.primary} />
+                                </TouchableOpacity>
+                            </View>
+                        </Card>
+                    ))}
+                </View>
             </ScrollView>
         </Container>
     );
@@ -90,8 +92,8 @@ const styles = StyleSheet.create({
     statsRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 25,
         gap: 15,
+        marginBottom: 24,
     },
     statItem: {
         flex: 1,
@@ -111,9 +113,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: theme.colors.cardTextSecondary,
         marginTop: 4,
-    },
-    alertCard: {
-        marginBottom: 15,
     },
     alertHeader: {
         flexDirection: 'row',
@@ -135,6 +134,9 @@ const styles = StyleSheet.create({
     timeText: {
         fontSize: 12,
         color: theme.colors.cardTextSecondary,
+    },
+    alertsContainer: {
+        gap: 16,
     },
     alertBody: {
         marginBottom: 15,
