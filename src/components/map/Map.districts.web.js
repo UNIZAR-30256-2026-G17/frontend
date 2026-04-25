@@ -43,7 +43,7 @@ const destinationIcon = new L.Icon({
     shadowSize: [41, 41]
 });
 
-export default function Map({
+export default function MapDistricts({
     showMarkers = true,
     showDistricts = true,
     markers = [],

@@ -10,7 +10,7 @@ import { Container } from '../../components/layout/Container';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Checkbox from '../../components/ui/Checkbox';
-import MapBeats from '../../components/map/Map.beat.web';
+import MapBeats from '../../components/map/Map.beats.web';
 
 import GenerateRoutesModal from './GenerateRoutesModal';
 import { generatePatrolRoutes } from '../../utils/routeGenerator';

@@ -4,7 +4,7 @@ import { useRoute } from '@react-navigation/native';
 
 import { Container } from '../../components/layout/Container';
 import Card from '../../components/ui/Card';
-import MapBeats from '../../components/map/Map.beat.web';
+import MapBeats from '../../components/map/Map.beats.web';
 
 import { theme } from '../../theme';
 

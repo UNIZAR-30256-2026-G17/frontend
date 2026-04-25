@@ -4,7 +4,7 @@ import { useRoute } from '@react-navigation/native';
 
 import { Container } from '../../components/layout/Container';
 import Card from '../../components/ui/Card';
-import Map from '../../components/map/Map';
+import MapDistricts from '../../components/map/Map.districts.web';
 
 import { theme } from '../../theme';
 
@@ -25,9 +25,9 @@ export const RoutesScreen = () => {
                 <Text style={styles.title}>
                     Rutas
                 </Text>
-[diff_block_end]
+                [diff_block_end]
 
-[diff_block_start]
+                [diff_block_start]
                 <View style={styles.content}>
                     <View style={styles.mapControls}>
                         <Card
@@ -43,7 +43,7 @@ export const RoutesScreen = () => {
                     </View>
 
                     <View style={styles.mapContainer}>
-                        <Map
+                        <MapDistricts
                             showMarkers={false}
                             showDistricts={false}
                             routePoints={routePoints}

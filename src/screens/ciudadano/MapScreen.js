@@ -12,7 +12,7 @@ import Button from '../../components/ui/Button';
 import Checkbox from '../../components/ui/Checkbox';
 import CreateAlertModal from './CreateAlertModal';
 import GenerateRouteModal from './GenerateRouteModal';
-import Map from '../../components/map/Map';
+import MapDistricts from '../../components/map/Map.districts.web';
 
 import { geocodeAddress } from '../../utils/geocodeAddress';
 
@@ -391,7 +391,7 @@ export const MapScreen = () => {
                         </View>
 
                         <View style={styles.mapContainer}>
-                            <Map
+                            <MapDistricts
                                 showMarkers={alertsSelected}
                                 showDistricts={ICSelected}
                                 markers={alerts}

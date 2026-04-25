@@ -15,23 +15,6 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-const originIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-});
-
-const destinationIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-});
 
 const getColorForBeatIC = (value) => {
     if (value >= 5) return theme.colors.ic1;
@@ -89,11 +72,6 @@ export default function MapBeats({
                             >
                                 <Popup>Ruta de Patrulla {index + 1}</Popup>
                             </Polyline>
-                        )}
-
-                        {/* 2. Marcador de Origen (Verde) */}
-                        {route?.origin?.latitude && (
-                            <Marker position={[route.origin.latitude, route.origin.longitude]} icon={originIcon} />
                         )}
                     </React.Fragment>
                 ))}
