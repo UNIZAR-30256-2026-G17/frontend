@@ -1,9 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react-native';
-import { LoginPoliceScreen } from './LoginPoliceScreen';
-import { AuthProvider } from '../../context/AuthContext';
+import { LoginPoliceScreen } from '../../../src/screens/policia/LoginPoliceScreen';
+import { AuthProvider } from '../../../src/context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
-
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Mock de navegación
@@ -19,7 +18,7 @@ jest.mock('@react-navigation/native', () => {
 });
 
 // Mock de Header
-jest.mock('../../components/layout/Header', () => {
+jest.mock('../../../src/components/layout/Header', () => {
   const React = require('react');
   const { Text } = require('react-native');
   return {
