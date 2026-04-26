@@ -16,7 +16,7 @@ import MapDistricts from '../../components/map/Map.districts.web';
 
 import { geocodeAddress } from '../../utils/geocodeAddress';
 
-import { API_URL } from '../../config/api';
+import { API_URL } from '../../config/env';
 
 const ICs = [
     { label: '> 28', color: theme.colors.ic1 },

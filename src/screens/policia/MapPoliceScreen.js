@@ -15,7 +15,7 @@ import MapBeats from '../../components/map/Map.beats.web';
 import GenerateRoutesModal from './GenerateRoutesModal';
 import { generatePatrolRoutes } from '../../utils/routeGenerator';
 
-import { API_URL } from '../../config/api';
+import { API_URL } from '../../config/env';
 
 const ICs = [
     { label: '> 5', color: theme.colors.ic1 },

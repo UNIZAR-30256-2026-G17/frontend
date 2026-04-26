@@ -9,7 +9,7 @@ import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 
-import { API_URL } from '../../config/api';
+import { API_URL } from '../../config/env';
 
 export const LoginAdminScreen = () => {
   const navigation = useNavigation();

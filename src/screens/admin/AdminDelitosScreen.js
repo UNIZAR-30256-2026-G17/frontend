@@ -3,9 +3,9 @@ import { Text, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-na
 import { theme } from '../../theme';
 
 import { useAuth } from '../../context/AuthContext';
-import { AdminContainer } from '../../components/layout/AdminContainer'; 
+import { AdminContainer } from '../../components/layout/AdminContainer';
 import { DelitosTable } from './DelitosTable';
-import { API_URL } from '../../config/api';
+import { API_URL } from '../../config/env';
 
 export function AdminDelitosScreen() {
   const { user } = useAuth();
@@ -20,8 +20,8 @@ export function AdminDelitosScreen() {
   const fetchDelitos = async () => {
     try {
       setLoading(true);
-      const token = user?.token; 
-      
+      const token = user?.token;
+
       const response = await fetch(`${API_URL}/crimes?limit=50`, {
         method: 'GET',
         headers: {
@@ -37,7 +37,7 @@ export function AdminDelitosScreen() {
       }
 
       // Accedemos a la lista de delitos usando data.crimes (y le ponemos [] por si acaso viene vacío)
-      setDelitos(data.crimes || []); 
+      setDelitos(data.crimes || []);
 
     } catch (error) {
       console.error('Error fetching delitos:', error);
@@ -56,7 +56,7 @@ export function AdminDelitosScreen() {
       // IMPORTANTE: Revisa en tu backend si esta es la ruta correcta para actualizar
       // Si tu archivo de rutas dice router.put('/:id', ...), entonces quítale el "/status" del final.
       const response = await fetch(`${API_URL}/crimes/${id}`, {
-        method: 'PATCH', 
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -89,13 +89,13 @@ export function AdminDelitosScreen() {
         scrollEventThrottle={16}
       >
         <Text style={styles.pageTitle}>Delitos</Text>
-        
+
         {loading ? (
           <ActivityIndicator size="large" color={theme.colors.primary} style={{ marginTop: 50 }} />
         ) : (
           <DelitosTable delitos={delitos} onToggle={toggleDelito} />
         )}
-        
+
       </ScrollView>
     </AdminContainer>
   );
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   pageTitle: {
-    ...theme.typography.pageTitle, 
+    ...theme.typography.pageTitle,
     color: theme.colors.text,
     textAlign: 'center',
     marginBottom: 40,

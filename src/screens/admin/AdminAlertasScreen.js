@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Text, 
-  ScrollView, 
-  StyleSheet, 
-  ActivityIndicator, 
-  Alert, 
-  RefreshControl 
+import {
+  Text,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+  RefreshControl
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { theme } from '../../theme';
 
-import { AdminContainer } from '../../components/layout/AdminContainer'; 
+import { AdminContainer } from '../../components/layout/AdminContainer';
 import { AlertasTable } from './AlertasTable';
-import EmptyState from '../../components/ui/EmptyState'; 
-import { API_URL } from '../../config/api';
+import EmptyState from '../../components/ui/EmptyState';
+import { API_URL } from '../../config/env';
 
 export function AdminAlertasScreen() {
   const [alertas, setAlertas] = useState([]);
@@ -30,7 +30,7 @@ export function AdminAlertasScreen() {
     try {
       setLoading(true);
       const token = user?.token;
-      
+
       const response = await fetch(`${API_URL}/alerts`, {
         method: 'GET',
         headers: {
@@ -47,7 +47,7 @@ export function AdminAlertasScreen() {
 
       // IMPORTANTE: Según tu log, la lista viene en data.alerts
       // Si data.alerts existe, la guardamos, si no, array vacío.
-      setAlertas(data.alerts || []); 
+      setAlertas(data.alerts || []);
 
     } catch (error) {
       console.error('Error fetching alertas:', error);
@@ -66,7 +66,7 @@ export function AdminAlertasScreen() {
   const toggleAlerta = async (id, currentStatus) => {
     try {
       const token = user?.token;
-      
+
       // Mapeo de estados de tu back: pending -> deleted
       const newStatus = currentStatus === 'deleted' ? 'pending' : 'deleted';
 
@@ -92,35 +92,35 @@ export function AdminAlertasScreen() {
   };
 
   return (
-      <AdminContainer>
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.container}
-          refreshControl={
-            <RefreshControl 
-              refreshing={refreshing} 
-              onRefresh={onRefresh} 
-              colors={[theme.colors.primary]}
-            />
-          }
-        >
-          <Text style={styles.pageTitle}>Panel de Alertas</Text>
-          
-          {loading && !refreshing ? (
-            <ActivityIndicator size="large" color={theme.colors.primary} style={styles.loader} />
-          ) : alertas.length === 0 ? (
-            <EmptyState
-              icon="bell-slash"
-              title="No hay alertas registradas"
-              subtitle="El sistema no tiene reportes actuales. Tira hacia abajo para refrescar."
-              buttonText="Buscar nuevas alertas"
-              onButtonPress={fetchAlertas}
-            />
-          ) : (
-            <AlertasTable alertas={alertas} onToggle={toggleAlerta} />
-          )}
-        </ScrollView>
-      </AdminContainer>
+    <AdminContainer>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[theme.colors.primary]}
+          />
+        }
+      >
+        <Text style={styles.pageTitle}>Panel de Alertas</Text>
+
+        {loading && !refreshing ? (
+          <ActivityIndicator size="large" color={theme.colors.primary} style={styles.loader} />
+        ) : alertas.length === 0 ? (
+          <EmptyState
+            icon="bell-slash"
+            title="No hay alertas registradas"
+            subtitle="El sistema no tiene reportes actuales. Tira hacia abajo para refrescar."
+            buttonText="Buscar nuevas alertas"
+            onButtonPress={fetchAlertas}
+          />
+        ) : (
+          <AlertasTable alertas={alertas} onToggle={toggleAlerta} />
+        )}
+      </ScrollView>
+    </AdminContainer>
   );
 }
 
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   pageTitle: {
-    ...theme.typography.pageTitle, 
+    ...theme.typography.pageTitle,
     color: theme.colors.text,
     textAlign: 'center',
     marginBottom: 40,

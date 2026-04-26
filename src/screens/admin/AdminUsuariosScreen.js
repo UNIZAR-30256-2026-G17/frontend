@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Text, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
-import { AdminContainer } from '../../components/layout/AdminContainer'; 
+import { AdminContainer } from '../../components/layout/AdminContainer';
 import { UsersTable } from './UsersTable';
-import { API_URL } from '../../config/api';
+import { API_URL } from '../../config/env';
 
 export function AdminUsuariosScreen() {
   const { user } = useAuth();
