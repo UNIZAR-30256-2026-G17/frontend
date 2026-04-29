@@ -82,6 +82,7 @@ export const Header = () => {
             onPress={() => !isAdmin && navigation.navigate('Home')}
             activeOpacity={isAdmin ? 1 : 0.75}
           >
+            {/* Si es mobile que el logo aparezca cetrado*/}
             <Image source={LOGO} style={styles.logo} resizeMode="contain" />
             {!isMobile && (
               <Text style={styles.title}>Montgomery SafetyMap</Text>
