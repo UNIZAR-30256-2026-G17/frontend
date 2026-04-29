@@ -10,7 +10,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { theme } from '../../theme';
 
-import { AdminContainer } from '../../components/layout/AdminContainer';
+import { Container } from '../../components/layout/Container';
 import { AlertasTable } from './AlertasTable';
 import EmptyState from '../../components/ui/EmptyState';
 import { API_URL } from '../../config/env';
@@ -92,7 +92,7 @@ export function AdminAlertasScreen() {
   };
 
   return (
-    <AdminContainer>
+    <Container>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.container}
@@ -120,7 +120,7 @@ export function AdminAlertasScreen() {
           <AlertasTable alertas={alertas} onToggle={toggleAlerta} />
         )}
       </ScrollView>
-    </AdminContainer>
+    </Container>
   );
 }
 

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Text, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { theme } from '../../theme';
 
+import { Container } from '../../components/layout/Container';
 import { useAuth } from '../../context/AuthContext';
-import { AdminContainer } from '../../components/layout/AdminContainer';
 import { DelitosTable } from './DelitosTable';
 import { API_URL } from '../../config/env';
 
@@ -82,7 +82,7 @@ export function AdminDelitosScreen() {
   };
 
   return (
-    <AdminContainer>
+    <Container>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.container}
@@ -97,7 +97,7 @@ export function AdminDelitosScreen() {
         )}
 
       </ScrollView>
-    </AdminContainer>
+    </Container>
   );
 }
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
-import { AdminContainer } from '../../components/layout/AdminContainer';
+import { Container } from '../../components/layout/Container';
 import { UsersTable } from './UsersTable';
 import { API_URL } from '../../config/env';
 
@@ -35,7 +35,7 @@ export function AdminUsuariosScreen() {
   };
 
   return (
-    <AdminContainer>
+    <Container>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
         <Text style={styles.pageTitle}>Panel de Usuarios</Text>
         {loading
@@ -43,7 +43,7 @@ export function AdminUsuariosScreen() {
           : <UsersTable users={users} />
         }
       </ScrollView>
-    </AdminContainer>
+    </Container>
   );
 }
 
