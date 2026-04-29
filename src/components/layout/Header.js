@@ -67,28 +67,31 @@ export const Header = () => {
       <View style={styles.header}>
 
         {/* ── LEFT: hamburger (mobile) + logo + nombre (desktop) ── */}
-        <View style={styles.leftSection}>
+        <View style={isMobile ? styles.sideSection : styles.leftSection}>
           {isMobile && (
-            <TouchableOpacity
-              onPress={() => setNavOpen(true)}
-              style={styles.iconButton}
-            >
+            <TouchableOpacity onPress={() => setNavOpen(true)} style={styles.iconButton}>
               <FontAwesome name="bars" size={20} color={theme.colors.headerText} />
             </TouchableOpacity>
           )}
-
-          <TouchableOpacity
-            style={styles.logoArea}
-            onPress={() => !isAdmin && navigation.navigate('Home')}
-            activeOpacity={isAdmin ? 1 : 0.75}
-          >
-            {/* Si es mobile que el logo aparezca cetrado*/}
-            <Image source={LOGO} style={styles.logo} resizeMode="contain" />
-            {!isMobile && (
+          {!isMobile && (
+            <TouchableOpacity
+              style={styles.logoArea}
+              onPress={() => !isAdmin && navigation.navigate('Home')}
+            >
+              <Image source={LOGO} style={styles.logo} resizeMode="contain" />
               <Text style={styles.title}>Montgomery SafetyMap</Text>
-            )}
-          </TouchableOpacity>
+            </TouchableOpacity>
+          )}
         </View>
+
+        {isMobile && (
+          <TouchableOpacity
+            style={styles.logoAreaMobile}
+            onPress={() => !isAdmin && navigation.navigate('Home')}
+          >
+            <Image source={LOGO} style={styles.logo} resizeMode="contain" />
+          </TouchableOpacity>
+        )}
 
         {/* ── RIGHT: tabs (desktop) + avatar/login ── */}
         <View style={styles.rightSection}>
@@ -168,6 +171,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
   },
+  headerMobileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
   leftSection: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -178,6 +186,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     ...Platform.select({ web: { cursor: 'pointer' }, default: {} }),
+  },
+  logoAreaMobile: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   logo: {
     width: 36,
