@@ -3,7 +3,19 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 import { useWindowDimensions } from 'react-native';
-import { COLS, EXPANDED_KEYS } from './crimes.constants';
+
+const COLS = [
+  { header: 'Id',             key: 'id' },
+  { header: 'Tipo de delito', key: 'tipo' },
+  { header: 'Subtipo',        key: 'subtipo' },
+  { header: 'Fecha',          key: 'fecha' },
+  { header: 'Hora',           key: 'hora' },
+  { header: 'Distrito',       key: 'distrito' },
+  { header: 'Beat',           key: 'beat' },
+  { header: 'Sector',         key: 'sector' },
+];
+
+const EXPANDED_KEYS = ['fecha', 'hora', 'distrito', 'beat', 'sector'];
 
 export function CreateCrimesTable({ data }) {
   const { width } = useWindowDimensions();

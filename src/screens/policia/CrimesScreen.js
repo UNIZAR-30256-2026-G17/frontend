@@ -12,12 +12,117 @@ import FilterPopover from './FilterPopover';
 import { CreateCrimesTable } from './CreateCrimesTable';
 import { UseCrimesFilter } from './UseCrimesFilter';
 import EmptyState from '../../components/ui/EmptyState';
-import {
-  ORDER_OPTIONS,
-  TIPO_OPTIONS,
-  DISTRITO_OPTIONS,
-  BEAT_OPTIONS,
-} from './crimes.constants';
+
+// Filtros predeterminados
+export const ORDER_OPTIONS = [
+  { label: 'Fecha: de más reciente a más antigua', value: 'date_desc' },
+  { label: 'Fecha: de más antigua a más reciente', value: 'date_asc' },
+  { label: 'Distrito (A-Z)',                        value: 'district_asc' },
+  { label: 'Tipo de delito (A-Z)',                  value: 'type_asc' },
+];
+
+// Tipos de delitos
+export const TIPO_OPTIONS = [
+  { label: 'Todos',                        value: '' },
+  { label: 'Delito contra la sociedad',    value: 'Delito contra la sociedad' },
+  { label: 'Delito contra personas',       value: 'Delito contra personas' },
+  { label: 'Delito contra la propiedad',   value: 'Delito contra la propiedad' },
+];
+
+// Distritos disponibles
+export const DISTRITO_OPTIONS = [
+  { label: 'Todos',         value: '' },
+  { label: 'Takoma Park',   value: 'Takoma Park' },
+  { label: 'Silver Spring', value: 'Silver Spring' },
+  { label: 'Bethesda',      value: 'Bethesda' },
+  { label: 'Rockville',     value: 'Rockville' },
+  { label: 'Montgomery Village', value: 'Montgomery Village' },
+  { label: 'Germantown',    value: 'Germantown' },
+  { label: 'Wheaton',       value: 'Wheaton' },
+];
+
+export const BEAT_OPTIONS = [
+  { label: 'Todos', value: '' },
+  { label: '1A1', value: '1A1' },
+  { label: '1A2', value: '1A2' },
+  { label: '1A3', value: '1A3' },
+  { label: '1A4', value: '1A4' },
+  { label: '1B1', value: '1B1' },
+  { label: '1B2', value: '1B2' },
+  { label: '1B3', value: '1B3' },
+  { label: '1B4', value: '1B4' },
+  { label: '1H2', value: '1H2' },
+  { label: '1N2', value: '1N2' },
+  { label: '1R2', value: '1R2' },
+  { label: '2D1', value: '2D1' },
+  { label: '2D2', value: '2D2' },
+  { label: '2D3', value: '2D3' },
+  { label: '2D4', value: '2D4' },
+  { label: '2E1', value: '2E1' },
+  { label: '2E2', value: '2E2' },
+  { label: '2E3', value: '2E3' },
+  { label: '2E4', value: '2E4' },
+  { label: '3G1', value: '3G1' },
+  { label: '3G2', value: '3G2' },
+  { label: '3G3', value: '3G3' },
+  { label: '3G4', value: '3G4' },
+  { label: '3G5', value: '3G5' },
+  { label: '3H1', value: '3H1' },
+  { label: '3H2', value: '3H2' },
+  { label: '3I1', value: '3I1' },
+  { label: '3I2', value: '3I2' },
+  { label: '3I3', value: '3I3' },
+  { label: '3L1', value: '3L1' },
+  { label: '4J1', value: '4J1' },
+  { label: '4J2', value: '4J2' },
+  { label: '4J3', value: '4J3' },
+  { label: '4J4', value: '4J4' },
+  { label: '4K1', value: '4K1' },
+  { label: '4K2', value: '4K2' },
+  { label: '4K3', value: '4K3' },
+  { label: '4K4', value: '4K4' },
+  { label: '4L1', value: '4L1' },
+  { label: '4L2', value: '4L2' },
+  { label: '4L3', value: '4L3' },
+  { label: '5M1', value: '5M1' },
+  { label: '5M2', value: '5M2' },
+  { label: '5M3', value: '5M3' },
+  { label: '5N1', value: '5N1' },
+  { label: '5N2', value: '5N2' },
+  { label: '5N3', value: '5N3' },
+  { label: '6P1', value: '6P1' },
+  { label: '6P2', value: '6P2' },
+  { label: '6P3', value: '6P3' },
+  { label: '6P4', value: '6P4' },
+  { label: '6P6', value: '6P6' },
+  { label: '6R1', value: '6R1' },
+  { label: '6R2', value: '6R2' },
+  { label: '6R3', value: '6R3' },
+  { label: '8T1', value: '8T1' },
+  { label: '8T2', value: '8T2' },
+  { label: '8T3', value: '8T3' },
+  { label: '-PG', value: '-PG' },
+];
+
+export const SECTOR_OPTIONS = [
+  { label: 'Todos', value: '' },
+  { label: 'A', value: 'A' },
+  { label: 'B', value: 'B' },
+  { label: 'D', value: 'D' },
+  { label: 'E', value: 'E' },
+  { label: 'G', value: 'G' },
+  { label: 'H', value: 'H' },
+  { label: 'I', value: 'I' },
+  { label: 'J', value: 'J' },
+  { label: 'K', value: 'K' },
+  { label: 'L', value: 'L' },
+  { label: 'M', value: 'M' },
+  { label: 'N', value: 'N' },
+  { label: 'P', value: 'P' },
+  { label: 'R', value: 'R' },
+  { label: 'T', value: 'T' },
+  { label: 'W', value: 'W' }
+];
 
 export function CrimesScreen() {
   const [showFilters, setShowFilters] = useState(false);
