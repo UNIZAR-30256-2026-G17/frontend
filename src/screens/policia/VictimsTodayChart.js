@@ -59,7 +59,7 @@ export const VictimsTodayChart = ({ data }) => {
     }, [hoveredId, pieData, arcGenerator, arcHover, dimensions.width]);
 
     return (
-        <Card title="Número de víctimas de hoy">
+        <Card title="Número de víctimas de ayer">
             <View 
                 style={styles.pieContainer}
                 onLayout={(e) => setDimensions({ width: e.nativeEvent.layout.width, height: 200 })}

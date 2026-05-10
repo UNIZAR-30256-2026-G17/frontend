@@ -1,12 +1,4 @@
-export const barData = [
-  { name: 'Bethesda', value: 20, color: '#8B0000' },
-  { name: 'Germantown', value: 16, color: '#B22222' },
-  { name: 'Montgomery Village', value: 13, color: '#CD5C5C' },
-  { name: 'Rockville', value: 11, color: '#D2691E' },
-  { name: 'Silver Spring', value: 5, color: '#DAA520' },
-  { name: 'Takoma Park', value: 3, color: '#BDB76B' },
-  { name: 'Wheaton', value: 1, color: '#8FBC8F' },
-];
+
 
 export const lineData = [
   { time: '08:30', value: 10 }, { time: '09:00', value: 5 }, { time: '09:30', value: 25 },

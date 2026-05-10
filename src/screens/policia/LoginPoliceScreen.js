@@ -56,7 +56,6 @@ export const LoginPoliceScreen = () => {
 
       const meData = await meResponse.json();
       if (!meResponse.ok) throw new Error('Error obteniendo datos del usuario');
-
       // 3. Guarda en contexto con datos reales del servidor
       await login({
         email: meData.user.email,

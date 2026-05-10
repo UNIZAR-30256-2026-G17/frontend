@@ -1,50 +1,129 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
 import { Container } from '../../components/layout/Container';
+import { useAuth } from '../../context/AuthContext';
+import { API_URL } from '../../config/env';
 
-// Importa tus componentes
 import { CrimesByDistrictChart } from './CrimesByDistrictChart';
 import { CrimesTodayChart } from './CrimesTodayChart';
 import { VictimsTodayChart } from './VictimsTodayChart';
 import { CrimeTypesStats } from './CrimeTypesStats';
 
-// Importa tus datos
-import { barData, lineData, pieData, statsData } from './mockData';
 
 export const EstadisticasScreen = () => {
-  // Obtenemos el ancho de la pantalla en tiempo real
   const { width } = useWindowDimensions();
-  const isMobile = width < 768; // Definimos el punto de quiebre (breakpoint)
+  const isMobile = width < 768;
+  const { user } = useAuth();
+
+  const [barData, setBarData] = useState([]);
+  const [lineData, setLineData] = useState([]);
+  const [lastUpdate, setLastUpdate] = useState('');
+  const [pieData, setPieData] = useState([]);
+  const [statsData, setStatsData] = useState([]);
+  const colorMap = {
+    'Crime Against Person':   '#B22222',
+    'Crime Against Property': '#DAA520',
+    'Crime Against Society':  '#4682B4',
+  };
+  const nameMap = {
+    'Crime Against Person':   'Delitos contra personas',
+    'Crime Against Property': 'Delitos contra la propiedad',
+    'Crime Against Society':  'Delitos contra la sociedad',
+  };
+  useEffect(() => {
+    if (user?.token) {
+      fetchCrimesByDistrict();
+      fetchCrimesByHour();
+      fetchCrimeNames1();
+    }
+  }, [user]);
+
+  const fetchCrimeNames1 = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const from = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0];
+      const response = await fetch(
+        `${API_URL}/crimes/byCrimename1?from=${from}&to=${today}`,
+        { headers: { 'Authorization': `Bearer ${user?.token}` } }
+      );
+      const json = await response.json();
+
+      // Para el pie chart (VictimsTodayChart)
+      setPieData(json.results.map(item => ({
+        name: nameMap[item.crimename1] ?? item.crimename1,
+        value: item.num_victims,
+        color: colorMap[item.crimename1] ?? '#888',
+      })));
+
+      // Para las stats (CrimeTypesStats)
+      setStatsData(json.results.map(item => ({
+        label: nameMap[item.crimename1] ?? item.crimename1,
+        value: `${Math.round(item.percentage)}%`,
+        color: colorMap[item.crimename1] ?? '#888',
+      })));
+
+    } catch (error) {
+      console.error('Error fetching crime names:', error);
+    }
+  };
+  const fetchCrimesByDistrict = async () => {
+    try {
+      const response = await fetch(`${API_URL}/crimes/yesterday/byDistrict`, {
+        headers: { 'Authorization': `Bearer ${user?.token}` }
+      });
+      const json = await response.json();
+      console.log('Response:', JSON.stringify(json));
+
+      const colors = ['#8B0000','#B22222','#CD5C5C','#D2691E','#DAA520','#BDB76B','#8FBC8F'];
+      setBarData(json.results.map((item, i) => ({
+        name: item.district,
+        value: item.num_crimes,
+        color: colors[i % colors.length],
+      })));
+      setLastUpdate(json.date);
+    } catch (error) {
+      console.error('Error fetching crimes by district:', error);
+    }
+  };
+
+  const fetchCrimesByHour = async () => {
+    try {
+      const response = await fetch(`${API_URL}/crimes/yesterday/byHour`, {
+        headers: { 'Authorization': `Bearer ${user?.token}` }
+      });
+      const json = await response.json();
+      setLineData(json.results.map(item => ({
+        time: item.hour,
+        value: item.num_crimes,
+      })));
+    } catch (error) {
+      console.error('Error fetching crimes by hour:', error);
+    }
+  };
 
   return (
     <Container>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        
+
         <View style={styles.headerContainer}>
           <Text style={styles.mainTitle}>Estadísticas</Text>
-          <Text style={styles.updateText}>Última actualización: 25/02/2026 a las 12:44</Text>
+          <Text style={styles.updateText}>Última actualización: {lastUpdate || '—'}</Text>
         </View>
 
-        {/* Usamos un contenedor con flexDirection dinámico. 
-           Si es móvil, los elementos se apilan. Si es web, se ponen a la par.
-        */}
         <View style={[styles.mainLayout, { flexDirection: isMobile ? 'column' : 'row' }]}>
-          
-          {/* COLUMNA IZQUIERDA (o Superior en móvil) */}
+
           <View style={[styles.section, !isMobile && { flex: 1.2 }]}>
             <CrimesByDistrictChart data={barData} />
-            <View style={{ height: 16 }} /> {/* Espaciador */}
+            <View style={{ height: 16 }} />
             <VictimsTodayChart data={pieData} />
           </View>
 
-          {/* Espacio entre columnas en escritorio */}
           {!isMobile && <View style={{ width: 16 }} />}
           {isMobile && <View style={{ height: 16 }} />}
 
-          {/* COLUMNA DERECHA (o Inferior en móvil) */}
           <View style={[styles.section, !isMobile && { flex: 1 }]}>
             <CrimesTodayChart data={lineData} />
-            <View style={{ height: 16 }} /> {/* Espaciador */}
+            <View style={{ height: 16 }} />
             <CrimeTypesStats data={statsData} />
           </View>
 
@@ -56,29 +135,10 @@ export const EstadisticasScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 40,
-  },
-  headerContainer: {
-    marginBottom: 24,
-    alignItems: 'center',
-  },
-  mainTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    textAlign: 'center',
-  },
-  updateText: {
-    fontSize: 12,
-    color: '#AAAAAA',
-    marginTop: 4,
-  },
-  mainLayout: {
-    width: '100%',
-  },
-  section: {
-    width: '100%',
-  },
+  scrollContent: { padding: 16, paddingBottom: 40 },
+  headerContainer: { marginBottom: 24, alignItems: 'center' },
+  mainTitle: { fontSize: 28, fontWeight: 'bold', color: '#FFFFFF', textAlign: 'center' },
+  updateText: { fontSize: 12, color: '#AAAAAA', marginTop: 4 },
+  mainLayout: { width: '100%' },
+  section: { width: '100%' },
 });

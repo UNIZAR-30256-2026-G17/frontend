@@ -66,7 +66,7 @@ export const CrimesTodayChart = ({ data }) => {
     };
 
     return (
-        <Card title="Delitos de hoy">
+        <Card title="Delitos de ayer">
             <View 
                 style={styles.chartContainer}
                 onLayout={(e) => setDimensions({ width: e.nativeEvent.layout.width, height: 250 })}
