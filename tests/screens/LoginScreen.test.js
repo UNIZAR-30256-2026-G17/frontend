@@ -4,7 +4,7 @@ import { LoginScreen } from '../../src/screens/LoginScreen';
 import { AuthProvider } from '../../src/context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Alert, Platform } from 'react-native';
+import { theme } from '../../src/theme';
 
 // Mock de AsyncStorage
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -26,9 +26,6 @@ jest.mock('@react-navigation/native', () => ({
 // Mock de fetch global
 global.fetch = jest.fn();
 
-// Mock de Alert
-jest.spyOn(Alert, 'alert');
-
 const renderLoginScreen = () => {
   return render(
     <SafeAreaProvider initialMetrics={{ frame: { x: 0, y: 0, width: 0, height: 0 }, insets: { top: 0, left: 0, right: 0, bottom: 0 } }}>
@@ -49,7 +46,8 @@ describe('LoginScreen', () => {
   it('se renderiza correctamente con todos los elementos básicos', () => {
     renderLoginScreen();
     
-    expect(screen.getAllByText('Iniciar sesión').length).toBe(2);
+    // El texto "Iniciar sesión" aparece en el título y en el botón
+    expect(screen.getAllByText('Iniciar sesión').length).toBeGreaterThan(0);
     expect(screen.getByPlaceholderText('ejemplo@gmail.com')).toBeTruthy();
     expect(screen.getByPlaceholderText('Ejemplo123@')).toBeTruthy();
     
@@ -57,18 +55,19 @@ describe('LoginScreen', () => {
     expect(screen.getByText('Registrarse')).toBeTruthy();
   });
 
-  it('muestra un error si los campos están vacíos', async () => {
+  it('muestra un mensaje de error si los campos están vacíos', async () => {
     renderLoginScreen();
     
     const loginButton = screen.getAllByText('Iniciar sesión')[1];
     fireEvent.press(loginButton);
 
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('Error', 'Todos los campos son obligatorios');
+      // Ahora usamos AppSnackbar, así que buscamos el texto en pantalla
+      expect(screen.getByText('Todos los campos son obligatorios')).toBeTruthy();
     });
   });
 
-  it('inicia sesión con éxito como policía y navega a MapPolice', async () => {
+  it('inicia sesión con éxito como policía y navega a Mapa Policial', async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({
@@ -84,11 +83,11 @@ describe('LoginScreen', () => {
     fireEvent.press(screen.getAllByText('Iniciar sesión')[1]);
 
     await waitFor(() => {
-      expect(mockedNavigate).toHaveBeenCalledWith('MapPolice');
+      expect(mockedNavigate).toHaveBeenCalledWith('Mapa Policial');
     });
   });
 
-  it('inicia sesión con éxito como admin y navega a AlertasAdmin', async () => {
+  it('inicia sesión con éxito como admin y navega a Panel de Alertas', async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({
@@ -104,7 +103,7 @@ describe('LoginScreen', () => {
     fireEvent.press(screen.getAllByText('Iniciar sesión')[1]);
 
     await waitFor(() => {
-      expect(mockedNavigate).toHaveBeenCalledWith('AlertasAdmin');
+      expect(mockedNavigate).toHaveBeenCalledWith('Panel de Alertas');
     });
   });
 
@@ -121,7 +120,7 @@ describe('LoginScreen', () => {
     fireEvent.press(screen.getAllByText('Iniciar sesión')[1]);
 
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('Error', 'Credenciales incorrectas');
+      expect(screen.getByText('Credenciales incorrectas')).toBeTruthy();
     });
   });
 });

@@ -20,6 +20,7 @@ jest.mock('@expo/vector-icons', () => ({
   AntDesign: 'AntDesign',
   Ionicons: 'Ionicons',
   MaterialIcons: 'MaterialIcons',
+  FontAwesome: 'FontAwesome',
 }));
 
 // Mock Header to avoid navigation state issues in screen tests
