@@ -15,7 +15,7 @@ export const withProtection = (Component, allowedRoles) => {
 
       if (!user) {
         setRedirecting(true);
-        setTimeout(() => navigation.replace('LoginAdmin'), 0);
+        setTimeout(() => navigation.replace('Login'), 0);
         return;
       }
 

@@ -8,14 +8,12 @@ import { withProtection } from './ProtectedScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { StatsScreen } from '../screens/ciudadano/StatsScreen';
 import { MapScreen } from '../screens/ciudadano/MapScreen';
-import { LoginPoliceScreen } from '../screens/policia/LoginPoliceScreen';
+import { LoginScreen } from '../screens/LoginScreen';
 import { RegisterScreen } from '../screens/policia/RegisterScreen';
 import { CrimesScreen } from '../screens/policia/CrimesScreen';
 import { RoutesScreen } from '../screens/ciudadano/RoutesScreen';
 import { MapPoliceScreen } from '../screens/policia/MapPoliceScreen';
 import { AlertsScreen } from '../screens/policia/AlertsScreen';
-// import { StatsPoliceScreen } from '../screens/policia/StatsPoliceScreen';
-import { LoginAdminScreen } from '../screens/admin/LoginAdminScreen';
 import { EstadisticasScreen } from '../screens/policia/EstadisticasScreen';
 import { AdminUsuariosScreen } from '../screens/admin/AdminUsuariosScreen';
 import { AdminDelitosScreen } from '../screens/admin/AdminDelitosScreen';
@@ -60,8 +58,7 @@ export default function AppNavigator() {
           <Stack.Screen name="Stats" component={StatsScreen} />
           <Stack.Screen name="Routes" component={RoutesScreen} />
 
-          <Stack.Screen name="LoginAdmin" component={LoginAdminScreen} />
-          <Stack.Screen name="LoginPolice" component={LoginPoliceScreen} />
+          <Stack.Screen name="Login"      component={LoginScreen} /> 
           <Stack.Screen name="Register" component={RegisterScreen} />
         </>
       ) : user.role === 'admin' ? (

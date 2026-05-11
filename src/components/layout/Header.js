@@ -127,7 +127,7 @@ export const Header = () => {
           ) : isMobile ? (
             <TouchableOpacity
               style={styles.iconButton}
-              onPress={() => navigation.navigate('LoginPolice')}
+              onPress={() => navigation.navigate('Login')}
             >
               <FontAwesome name="user-circle" size={30} color={theme.colors.headerText} />
             </TouchableOpacity>
@@ -135,7 +135,7 @@ export const Header = () => {
             <Button
               title="Iniciar sesión"
               variant="header"
-              onPress={() => navigation.navigate('LoginPolice')}
+              onPress={() => navigation.navigate('Login')}
             />
           )}
         </View>

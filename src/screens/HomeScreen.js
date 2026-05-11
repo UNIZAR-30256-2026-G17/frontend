@@ -246,7 +246,7 @@ export const HomeScreen = () => {
               <FontAwesome name="map" size={14} color={C.dark} />
               <Text style={s.btnYellowText}>Ver el mapa</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={s.btnGhost} onPress={() => navigation.navigate('LoginPolice')} activeOpacity={0.7}>
+            <TouchableOpacity style={s.btnGhost} onPress={() => navigation.navigate('Login')} activeOpacity={0.7}>
               <Text style={s.btnGhostText}>Iniciar sesión</Text>
               <FontAwesome name="arrow-right" size={12} color="rgba(255,255,255,0.6)" />
             </TouchableOpacity>

@@ -104,15 +104,6 @@ export const CrimesByDistrictChart = ({ data }) => {
     return (
         <Card
             title="Número de delitos por distrito"
-            right={
-                <View style={{ width: 140 }}>
-                    <Dropdown
-                        options={[{ label: 'Último mes', value: '1m' }, { label: 'Último año', value: '1y' }]}
-                        selected={selectedMonth}
-                        onSelect={setSelectedMonth}
-                    />
-                </View>
-            }
         >
             <View 
                 style={styles.chartContainer}

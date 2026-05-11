@@ -23,7 +23,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/montgomery-icon.png"
     },
     "plugins": [
       "@react-native-community/datetimepicker",
