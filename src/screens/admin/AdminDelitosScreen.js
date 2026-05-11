@@ -1,21 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Text, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { Text, ScrollView, StyleSheet, View } from 'react-native';
 import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
 import { useAuth } from '../../context/AuthContext';
 import { DelitosTable } from './DelitosTable';
+import LoadingOverlay from '../../components/ui/LoadingOverlay';
+import AppLoading from '../../components/ui/AppLoading';
+import AppSnackbar from '../../components/ui/AppSnackBar';
 import { API_URL } from '../../config/env';
 
 export function AdminDelitosScreen() {
   const { user } = useAuth();
   const [delitos, setDelitos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
 
-  // Se ejecuta al entrar a la pantalla
   useEffect(() => {
     if (user?.token) fetchDelitos();
   }, [user]);
+
+  const showSnackbar = (message, variant = 'normal') =>
+    setSnackbar({ visible: true, message, variant });
+
+  const hideSnackbar = () =>
+    setSnackbar(prev => ({ ...prev, visible: false }));
 
   const fetchDelitos = async () => {
     try {
@@ -36,12 +46,10 @@ export function AdminDelitosScreen() {
         throw new Error(data.message || 'Error al obtener los delitos');
       }
 
-      // Accedemos a la lista de delitos usando data.crimes (y le ponemos [] por si acaso viene vacío)
       setDelitos(data.crimes || []);
-
     } catch (error) {
       console.error('Error fetching delitos:', error);
-      Alert.alert('Error', 'No se pudieron cargar los delitos desde el servidor');
+      showSnackbar('No se pudieron cargar los delitos', 'error');
     } finally {
       setLoading(false);
     }
@@ -49,12 +57,10 @@ export function AdminDelitosScreen() {
 
   const toggleDelito = async (id, currentStatus) => {
     try {
-      // Tu backend espera 'available' o 'deleted'
+      setActionLoading(true);
       const newStatus = currentStatus === 'available' ? 'deleted' : 'available';
       const token = user?.token;
 
-      // IMPORTANTE: Revisa en tu backend si esta es la ruta correcta para actualizar
-      // Si tu archivo de rutas dice router.put('/:id', ...), entonces quítale el "/status" del final.
       const response = await fetch(`${API_URL}/crimes/${id}`, {
         method: 'PATCH',
         headers: {
@@ -68,35 +74,48 @@ export function AdminDelitosScreen() {
         throw new Error('No se pudo actualizar el estado en el servidor');
       }
 
-      // Si el backend lo guardó bien, actualizamos la tabla en pantalla
       setDelitos((prev) =>
         prev.map((d) =>
           d._id === id ? { ...d, status: newStatus } : d
         )
       );
+      
+      showSnackbar(newStatus === 'deleted' ? 'Delito eliminado' : 'Delito restaurado');
 
     } catch (error) {
       console.error('Error toggling delito:', error);
-      Alert.alert('Error', 'Hubo un problema al cambiar el estado del delito.');
+      showSnackbar('Error al cambiar el estado del delito', 'error');
+    } finally {
+      setActionLoading(false);
     }
   };
 
   return (
     <Container>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.container}
-        scrollEventThrottle={16}
-      >
-        <Text style={styles.pageTitle}>Delitos</Text>
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.container}
+          scrollEventThrottle={16}
+        >
+          <Text style={styles.pageTitle}>Delitos</Text>
 
-        {loading ? (
-          <ActivityIndicator size="large" color={theme.colors.primary} style={{ marginTop: 50 }} />
-        ) : (
-          <DelitosTable delitos={delitos} onToggle={toggleDelito} />
-        )}
+          {loading ? (
+            <AppLoading message="Cargando delitos..." style={styles.centerLoader} />
+          ) : (
+            <DelitosTable delitos={delitos} onToggle={toggleDelito} />
+          )}
 
-      </ScrollView>
+        </ScrollView>
+      </View>
+
+      <LoadingOverlay visible={actionLoading} message="Procesando..." />
+      <AppSnackbar
+        visible={snackbar.visible}
+        message={snackbar.message}
+        variant={snackbar.variant}
+        onDismiss={hideSnackbar}
+      />
     </Container>
   );
 }
@@ -120,4 +139,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     marginTop: 20,
   },
+  centerLoader: {
+    marginTop: 60,
+  }
 });

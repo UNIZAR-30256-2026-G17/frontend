@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
-import { useWindowDimensions, Platform } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator } from 'react-native-paper';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 
@@ -11,6 +11,9 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Checkbox from '../../components/ui/Checkbox';
 import MapBeats from '../../components/map/Map.beats.web';
+import LoadingOverlay from '../../components/ui/LoadingOverlay';
+import AppLoading from '../../components/ui/AppLoading';
+import AppSnackbar from '../../components/ui/AppSnackBar';
 
 import GenerateRoutesModal from './GenerateRoutesModal';
 import { generatePatrolRoutes } from '../../utils/routeGenerator';
@@ -28,7 +31,7 @@ const ICs = [
 ];
 
 export const MapPoliceScreen = () => {
-    const { user, loading } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const navigation = useNavigation();
 
     const { width } = useWindowDimensions();
@@ -36,9 +39,11 @@ export const MapPoliceScreen = () => {
 
     const [ICSelected, setICSelected] = useState(true);
     const [beatICs, setBeatICs] = useState([]);
+    const [loadingMap, setLoadingMap] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
+    const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
 
     const [modalGenerateRoutesVisible, setModalGenerateRoutesVisible] = useState(false);
-    const [patrolRoutes, setPatrolRoutes] = useState([]);
 
     useEffect(() => {
         if (user && user.token) {
@@ -46,9 +51,15 @@ export const MapPoliceScreen = () => {
         }
     }, [user]);
 
+    const showSnackbar = (message, variant = 'normal') =>
+      setSnackbar({ visible: true, message, variant });
+
+    const hideSnackbar = () =>
+      setSnackbar(prev => ({ ...prev, visible: false }));
+
     const fetchBeatsICsLastDay = async () => {
-        console.log("DENTRO");
         try {
+            setLoadingMap(true);
             const response = await fetch(
                 `${API_URL}/ic_beat?time=day`,
                 {
@@ -59,7 +70,6 @@ export const MapPoliceScreen = () => {
             );
 
             const data = await response.json();
-            console.log("DATA:", data);
 
             if (!response.ok) {
                 throw new Error(data.message || 'Error obteniendo ICs');
@@ -69,6 +79,9 @@ export const MapPoliceScreen = () => {
 
         } catch (error) {
             console.error('Error ICs:', error);
+            showSnackbar('Error al cargar datos del mapa', 'error');
+        } finally {
+            setLoadingMap(false);
         }
     };
 
@@ -76,18 +89,15 @@ export const MapPoliceScreen = () => {
         const n = parseInt(data.numPatrullas);
 
         try {
+            setActionLoading(true);
             if (beatICs.length === 0) throw new Error("No hay datos de IC cargados");
 
-            // Generamos las rutas basadas en los top N beats
             const routes = await generatePatrolRoutes(n, beatICs);
-
-            // Filtramos las que fallaron (path null)
             const validRoutes = routes.filter(r => r.path !== null);
 
             setModalGenerateRoutesVisible(false);
 
-            // Navegamos a la pantalla de visualización enviando el array de rutas
-            navigation.navigate('RoutesPolice', {
+            navigation.navigate('Rutas de Patrullaje', {
                 isMultiple: true,
                 routes: validRoutes,
                 count: n
@@ -96,14 +106,16 @@ export const MapPoliceScreen = () => {
         } catch (error) {
             setModalGenerateRoutesVisible(false);
             console.error("Error al generar patrullas:", error);
-            Alert.alert("Error", "No se pudieron generar las rutas de patrullaje.");
+            showSnackbar('Error al generar las rutas', 'error');
+        } finally {
+            setActionLoading(false);
         }
     };
 
-    if (loading) {
+    if (authLoading || (loadingMap && beatICs.length === 0)) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', backgroundColor: theme.colors.background }}>
-                <ActivityIndicator size="large" color={theme.colors.primary} />
+            <View style={styles.centerContainer}>
+                <AppLoading message="Cargando mapa..." />
             </View>
         );
     }
@@ -113,10 +125,7 @@ export const MapPoliceScreen = () => {
             <View style={styles.container}>
                 <Text style={styles.title}>Mapa de Montgomery</Text>
 
-
-                <View style={[
-                    styles.layoutContainer
-                ]}>
+                <View style={styles.layoutContainer}>
                     <View style={styles.buttonRightContainer}>
                         <Button
                             title="Generar rutas de patrullaje"
@@ -127,17 +136,13 @@ export const MapPoliceScreen = () => {
                     </View>
 
                     <View>
-                        <Card
-                            title="Condado de Montgomery, Maryland, EE.UU."
-                        >
-                            <View style={[styles.sameRow, { justifyContent: 'space-between', alignItems: 'center' }]}>
-                                <View style={styles.sameRow}>
-                                    <Checkbox
-                                        label="Índice de criminalidad por beat"
-                                        defaultValue={ICSelected}
-                                        onChange={setICSelected}
-                                    />
-                                </View>
+                        <Card title="Condado de Montgomery, Maryland, EE.UU.">
+                            <View style={styles.sameRow}>
+                                <Checkbox
+                                    label="Índice de criminalidad por beat"
+                                    defaultValue={ICSelected}
+                                    onChange={setICSelected}
+                                />
                             </View>
                         </Card>
                     </View>
@@ -150,9 +155,7 @@ export const MapPoliceScreen = () => {
                     </View>
 
                     {ICSelected && (
-                        <Card
-                            title="Índice de criminalidad"
-                        >
+                        <Card title="Índice de criminalidad">
                             <View style={styles.sameRow}>
                                 {ICs.map((ic, index) => (
                                     <View key={index} style={styles.sameRow}>
@@ -173,6 +176,14 @@ export const MapPoliceScreen = () => {
                     onConfirm={handleGenerateRoutes}
                 />
             </View>
+
+            <LoadingOverlay visible={actionLoading} message="Generando rutas..." />
+            <AppSnackbar
+                visible={snackbar.visible}
+                message={snackbar.message}
+                variant={snackbar.variant}
+                onDismiss={hideSnackbar}
+            />
         </Container>
     );
 };
@@ -181,34 +192,35 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    centerContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: theme.colors.background,
+        gap: 12,
+    },
+    loadingText: {
+        color: theme.colors.textSecondary,
+        fontSize: 14,
+    },
     title: {
         ...theme.typography.pageTitle,
         color: theme.colors.text,
         marginTop: 16,
         alignSelf: 'center',
     },
-
     layoutContainer: {
         flex: 1,
         margin: 16,
         gap: 8,
     },
-
     buttonRightContainer: {
         alignItems: 'flex-end',
     },
-
     sameRow: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 4,
-    },
-    fullWidth: {
-        flex: 1,
-    },
-    map: {
-        flex: 1,
-        minHeight: 300,
+        gap: 8,
     },
     mapContainer: {
         flex: 1,
@@ -217,12 +229,8 @@ const styles = StyleSheet.create({
         width: 30,
         height: 20,
     },
-
     cardText: {
         ...theme.typography.cardDescription,
         color: theme.colors.cardTextSecondary,
-    },
-    cardTextTitle: {
-        fontWeight: 'bold',
     },
 });

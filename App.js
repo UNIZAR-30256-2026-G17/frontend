@@ -1,8 +1,10 @@
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 import AppNavigator from './src/navigation/AppNavigator';
 import { AuthProvider } from './src/context/AuthContext';
+import { paperTheme } from './src/theme';
 
 const linking = {
   prefixes: ['http://localhost:8081', 'http://localhost:3000'],
@@ -29,11 +31,13 @@ const linking = {
 export default function App() {
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <NavigationContainer linking={linking}>
-          <AppNavigator />
-        </NavigationContainer>
-      </AuthProvider>
+      <PaperProvider theme={paperTheme}>
+        <AuthProvider>
+          <NavigationContainer linking={linking}>
+            <AppNavigator />
+          </NavigationContainer>
+        </AuthProvider>
+      </PaperProvider>
     </SafeAreaProvider>
   );
 }

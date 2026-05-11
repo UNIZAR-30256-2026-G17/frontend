@@ -28,20 +28,20 @@ export const Header = () => {
 
   const tabs = isAdmin
     ? [
-        { label: 'Usuarios',     route: 'UsersAdmin',   icon: 'user' },
-        { label: 'Delitos',      route: 'DelitosAdmin',  icon: 'warning' },
-        { label: 'Alertas',      route: 'AlertasAdmin',  icon: 'bell' },
+        { label: 'Usuarios',     route: 'Panel de Usuarios',   icon: 'user' },
+        { label: 'Delitos',      route: 'Panel de Delitos',  icon: 'warning' },
+        { label: 'Alertas',      route: 'Panel de Alertas',  icon: 'bell' },
       ]
     : isPolice
       ? [
-          { label: 'Mapa',          route: 'MapPolice',    icon: 'map-marker' },
-          { label: 'Delitos',       route: 'CrimesPolice', icon: 'exclamation-triangle' },
-          { label: 'Alertas',       route: 'AlertsPolice', icon: 'bell' },
-          { label: 'Estadísticas',  route: 'StatsPolice',  icon: 'bar-chart' },
+          { label: 'Mapa',          route: 'Mapa Policial',    icon: 'map-marker' },
+          { label: 'Delitos',       route: 'Listado de Delitos', icon: 'exclamation-triangle' },
+          { label: 'Alertas',       route: 'Gestión de Alertas', icon: 'bell' },
+          { label: 'Estadísticas',  route: 'Estadísticas Policiales',  icon: 'bar-chart' },
         ]
       : [
-          { label: 'Mapa',         route: 'Map',   icon: 'map-marker' },
-          { label: 'Estadísticas', route: 'Stats', icon: 'bar-chart' },
+          { label: 'Mapa',         route: 'Mapa',   icon: 'map-marker' },
+          { label: 'Estadísticas', route: 'Estadísticas', icon: 'bar-chart' },
         ];
 
   const currentRoute = useNavigationState(
@@ -51,7 +51,7 @@ export const Header = () => {
   const handleLogout = async () => {
     setProfileOpen(false);
     await logout();
-    navigation.navigate('Home');
+    navigation.navigate('Inicio');
   };
 
   const handleNavigate = (route) => {
@@ -76,7 +76,7 @@ export const Header = () => {
           {!isMobile && (
             <TouchableOpacity
               style={styles.logoArea}
-              onPress={() => !isAdmin && navigation.navigate('Home')}
+              onPress={() => !isAdmin && navigation.navigate('Inicio')}
             >
               <Image source={LOGO} style={styles.logo} resizeMode="contain" />
               <Text style={styles.title}>Montgomery SafetyMap</Text>
@@ -87,7 +87,7 @@ export const Header = () => {
         {isMobile && (
           <TouchableOpacity
             style={styles.logoAreaMobile}
-            onPress={() => !isAdmin && navigation.navigate('Home')}
+            onPress={() => !isAdmin && navigation.navigate('Inicio')}
           >
             <Image source={LOGO} style={styles.logo} resizeMode="contain" />
           </TouchableOpacity>
@@ -127,7 +127,7 @@ export const Header = () => {
           ) : isMobile ? (
             <TouchableOpacity
               style={styles.iconButton}
-              onPress={() => navigation.navigate('Login')}
+              onPress={() => navigation.navigate('Iniciar Sesión')}
             >
               <FontAwesome name="user-circle" size={30} color={theme.colors.headerText} />
             </TouchableOpacity>
@@ -135,7 +135,7 @@ export const Header = () => {
             <Button
               title="Iniciar sesión"
               variant="header"
-              onPress={() => navigation.navigate('Login')}
+              onPress={() => navigation.navigate('Iniciar Sesión')}
             />
           )}
         </View>

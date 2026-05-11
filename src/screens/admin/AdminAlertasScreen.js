@@ -3,9 +3,8 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  ActivityIndicator,
-  Alert,
-  RefreshControl
+  RefreshControl,
+  View
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { theme } from '../../theme';
@@ -13,18 +12,31 @@ import { theme } from '../../theme';
 import { Container } from '../../components/layout/Container';
 import { AlertasTable } from './AlertasTable';
 import EmptyState from '../../components/ui/EmptyState';
+import LoadingOverlay from '../../components/ui/LoadingOverlay';
+import AppLoading from '../../components/ui/AppLoading';
+import AppSnackbar from '../../components/ui/AppSnackBar';
 import { API_URL } from '../../config/env';
 
 export function AdminAlertasScreen() {
   const [alertas, setAlertas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
+
   const { user } = useAuth();
+
   useEffect(() => {
     if (user?.token) {
       fetchAlertas();
     }
   }, [user]);
+
+  const showSnackbar = (message, variant = 'normal') =>
+    setSnackbar({ visible: true, message, variant });
+
+  const hideSnackbar = () =>
+    setSnackbar(prev => ({ ...prev, visible: false }));
 
   const fetchAlertas = async () => {
     try {
@@ -45,13 +57,10 @@ export function AdminAlertasScreen() {
         throw new Error(data.message || 'Error al obtener las alertas');
       }
 
-      // IMPORTANTE: Según tu log, la lista viene en data.alerts
-      // Si data.alerts existe, la guardamos, si no, array vacío.
       setAlertas(data.alerts || []);
-
     } catch (error) {
       console.error('Error fetching alertas:', error);
-      Alert.alert('Error', 'No se pudieron cargar las alertas');
+      showSnackbar('No se pudieron cargar las alertas', 'error');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -65,9 +74,8 @@ export function AdminAlertasScreen() {
 
   const toggleAlerta = async (id, currentStatus) => {
     try {
+      setActionLoading(true);
       const token = user?.token;
-
-      // Mapeo de estados de tu back: pending -> deleted
       const newStatus = currentStatus === 'deleted' ? 'pending' : 'deleted';
 
       const response = await fetch(`${API_URL}/alerts/${id}`, {
@@ -81,45 +89,58 @@ export function AdminAlertasScreen() {
 
       if (!response.ok) throw new Error('Error en la actualización');
 
-      // Actualizamos usando _id porque así viene en tu JSON
       setAlertas((prev) =>
         prev.map((a) => (a._id === id ? { ...a, status: newStatus } : a))
       );
+      
+      showSnackbar(newStatus === 'deleted' ? 'Alerta eliminada' : 'Alerta restaurada');
 
     } catch (error) {
-      Alert.alert('Error', 'No se pudo cambiar el estado de la alerta');
+      showSnackbar('No se pudo cambiar el estado de la alerta', 'error');
+    } finally {
+      setActionLoading(false);
     }
   };
 
   return (
     <Container>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.container}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={[theme.colors.primary]}
-          />
-        }
-      >
-        <Text style={styles.pageTitle}>Panel de Alertas</Text>
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.container}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[theme.colors.primary]}
+            />
+          }
+        >
+          <Text style={styles.pageTitle}>Panel de Alertas</Text>
 
-        {loading && !refreshing ? (
-          <ActivityIndicator size="large" color={theme.colors.primary} style={styles.loader} />
-        ) : alertas.length === 0 ? (
-          <EmptyState
-            icon="bell-slash"
-            title="No hay alertas registradas"
-            subtitle="El sistema no tiene reportes actuales. Tira hacia abajo para refrescar."
-            buttonText="Buscar nuevas alertas"
-            onButtonPress={fetchAlertas}
-          />
-        ) : (
-          <AlertasTable alertas={alertas} onToggle={toggleAlerta} />
-        )}
-      </ScrollView>
+          {loading && !refreshing ? (
+            <AppLoading message="Cargando alertas..." style={styles.centerLoader} />
+          ) : alertas.length === 0 ? (
+            <EmptyState
+              icon="bell-slash"
+              title="No hay alertas registradas"
+              subtitle="El sistema no tiene reportes actuales. Tira hacia abajo para refrescar."
+              buttonText="Buscar nuevas alertas"
+              onButtonPress={fetchAlertas}
+            />
+          ) : (
+            <AlertasTable alertas={alertas} onToggle={toggleAlerta} />
+          )}
+        </ScrollView>
+      </View>
+
+      <LoadingOverlay visible={actionLoading} message="Actualizando alerta..." />
+      <AppSnackbar
+        visible={snackbar.visible}
+        message={snackbar.message}
+        variant={snackbar.variant}
+        onDismiss={hideSnackbar}
+      />
     </Container>
   );
 }
@@ -143,7 +164,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     marginTop: 20,
   },
-  loader: {
-    marginTop: 100,
+  centerLoader: {
+    marginTop: 60,
   }
 });

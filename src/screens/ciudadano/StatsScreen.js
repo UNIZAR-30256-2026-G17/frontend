@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
 import { Container } from '../../components/layout/Container';
 import Card from '../../components/ui/Card';
 import Dropdown from '../../components/ui/Dropdown';
+import AppLoading from '../../components/ui/AppLoading';
+import AppSnackbar from '../../components/ui/AppSnackBar';
 import { theme } from '../../theme';
 import { API_URL } from '../../config/env';
 
@@ -28,6 +31,8 @@ const options = [
 export const StatsScreen = () => {
   const [selectedOption, setSelectedOption] = useState(options[1]);
   const [stats, setStats] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
 
   const getColorByPercentage = (value) => {
     if (value >= 60) return theme.colors.danger;
@@ -41,6 +46,7 @@ export const StatsScreen = () => {
 
   const fetchStats = async () => {
     try {
+      setLoading(true);
       const to = new Date().toISOString().split('T')[0];
       const from = new Date(Date.now() - selectedOption.value * 86400000)
         .toISOString().split('T')[0];
@@ -48,9 +54,12 @@ export const StatsScreen = () => {
         `${API_URL}/crimes/byCrimename1?from=${from}&to=${to}`,
       );
       const json = await response.json();
-      setStats(json.results);
+      setStats(json.results || []);
     } catch (e) {
       console.error('Error fetching stats:', e);
+      setSnackbar({ visible: true, message: 'Error al cargar estadísticas', variant: 'error' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,7 +69,7 @@ export const StatsScreen = () => {
         <Text style={styles.title}>Estadísticas</Text>
         <View style={styles.content}>
           <Card
-            title="Porcentaje de clasificación de los tipos de delitos"
+            title="Distribución de delitos"
             right={
               <Dropdown
                 options={options}
@@ -69,23 +78,34 @@ export const StatsScreen = () => {
               />
             }
           >
-            <View style={styles.layout}>
-              {stats.map((item, i) => (
-                <View key={i} style={{ flex: 1 }}>
-                  <Card title={nameMap[item.crimename1] ?? item.crimename1}>
-                    <Text style={[styles.percentage, { color: getColorByPercentage(item.percentage) }]}>
-                      {Math.round(item.percentage)}%
-                    </Text>
-                    <Text style={styles.secondaryText}>
-                      {descriptionMap[item.crimename1] ?? ''}
-                    </Text>
-                  </Card>
-                </View>
-              ))}
-            </View>
+            {loading ? (
+              <AppLoading message="Cargando estadísticas..." />
+            ) : (
+              <View style={styles.layout}>
+                {stats.map((item, i) => (
+                  <View key={i} style={{ flex: 1, minWidth: 280 }}>
+                    <Card title={nameMap[item.crimename1] ?? item.crimename1}>
+                      <Text style={[styles.percentage, { color: getColorByPercentage(item.percentage) }]}>
+                        {Math.round(item.percentage)}%
+                      </Text>
+                      <Text style={styles.secondaryText}>
+                        {descriptionMap[item.crimename1] ?? ''}
+                      </Text>
+                    </Card>
+                  </View>
+                ))}
+              </View>
+            )}
           </Card>
         </View>
       </View>
+      
+      <AppSnackbar
+        visible={snackbar.visible}
+        message={snackbar.message}
+        variant={snackbar.variant}
+        onDismiss={() => setSnackbar(prev => ({ ...prev, visible: false }))}
+      />
     </Container>
   );
 };
@@ -95,6 +115,15 @@ const styles = StyleSheet.create({
   title: { ...theme.typography.pageTitle, color: theme.colors.text, marginTop: 16, alignSelf: 'center' },
   content: { flex: 1, margin: 16 },
   layout: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  percentage: { ...theme.typography.statsPercentage, color: theme.colors.danger },
+  percentage: { ...theme.typography.statsPercentage },
   secondaryText: { ...theme.typography.body, color: theme.colors.cardTextSecondary },
+  centerLoader: {
+    padding: 40,
+    alignItems: 'center',
+    gap: 12,
+  },
+  loadingText: {
+    color: theme.colors.textSecondary,
+    fontSize: 14,
+  }
 });

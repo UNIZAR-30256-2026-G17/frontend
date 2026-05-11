@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, Alert, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/AuthContext';
 import { theme } from '../theme';
@@ -8,6 +8,8 @@ import { Container } from '../components/layout/Container';
 import Card from '../components/ui/Card';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
+import LoadingOverlay from '../components/ui/LoadingOverlay';
+import AppSnackbar from '../components/ui/AppSnackBar';
 
 import { API_URL } from '../config/env';
 
@@ -17,23 +19,24 @@ export const LoginScreen = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
 
-  const showAlert = (title, msg) => {
-    if (Platform.OS === 'web') {
-      alert(msg);
-    } else {
-      Alert.alert(title, msg);
-    }
-  };
+  const showSnackbar = (message, variant = 'normal') =>
+    setSnackbar({ visible: true, message, variant });
+
+  const hideSnackbar = () =>
+    setSnackbar(prev => ({ ...prev, visible: false }));
 
   const handleLogin = async () => {
     try {
       if (!email.trim() || !password.trim()) {
-        showAlert('Error', 'Todos los campos son obligatorios');
+        showSnackbar('Todos los campos son obligatorios', 'error');
         return;
       }
 
-      // 1. Login para obtener el token
+      setLoading(true);
+
       const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -46,23 +49,23 @@ export const LoginScreen = () => {
         throw new Error(data.message || 'Credenciales incorrectas');
       }
 
-      // 3. Guarda en contexto con datos reales del servidor
       await login({
         email: data.user.email,
         role: data.user.role,
         token: data.token,
       });
 
-      // 4. Navega según el rol devuelto por el servidor
       if (data.user.role === 'admin') {
-        navigation.navigate('AlertasAdmin');
+        navigation.navigate('Panel de Alertas');
       } else {
-        navigation.navigate('MapPolice');
+        navigation.navigate('Mapa Policial');
       }
 
     } catch (error) {
       console.error('Login error:', error);
-      showAlert('Error', error.message);
+      showSnackbar(error.message, 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,8 +79,6 @@ export const LoginScreen = () => {
 
         <View style={styles.cardWrapper}>
           <Card>
-
-            {/* Logo + nombre institución */}
             <View style={styles.institutionHeader}>
               <Text style={styles.institutionName}>
                 Policía de Montgomery
@@ -90,7 +91,6 @@ export const LoginScreen = () => {
                 />
             </View>
 
-            {/* Formulario */}
             <Input
               label="Correo"
               placeholder="ejemplo@gmail.com"
@@ -98,6 +98,7 @@ export const LoginScreen = () => {
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
+              icon="envelope"
             />
 
             <Input
@@ -106,6 +107,7 @@ export const LoginScreen = () => {
               value={password}
               onChangeText={setPassword}
               secureTextEntry
+              icon="lock"
             />
 
             <Button
@@ -117,11 +119,19 @@ export const LoginScreen = () => {
             <Button
             title="Registrarse"
             variant="secondary"
-            onPress={() => navigation.navigate('Register')}
+            onPress={() => navigation.navigate('Registro')}
             />
           </Card>
         </View>
       </ScrollView>
+
+      <LoadingOverlay visible={loading} message="Iniciando sesión..." />
+      <AppSnackbar
+        visible={snackbar.visible}
+        message={snackbar.message}
+        variant={snackbar.variant}
+        onDismiss={hideSnackbar}
+      />
     </Container>
   );
 };
@@ -137,13 +147,13 @@ const styles = StyleSheet.create({
   pageTitle: {
     ...theme.typography.pageTitle,
     color: theme.colors.text,
+    textAlign: 'center',
     marginBottom: 32,
   },
   cardWrapper: {
     width: '100%',
     maxWidth: 420,
   },
-  // Cabecera institución
   institutionHeader: {
     alignItems: 'center',
     marginBottom: 8,
@@ -158,19 +168,5 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     marginBottom: 8,
-  },
-  adminIconContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: theme.colors.headerBackground,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-    elevation: 4,
-  },
-  adminLogo: {
-    width: 60,
-    height: 60,
   },
 });

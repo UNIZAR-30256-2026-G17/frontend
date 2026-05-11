@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { theme } from '../../theme';
 
@@ -7,6 +7,7 @@ import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import ToggleButton from '../../components/ui/ToggleButton';
 import DateInput from '../../components/ui/DateInput';
+import AppLoading from '../../components/ui/AppLoading';
 
 import FilterPopover from './FilterPopover';
 import { CreateCrimesTable } from './CreateCrimesTable';
@@ -104,28 +105,9 @@ export const BEAT_OPTIONS = [
   { label: '-PG', value: '-PG' },
 ];
 
-export const SECTOR_OPTIONS = [
-  { label: 'Todos', value: '' },
-  { label: 'A', value: 'A' },
-  { label: 'B', value: 'B' },
-  { label: 'D', value: 'D' },
-  { label: 'E', value: 'E' },
-  { label: 'G', value: 'G' },
-  { label: 'H', value: 'H' },
-  { label: 'I', value: 'I' },
-  { label: 'J', value: 'J' },
-  { label: 'K', value: 'K' },
-  { label: 'L', value: 'L' },
-  { label: 'M', value: 'M' },
-  { label: 'N', value: 'N' },
-  { label: 'P', value: 'P' },
-  { label: 'R', value: 'R' },
-  { label: 'T', value: 'T' },
-  { label: 'W', value: 'W' }
-];
-
 export function CrimesScreen() {
   const [showFilters, setShowFilters] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const {
     filteredData,
@@ -141,6 +123,12 @@ export function CrimesScreen() {
     setDateFrom,
     resetFilters,
   } = UseCrimesFilter();
+
+  useEffect(() => {
+    // Simulamos carga inicial
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <Container>
@@ -171,7 +159,9 @@ export function CrimesScreen() {
         </View>
 
         {/* ── Tabla de resultados ── */}
-        {filteredData.length > 0 ? (
+        {loading ? (
+          <AppLoading message="Cargando listado de delitos..." style={{ marginTop: 40 }} />
+        ) : filteredData.length > 0 ? (
           <>
             <Text style={styles.resultsText}>
               {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
@@ -262,6 +252,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
     gap: 25,
+    marginBottom: 20,
   },
   orderContainer: {
     width: 320,

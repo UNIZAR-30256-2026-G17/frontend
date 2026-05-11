@@ -68,7 +68,7 @@ export const RegisterScreen = () => {
       await login({ role: 'police', email: loginData.user?.email || email }, loginData.token);
 
       // Redirigir a pantalla policial
-      navigation.navigate('MapPolice');
+      navigation.navigate('Mapa Policial');
 
     } catch (error) {
       console.error(error);
@@ -133,7 +133,7 @@ export const RegisterScreen = () => {
             <Button
               title="Iniciar sesión"
               variant="secondary"
-              onPress={() => navigation.navigate('Login')}
+              onPress={() => navigation.navigate('Iniciar Sesión')}
             />
           </Card>
         </View>

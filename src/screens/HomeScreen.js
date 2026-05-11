@@ -242,11 +242,11 @@ export const HomeScreen = () => {
           </Text>
 
           <View style={[s.ctaRow, m && s.ctaRowM]}>
-            <TouchableOpacity style={s.btnYellow} onPress={() => navigation.navigate('Map')} activeOpacity={0.85}>
+            <TouchableOpacity style={s.btnYellow} onPress={() => navigation.navigate('Mapa')} activeOpacity={0.85}>
               <FontAwesome name="map" size={14} color={C.dark} />
               <Text style={s.btnYellowText}>Ver el mapa</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={s.btnGhost} onPress={() => navigation.navigate('Login')} activeOpacity={0.7}>
+            <TouchableOpacity style={s.btnGhost} onPress={() => navigation.navigate('Iniciar Sesión')} activeOpacity={0.7}>
               <Text style={s.btnGhostText}>Iniciar sesión</Text>
               <FontAwesome name="arrow-right" size={12} color="rgba(255,255,255,0.6)" />
             </TouchableOpacity>
@@ -327,11 +327,11 @@ export const HomeScreen = () => {
           Consulta el mapa sin registrarte, o inicia sesión si eres agente o administrador.
         </Text>
         <View style={[s.ctaRow, m && s.ctaRowM]}>
-          <TouchableOpacity style={s.btnYellowDark} onPress={() => navigation.navigate('Map')} activeOpacity={0.85}>
+          <TouchableOpacity style={s.btnYellowDark} onPress={() => navigation.navigate('Mapa')} activeOpacity={0.85}>
             <FontAwesome name="map" size={14} color={C.white} />
             <Text style={s.btnYellowDarkText}>Explorar el mapa</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={s.btnOutline} onPress={() => navigation.navigate('Stats')} activeOpacity={0.7}>
+          <TouchableOpacity style={s.btnOutline} onPress={() => navigation.navigate('Estadísticas')} activeOpacity={0.7}>
             <FontAwesome name="bar-chart" size={14} color={C.dark} />
             <Text style={s.btnOutlineText}>Ver estadísticas</Text>
           </TouchableOpacity>

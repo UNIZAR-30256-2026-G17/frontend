@@ -53,29 +53,29 @@ export default function AppNavigator() {
       {!user ? (
         <>
           {/* Públicas */}
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="Map" component={MapScreen} />
-          <Stack.Screen name="Stats" component={StatsScreen} />
-          <Stack.Screen name="Routes" component={RoutesScreen} />
+          <Stack.Screen name="Inicio" component={HomeScreen} />
+          <Stack.Screen name="Mapa" component={MapScreen} />
+          <Stack.Screen name="Estadísticas" component={StatsScreen} />
+          <Stack.Screen name="Rutas" component={RoutesScreen} />
 
-          <Stack.Screen name="Login"      component={LoginScreen} /> 
-          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="Iniciar Sesión" component={LoginScreen} /> 
+          <Stack.Screen name="Registro" component={RegisterScreen} />
         </>
       ) : user.role === 'admin' ? (
         <>
           {/* Protegidas admin */}
-          <Stack.Screen name="AlertasAdmin" component={AlertasAdminProtected} />
-          <Stack.Screen name="DelitosAdmin" component={DelitosAdminProtected} />
-          <Stack.Screen name="UsersAdmin" component={UsersAdminProtected} />
+          <Stack.Screen name="Panel de Alertas" component={AlertasAdminProtected} />
+          <Stack.Screen name="Panel de Delitos" component={DelitosAdminProtected} />
+          <Stack.Screen name="Panel de Usuarios" component={UsersAdminProtected} />
         </>
       ) : (
         <>
           {/* Protegidas policía */}
-          <Stack.Screen name="MapPolice" component={MapPoliceProtected} />
-          <Stack.Screen name="StatsPolice" component={EstadisticasProtected} />
-          <Stack.Screen name="CrimesPolice" component={CrimesProtected} />
-          <Stack.Screen name="AlertsPolice" component={AlertsPoliceProtected} />
-          <Stack.Screen name="RoutesPolice" component={RoutesPoliceProtected} />
+          <Stack.Screen name="Mapa Policial" component={MapPoliceProtected} />
+          <Stack.Screen name="Estadísticas Policiales" component={EstadisticasProtected} />
+          <Stack.Screen name="Listado de Delitos" component={CrimesProtected} />
+          <Stack.Screen name="Gestión de Alertas" component={AlertsPoliceProtected} />
+          <Stack.Screen name="Rutas de Patrullaje" component={RoutesPoliceProtected} />
         </>
       )}
     </Stack.Navigator>
