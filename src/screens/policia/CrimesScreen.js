@@ -9,7 +9,7 @@ import ToggleButton from '../../components/ui/ToggleButton';
 import DateInput from '../../components/ui/DateInput';
 import AppLoading from '../../components/ui/AppLoading';
 
-import FilterPopover from './FilterPopover';
+import FilterPopover from '../../components/ui/FilterPopover';
 import { CreateCrimesTable } from './CreateCrimesTable';
 import { UseCrimesFilter } from './UseCrimesFilter';
 import EmptyState from '../../components/ui/EmptyState';
@@ -18,28 +18,28 @@ import EmptyState from '../../components/ui/EmptyState';
 export const ORDER_OPTIONS = [
   { label: 'Fecha: de más reciente a más antigua', value: 'date_desc' },
   { label: 'Fecha: de más antigua a más reciente', value: 'date_asc' },
-  { label: 'Distrito (A-Z)',                        value: 'district_asc' },
-  { label: 'Tipo de delito (A-Z)',                  value: 'type_asc' },
+  { label: 'Distrito (A-Z)', value: 'district_asc' },
+  { label: 'Tipo de delito (A-Z)', value: 'type_asc' },
 ];
 
 // Tipos de delitos
 export const TIPO_OPTIONS = [
-  { label: 'Todos',                        value: '' },
-  { label: 'Delito contra la sociedad',    value: 'Delito contra la sociedad' },
-  { label: 'Delito contra personas',       value: 'Delito contra personas' },
-  { label: 'Delito contra la propiedad',   value: 'Delito contra la propiedad' },
+  { label: 'Todos', value: '' },
+  { label: 'Delito contra la sociedad', value: 'Delito contra la sociedad' },
+  { label: 'Delito contra personas', value: 'Delito contra personas' },
+  { label: 'Delito contra la propiedad', value: 'Delito contra la propiedad' },
 ];
 
 // Distritos disponibles
 export const DISTRITO_OPTIONS = [
-  { label: 'Todos',         value: '' },
-  { label: 'Takoma Park',   value: 'Takoma Park' },
+  { label: 'Todos', value: '' },
+  { label: 'Takoma Park', value: 'Takoma Park' },
   { label: 'Silver Spring', value: 'Silver Spring' },
-  { label: 'Bethesda',      value: 'Bethesda' },
-  { label: 'Rockville',     value: 'Rockville' },
+  { label: 'Bethesda', value: 'Bethesda' },
+  { label: 'Rockville', value: 'Rockville' },
   { label: 'Montgomery Village', value: 'Montgomery Village' },
-  { label: 'Germantown',    value: 'Germantown' },
-  { label: 'Wheaton',       value: 'Wheaton' },
+  { label: 'Germantown', value: 'Germantown' },
+  { label: 'Wheaton', value: 'Wheaton' },
 ];
 
 export const BEAT_OPTIONS = [
@@ -149,18 +149,18 @@ export function CrimesScreen() {
         {/* ── Barra superior ── */}
         <View style={styles.topBar}>
           <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
-          <Button
-            title="Filtrar"
-            icon="filter"
-            variant="primary"
-            onPress={() => setShowFilters(true)}
-          />
-          {numFiltrosActivos > 0 && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
-            </View>
-          )}
-        </View>
+            <Button
+              title="Filtrar"
+              icon="filter"
+              variant="primary"
+              onPress={() => setShowFilters(true)}
+            />
+            {numFiltrosActivos > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
+              </View>
+            )}
+          </View>
           <View style={styles.orderContainer}>
             <Text style={styles.orderLabel}>Ordenar por</Text>
             <Dropdown

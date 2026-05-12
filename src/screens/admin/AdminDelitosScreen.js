@@ -14,7 +14,7 @@ import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import ToggleButton from '../../components/ui/ToggleButton';
 import DateInput from '../../components/ui/DateInput';
-import FilterPopover from '../policia/FilterPopover'; // ajusta la ruta si difiere
+import FilterPopover from '../../components/ui/FilterPopover'; // ajusta la ruta si difiere
 import { UseDelitosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './UseDelitosFilter';
 
 export function AdminDelitosScreen() {
