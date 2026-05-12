@@ -3,7 +3,7 @@ import { Text, ScrollView, StyleSheet, View } from 'react-native';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { Container } from '../../components/layout/Container';
-import { UsersTable } from './UsersTable';
+import { UsersTable } from './tables/UsersTable';
 import AppLoading from '../../components/ui/AppLoading';
 import AppSnackbar from '../../components/ui/AppSnackBar';
 import { API_URL } from '../../config/env';

@@ -10,7 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
-import { AlertasTable } from './table/AlertasTable';
+import { AlertasTable } from './tables/AlertasTable';
 import EmptyState from '../../components/ui/EmptyState';
 import LoadingOverlay from '../../components/ui/LoadingOverlay';
 import AppLoading from '../../components/ui/AppLoading';
