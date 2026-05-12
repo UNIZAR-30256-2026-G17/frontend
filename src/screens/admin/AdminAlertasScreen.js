@@ -16,15 +16,15 @@ import Dropdown from '../../components/ui/Dropdown';
 import ToggleButton from '../../components/ui/ToggleButton';
 import DateInput from '../../components/ui/DateInput';
 import FilterPopover from '../../components/ui/FilterPopover';
-import { UseAlertasFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './UseAlertasFilter';
+import { UseAlertasFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseAlertasFilter';
 
 export function AdminAlertasScreen() {
-  const [alertas, setAlertas]             = useState([]);
-  const [loading, setLoading]             = useState(true);
-  const [refreshing, setRefreshing]       = useState(false);
+  const [alertas, setAlertas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
-  const [showFilters, setShowFilters]     = useState(false);
-  const [snackbar, setSnackbar]           = useState({ visible: false, message: '', variant: 'normal' });
+  const [showFilters, setShowFilters] = useState(false);
+  const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
 
   const { user } = useAuth();
 
@@ -219,16 +219,16 @@ export function AdminAlertasScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll:      { flex: 1, backgroundColor: theme.colors.background },
-  container:   { padding: 24, paddingBottom: 40, width: '100%', maxWidth: 1200, alignSelf: 'center' },
-  pageTitle:   { ...theme.typography.pageTitle, color: theme.colors.text, textAlign: 'center', marginBottom: 24, marginTop: 20 },
-  topBar:      { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20 },
+  scroll: { flex: 1, backgroundColor: theme.colors.background },
+  container: { padding: 24, paddingBottom: 40, width: '100%', maxWidth: 1200, alignSelf: 'center' },
+  pageTitle: { ...theme.typography.pageTitle, color: theme.colors.text, textAlign: 'center', marginBottom: 24, marginTop: 20 },
+  topBar: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20 },
   orderContainer: { width: 320 },
-  orderLabel:  { ...theme.typography.body, color: theme.colors.text, marginBottom: 4 },
+  orderLabel: { ...theme.typography.body, color: theme.colors.text, marginBottom: 4 },
   resultsText: { ...theme.typography.body, color: theme.colors.text, marginBottom: 8 },
   filterGroupTitle: { ...theme.typography.cardTitle, color: theme.colors.cardText, marginBottom: 8, marginTop: 18 },
   toggleGroup: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  dateGroup:   { width: 160 },
+  dateGroup: { width: 160 },
   centerLoader: { marginTop: 60 },
   badge: {
     position: 'absolute',

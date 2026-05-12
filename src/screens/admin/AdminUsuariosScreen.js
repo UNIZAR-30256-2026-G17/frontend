@@ -14,23 +14,23 @@ import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import ToggleButton from '../../components/ui/ToggleButton';
 import FilterPopover from '../../components/ui/FilterPopover';
-import { UseUsuariosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './UseUsuariosFilter';
+import { UseUsuariosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseUsuariosFilter';
 
 export function AdminUsuariosScreen() {
   const { user } = useAuth();
-  const [users,       setUsers]       = useState([]);
-  const [loading,     setLoading]     = useState(true);
-  const [refreshing,  setRefreshing]  = useState(false);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [snackbar,    setSnackbar]    = useState({ visible: false, message: '', variant: 'normal' });
+  const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
 
   const {
     filteredData,
     roleOptions,
-    order,        setOrder,
+    order, setOrder,
     statusFilter, setStatusFilter,
-    roleFilter,   setRoleFilter,
-    emailSearch,  setEmailSearch,
+    roleFilter, setRoleFilter,
+    emailSearch, setEmailSearch,
     numFiltrosActivos,
     resetFilters,
   } = UseUsuariosFilter(users);
@@ -209,13 +209,13 @@ export function AdminUsuariosScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll:           { flex: 1, backgroundColor: theme.colors.background },
-  container:        { padding: 24, paddingBottom: 40, width: '100%', maxWidth: 1000, alignSelf: 'center' },
-  pageTitle:        { ...theme.typography.pageTitle, color: theme.colors.text, textAlign: 'center', marginBottom: 24, marginTop: 20 },
-  topBar:           { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20 },
-  orderContainer:   { width: 320 },
-  orderLabel:       { ...theme.typography.body, color: theme.colors.text, marginBottom: 4 },
-  searchRow:  { marginBottom: 16 },
+  scroll: { flex: 1, backgroundColor: theme.colors.background },
+  container: { padding: 24, paddingBottom: 40, width: '100%', maxWidth: 1000, alignSelf: 'center' },
+  pageTitle: { ...theme.typography.pageTitle, color: theme.colors.text, textAlign: 'center', marginBottom: 24, marginTop: 20 },
+  topBar: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20 },
+  orderContainer: { width: 320 },
+  orderLabel: { ...theme.typography.body, color: theme.colors.text, marginBottom: 4 },
+  searchRow: { marginBottom: 16 },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -232,10 +232,10 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     flex: 1,
   },
-  resultsText:      { ...theme.typography.body, color: theme.colors.text, marginBottom: 8 },
+  resultsText: { ...theme.typography.body, color: theme.colors.text, marginBottom: 8 },
   filterGroupTitle: { ...theme.typography.cardTitle, color: theme.colors.cardText, marginBottom: 8, marginTop: 18 },
-  toggleGroup:      { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  centerLoader:     { marginTop: 60 },
+  toggleGroup: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  centerLoader: { marginTop: 60 },
   badge: {
     position: 'absolute',
     top: -3,
