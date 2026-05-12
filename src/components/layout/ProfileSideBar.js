@@ -210,8 +210,9 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   panelTitle: {
-    fontFamily: 'PlusJakarta-ExtraBold',
-    fontSize: 20,
+    fontFamily: theme.typography.pageTitle.fontFamily,
+    fontSize: 22,
+    fontWeight: '800',
     color: '#FFFFFF',
     letterSpacing: -0.4,
   },
@@ -259,14 +260,16 @@ const styles = StyleSheet.create({
   },
   avatarText: {
     color: '#FFFFFF',
-    fontFamily: 'PlusJakarta-Bold',
+    fontFamily: theme.typography.title.fontFamily,
+    fontWeight: '700',
     fontSize: 32,
   },
   roleIconBadge: {
     display: 'none',
   },
   userName: {
-    fontFamily: 'PlusJakarta-Bold',
+    fontFamily: theme.typography.title.fontFamily,
+    fontWeight: '700',
     fontSize: 24,
     color: '#FFFFFF',
     marginTop: 8,
@@ -285,7 +288,8 @@ const styles = StyleSheet.create({
   roleText: {
     fontSize: 11,
     color: 'rgba(255, 255, 255, 0.7)',
-    fontFamily: 'Inter-Bold',
+    fontFamily: theme.typography.bodyBold.fontFamily,
+    fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
@@ -321,12 +325,14 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginBottom: 4,
-    fontFamily: 'Inter-Bold',
+    fontFamily: theme.typography.bodyBold.fontFamily,
+    fontWeight: '700',
   },
   infoValue: {
     fontSize: 15,
     color: '#FFFFFF',
-    fontFamily: 'Inter-SemiBold',
+    fontFamily: theme.typography.bodyMedium.fontFamily,
+    fontWeight: '600',
   },
 
   // Footer
