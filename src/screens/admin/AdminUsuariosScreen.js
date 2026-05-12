@@ -1,18 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { Text, ScrollView, StyleSheet, View } from 'react-native';
+import { Text, ScrollView, StyleSheet, RefreshControl, View, TextInput, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { Container } from '../../components/layout/Container';
 import { UsersTable } from './tables/UsersTable';
+import EmptyState from '../../components/ui/EmptyState';
 import AppLoading from '../../components/ui/AppLoading';
 import AppSnackbar from '../../components/ui/AppSnackBar';
 import { API_URL } from '../../config/env';
 
+import Button from '../../components/ui/Button';
+import Dropdown from '../../components/ui/Dropdown';
+import ToggleButton from '../../components/ui/ToggleButton';
+import FilterPopover from '../../components/ui/FilterPopover';
+import { UseUsuariosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './UseUsuariosFilter';
+
 export function AdminUsuariosScreen() {
   const { user } = useAuth();
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
+  const [users,       setUsers]       = useState([]);
+  const [loading,     setLoading]     = useState(true);
+  const [refreshing,  setRefreshing]  = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [snackbar,    setSnackbar]    = useState({ visible: false, message: '', variant: 'normal' });
+
+  const {
+    filteredData,
+    roleOptions,
+    order,        setOrder,
+    statusFilter, setStatusFilter,
+    roleFilter,   setRoleFilter,
+    emailSearch,  setEmailSearch,
+    numFiltrosActivos,
+    resetFilters,
+  } = UseUsuariosFilter(users);
 
   useEffect(() => {
     if (user?.token) fetchUsers();
@@ -40,21 +61,142 @@ export function AdminUsuariosScreen() {
       showSnackbar(error.message, 'error');
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchUsers();
+  };
+
+  const hasData = !loading && users.length > 0;
 
   return (
     <Container>
       <View style={{ flex: 1 }}>
-        <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.container}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[theme.colors.primary]}
+            />
+          }
+        >
           <Text style={styles.pageTitle}>Panel de Usuarios</Text>
-          {loading ? (
-            <AppLoading message="Cargando usuarios..." style={styles.centerLoader} />
-          ) : (
-            <UsersTable users={users} />
+
+          {/* ── Barra superior ── */}
+          {hasData && (
+            <View style={styles.topBar}>
+              <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
+                <Button
+                  title="Filtrar"
+                  icon="filter"
+                  variant="primary"
+                  onPress={() => setShowFilters(true)}
+                />
+                {numFiltrosActivos > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
+                  </View>
+                )}
+              </View>
+              <View style={styles.orderContainer}>
+                <Text style={styles.orderLabel}>Ordenar por</Text>
+                <Dropdown
+                  options={ORDER_OPTIONS}
+                  selected={order}
+                  onSelect={setOrder}
+                  placeholder="Ordenar por..."
+                />
+              </View>
+            </View>
           )}
+
+          {/* ── Buscador de correo ── */}
+          {hasData && (
+            <View style={styles.searchRow}>
+              <View style={styles.searchBox}>
+                <Ionicons name="search-outline" size={16} color={theme.colors.text} />
+                <TextInput
+                  style={styles.searchInput}
+                  placeholder="Buscar por correo..."
+                  placeholderTextColor={theme.colors.text}
+                  value={emailSearch}
+                  onChangeText={setEmailSearch}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                />
+                {emailSearch.length > 0 && (
+                  <TouchableOpacity onPress={() => setEmailSearch('')} hitSlop={8}>
+                    <Ionicons name="close" size={16} color={theme.colors.text} />
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+          )}
+
+          {loading && !refreshing ? (
+            <AppLoading message="Cargando usuarios..." style={styles.centerLoader} />
+          ) : users.length === 0 ? (
+            <EmptyState
+              icon="users-slash"
+              title="No hay usuarios registrados"
+              subtitle="Tira hacia abajo para refrescar."
+              buttonText="Recargar"
+              onButtonPress={fetchUsers}
+            />
+          ) : filteredData.length === 0 ? (
+            <EmptyState
+              icon="search-minus"
+              title="No se encontraron usuarios"
+              subtitle="Prueba ajustando los filtros para ver más resultados."
+              buttonText="Limpiar filtros"
+              onButtonPress={resetFilters}
+            />
+          ) : (
+            <>
+              <Text style={styles.resultsText}>
+                {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
+              </Text>
+              <UsersTable users={filteredData} />
+            </>
+          )}
+
         </ScrollView>
       </View>
+
+      {/* ── Modal de filtros ── */}
+      <FilterPopover visible={showFilters} onClose={() => setShowFilters(false)}>
+
+        <Text style={styles.filterGroupTitle}>Estado</Text>
+        <View style={styles.toggleGroup}>
+          {STATUS_OPTIONS.map((opt) => (
+            <ToggleButton
+              key={opt.value}
+              title={opt.label}
+              defaultSelected={statusFilter?.value === opt.value}
+              onToggle={(val) => setStatusFilter(val ? opt : null)}
+            />
+          ))}
+        </View>
+
+        <Text style={styles.filterGroupTitle}>Rol</Text>
+        <View style={styles.toggleGroup}>
+          {roleOptions.map((opt) => (
+            <ToggleButton
+              key={opt.value}
+              title={opt.label}
+              defaultSelected={roleFilter?.value === opt.value}
+              onToggle={(val) => setRoleFilter(val ? opt : null)}
+            />
+          ))}
+        </View>
+
+      </FilterPopover>
 
       <AppSnackbar
         visible={snackbar.visible}
@@ -67,22 +209,52 @@ export function AdminUsuariosScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: theme.colors.background },
-  container: {
-    padding: 24,
-    paddingBottom: 40,
-    width: '100%',
-    maxWidth: 1000,
-    alignSelf: 'center',
+  scroll:           { flex: 1, backgroundColor: theme.colors.background },
+  container:        { padding: 24, paddingBottom: 40, width: '100%', maxWidth: 1000, alignSelf: 'center' },
+  pageTitle:        { ...theme.typography.pageTitle, color: theme.colors.text, textAlign: 'center', marginBottom: 24, marginTop: 20 },
+  topBar:           { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20 },
+  orderContainer:   { width: 320 },
+  orderLabel:       { ...theme.typography.body, color: theme.colors.text, marginBottom: 4 },
+  searchRow:  { marginBottom: 16 },
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: theme.colors.card,
+    borderWidth: 1,
+    borderColor: theme.colors.tableBorder,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
   },
-  pageTitle: {
-    ...theme.typography.pageTitle,
+  searchInput: {
+    ...theme.typography.body,
     color: theme.colors.text,
-    textAlign: 'center',
-    marginBottom: 40,
-    marginTop: 20,
+    flex: 1,
   },
-  centerLoader: {
-    marginTop: 60,
-  }
+  resultsText:      { ...theme.typography.body, color: theme.colors.text, marginBottom: 8 },
+  filterGroupTitle: { ...theme.typography.cardTitle, color: theme.colors.cardText, marginBottom: 8, marginTop: 18 },
+  toggleGroup:      { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  centerLoader:     { marginTop: 60 },
+  badge: {
+    position: 'absolute',
+    top: -3,
+    right: -3,
+    backgroundColor: theme.colors.tableBorder,
+    borderRadius: 9999,
+    minWidth: 18,
+    height: 18,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+    borderWidth: 2,
+    borderColor: theme.colors.background,
+  },
+  badgeText: {
+    color: theme.colors.primaryButtonText,
+    fontSize: 10,
+    fontWeight: '700',
+    includeFontPadding: false,
+  },
 });
