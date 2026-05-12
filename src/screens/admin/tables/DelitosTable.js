@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { theme } from '../../theme';
-import Button from '../../components/ui/Button';
-import TablePagination from '../../components/ui/TablePagination';
+import { theme } from '../../../theme';
+import Button from '../../../components/ui/Button';
+import TablePagination from '../../../components/ui/TablePagination';
 
 const COLS_DESKTOP = [
-  { key: 'id', header: 'Id', flex: 1.5 }, 
+  { key: 'id', header: 'Id', flex: 1.5 },
   { key: 'tipo', header: 'Tipo de delito', flex: 2 },
   { key: 'fecha', header: 'Fecha', flex: 1.5 },
   { key: 'distrito', header: 'Distrito', flex: 1.5 },
@@ -18,7 +18,7 @@ const ITEMS_PER_PAGE = 10;
 
 export function DelitosTable({ delitos = [], onToggle }) {
   const { width } = useWindowDimensions();
-  const isMobile = width < 900; 
+  const isMobile = width < 900;
   const [expandedRow, setExpandedRow] = useState(null);
   const [page, setPage] = useState(0);
 
@@ -43,7 +43,7 @@ export function DelitosTable({ delitos = [], onToggle }) {
                 {col.header}
               </Text>
             ))}
-            <View style={styles.headerBtnSpace} /> 
+            <View style={styles.headerBtnSpace} />
           </View>
 
           {paginatedData.map((row, i) => {
@@ -82,12 +82,12 @@ export function DelitosTable({ delitos = [], onToggle }) {
           <Text style={[styles.headerCell, styles.mEstado]}>Estado</Text>
           <View style={styles.mActionsContainer} />
         </View>
-        
+
         {paginatedData.map((row, i) => {
           const expanded = expandedRow === row._id;
           const isDisponible = row.status === 'available';
           const statusText = isDisponible ? 'Disponible' : 'Eliminado';
-          
+
           return (
             <View key={row._id}>
               <View style={rowStyle(i)}>
@@ -141,43 +141,43 @@ export function DelitosTable({ delitos = [], onToggle }) {
   );
 }
 
-const styles = StyleSheet.create({ 
-  table: { 
-    borderRadius: 10, 
-    overflow: 'hidden', 
+const styles = StyleSheet.create({
+  table: {
+    borderRadius: 10,
+    overflow: 'hidden',
     backgroundColor: '#fff',
     borderColor: theme.colors.tableBorder || '#eee',
     borderWidth: 1,
   },
-  headerRow: { 
-    flexDirection: 'row', 
-    backgroundColor: theme.colors.tableHeaderBackground || '#000', 
-    paddingVertical: 12, 
-    alignItems: 'center' 
+  headerRow: {
+    flexDirection: 'row',
+    backgroundColor: theme.colors.tableHeaderBackground || '#000',
+    paddingVertical: 12,
+    alignItems: 'center'
   },
-  headerCell: { 
-    ...theme.typography.body, 
-    color: theme.colors.tableHeaderText || '#fff', 
-    fontWeight: 'bold', 
+  headerCell: {
+    ...theme.typography.body,
+    color: theme.colors.tableHeaderText || '#fff',
+    fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: 12, 
+    fontSize: 12,
   },
   headerBtnSpace: {
-    flex: 1.2, 
+    flex: 1.2,
   },
-  row: { 
-    flexDirection: 'row', 
+  row: {
+    flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
     borderTopWidth: 1,
     borderTopColor: theme.colors.tableBorder || '#eee',
   },
   rowEven: { backgroundColor: theme.colors.tableRowEven || '#f0f0f0' },
-  rowOdd:  { backgroundColor: theme.colors.tableRowOdd || '#e6e6e6' },
-  cell: { 
-    textAlign: 'center', 
-    ...theme.typography.body, 
-    color: theme.colors.tableText || '#333', 
+  rowOdd: { backgroundColor: theme.colors.tableRowOdd || '#e6e6e6' },
+  cell: {
+    textAlign: 'center',
+    ...theme.typography.body,
+    color: theme.colors.tableText || '#333',
     fontSize: 12,
   },
   actionCellDesktop: {
@@ -189,30 +189,30 @@ const styles = StyleSheet.create({
   mId: { flex: 1.2, textAlign: 'left', paddingLeft: 12, fontSize: 11 },
   mTipo: { flex: 1.8, textAlign: 'left', fontSize: 11 },
   mEstado: { flex: 1.2, fontSize: 11 },
-  mActionsContainer: { 
-    width: 75, 
+  mActionsContainer: {
+    width: 75,
     flexDirection: 'row',
-    alignItems: 'center', 
+    alignItems: 'center',
     justifyContent: 'flex-end',
     paddingRight: 12,
-    gap: 6, 
+    gap: 6,
   },
   expandButton: {
-    padding: 4, 
+    padding: 4,
   },
-  expandedRow: { 
-    paddingHorizontal: 16, 
-    paddingVertical: 12, 
-    borderTopWidth: 1, 
-    borderTopColor: theme.colors.tableBorder || '#eee', 
-    gap: 4 
+  expandedRow: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.tableBorder || '#eee',
+    gap: 4
   },
-  expText: { 
-    ...theme.typography.body, 
+  expText: {
+    ...theme.typography.body,
     color: theme.colors.tableText || '#333',
     fontSize: 12,
   },
-  expLabel: { 
-    fontWeight: 'bold', 
+  expLabel: {
+    fontWeight: 'bold',
   },
 });

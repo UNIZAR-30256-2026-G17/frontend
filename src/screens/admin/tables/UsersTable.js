@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
-import { theme } from '../../theme';
-import Button from '../../components/ui/Button';
-import TablePagination from '../../components/ui/TablePagination';
+import { theme } from '../../../theme';
+import Button from '../../../components/ui/Button';
+import TablePagination from '../../../components/ui/TablePagination';
 
 const COLS_DESKTOP = [
   { key: 'email', header: 'Correo' },
@@ -53,7 +53,7 @@ export function UsersTable({ users = [] }) {
                   icon={row.status === 'active' ? 'times' : 'check'}
                   variant={row.status === 'active' ? 'danger' : 'success'}
                   size="small"
-                  onPress={() => {}}
+                  onPress={() => { }}
                 />
               </View>
             </View>
@@ -87,7 +87,7 @@ export function UsersTable({ users = [] }) {
                 icon={row.status === 'active' ? 'times' : 'check'}
                 variant={row.status === 'active' ? 'danger' : 'success'}
                 size="small"
-                onPress={() => {}}
+                onPress={() => { }}
               />
             </View>
           </View>
@@ -111,9 +111,9 @@ export function UsersTable({ users = [] }) {
 }
 
 const styles = StyleSheet.create({
-  table: { 
-    borderRadius: 10, 
-    overflow: 'hidden', 
+  table: {
+    borderRadius: 10,
+    overflow: 'hidden',
     backgroundColor: '#fff',
     borderColor: theme.colors.tableBorder || '#eee',
     borderWidth: 1,
@@ -131,14 +131,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
   },
-  row: { 
-    flexDirection: 'row', 
+  row: {
+    flexDirection: 'row',
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: theme.colors.tableBorder || '#eee',
   },
   rowEven: { backgroundColor: theme.colors.tableRowEven || '#fff' },
-  rowOdd:  { backgroundColor: theme.colors.tableRowOdd  || '#f9f9f9' },
+  rowOdd: { backgroundColor: theme.colors.tableRowOdd || '#f9f9f9' },
   cell: {
     flex: 1,
     textAlign: 'center',
@@ -149,8 +149,8 @@ const styles = StyleSheet.create({
   headerBtnSpace: { flex: 1.2 },
   actionCell: { flex: 1.2, alignItems: 'center', justifyContent: 'center', paddingRight: 8 },
   colEmail: { flex: 2, textAlign: 'left', paddingLeft: 24 },
-  mCorreo:  { flex: 2, textAlign: 'left', paddingLeft: 12, fontSize: 11 },
-  mPlaca:   { flex: 1, fontSize: 11 },
-  mEstado:  { flex: 1.2, fontSize: 11 },
+  mCorreo: { flex: 2, textAlign: 'left', paddingLeft: 12, fontSize: 11 },
+  mPlaca: { flex: 1, fontSize: 11 },
+  mEstado: { flex: 1.2, fontSize: 11 },
   mBtnContainer: { width: 50, alignItems: 'center', justifyContent: 'center', paddingRight: 16 },
 });

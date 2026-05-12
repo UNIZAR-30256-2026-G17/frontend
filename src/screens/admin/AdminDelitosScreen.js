@@ -4,7 +4,7 @@ import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
 import { useAuth } from '../../context/AuthContext';
-import { DelitosTable } from './DelitosTable';
+import { DelitosTable } from './tables/DelitosTable';
 import LoadingOverlay from '../../components/ui/LoadingOverlay';
 import AppLoading from '../../components/ui/AppLoading';
 import AppSnackbar from '../../components/ui/AppSnackBar';
@@ -19,10 +19,10 @@ import { UseDelitosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './UseDelitosFil
 
 export function AdminDelitosScreen() {
   const { user } = useAuth();
-  const [delitos, setDelitos]         = useState([]);
-  const [loading, setLoading]         = useState(true);
+  const [delitos, setDelitos] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
-  const [snackbar, setSnackbar]       = useState({ visible: false, message: '', variant: 'normal' });
+  const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
   const [showFilters, setShowFilters] = useState(false);
 
   const {
@@ -97,7 +97,7 @@ export function AdminDelitosScreen() {
           contentContainerStyle={styles.container}
           scrollEventThrottle={16}
         >
-          <Text style={styles.pageTitle}>Delitos</Text>
+          <Text style={styles.pageTitle}>Panel de delitos</Text>
 
           {/* ── Barra superior ── */}
           {!loading && (
@@ -171,7 +171,7 @@ export function AdminDelitosScreen() {
         <View style={styles.threeColRow}>
           {[
             { label: 'Distrito', options: distritoOptions, selected: distritoFilter, onSelect: setDistritoFilter },
-            { label: 'Beat',     options: beatOptions,     selected: beatFilter,     onSelect: setBeatFilter },
+            { label: 'Beat', options: beatOptions, selected: beatFilter, onSelect: setBeatFilter },
           ].map(({ label, options, selected, onSelect }) => (
             <View key={label} style={styles.col}>
               <Text style={styles.filterGroupTitle}>{label}</Text>
@@ -209,18 +209,18 @@ export function AdminDelitosScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll:     { flex: 1, backgroundColor: theme.colors.background },
-  container:  { padding: 24, paddingBottom: 40, width: '100%', maxWidth: 1200, alignSelf: 'center' },
-  pageTitle:  { ...theme.typography.pageTitle, color: theme.colors.text, textAlign: 'center', marginBottom: 24, marginTop: 20 },
-  topBar:     { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20 },
+  scroll: { flex: 1, backgroundColor: theme.colors.background },
+  container: { padding: 24, paddingBottom: 40, width: '100%', maxWidth: 1200, alignSelf: 'center' },
+  pageTitle: { ...theme.typography.pageTitle, color: theme.colors.text, textAlign: 'center', marginBottom: 24, marginTop: 20 },
+  topBar: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20 },
   orderContainer: { width: 320 },
   orderLabel: { ...theme.typography.body, color: theme.colors.text, marginBottom: 4 },
-  resultsText:{ ...theme.typography.body, color: theme.colors.text, marginBottom: 8 },
+  resultsText: { ...theme.typography.body, color: theme.colors.text, marginBottom: 8 },
   filterGroupTitle: { ...theme.typography.cardTitle, color: theme.colors.cardText, marginBottom: 8, marginTop: 18 },
-  toggleGroup:{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  threeColRow:{ flexDirection: 'row', gap: 12 },
-  col:        { flex: 1 },
-  dateGroup:  { width: 160 },
+  toggleGroup: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  threeColRow: { flexDirection: 'row', gap: 12 },
+  col: { flex: 1 },
+  dateGroup: { width: 160 },
   centerLoader: { marginTop: 60 },
   badge: {
     position: 'absolute',
