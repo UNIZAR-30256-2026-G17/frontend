@@ -11,7 +11,7 @@ const COLS_DESKTOP = [
   { key: 'status', header: 'Estado' },
 ];
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 10;
 
 export function UsersTable({ users = [] }) {
   const { width } = useWindowDimensions();

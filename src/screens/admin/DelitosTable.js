@@ -14,7 +14,7 @@ const COLS_DESKTOP = [
   { key: 'estado', header: 'Estado', flex: 1 },
 ];
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 10;
 
 export function DelitosTable({ delitos = [], onToggle }) {
   const { width } = useWindowDimensions();
