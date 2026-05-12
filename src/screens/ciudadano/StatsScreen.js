@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import { Container } from '../../components/layout/Container';
+import { useScroll } from '../../context/ScrollContext';
 import Card from '../../components/ui/Card';
 import Dropdown from '../../components/ui/Dropdown';
 import AppLoading from '../../components/ui/AppLoading';
@@ -29,6 +30,7 @@ const options = [
 ];
 
 export const StatsScreen = () => {
+  const { handleScroll } = useScroll();
   const [selectedOption, setSelectedOption] = useState(options[1]);
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -65,7 +67,11 @@ export const StatsScreen = () => {
 
   return (
     <Container>
-      <View style={styles.container}>
+      <ScrollView 
+        style={styles.container}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+      >
         <Text style={styles.title}>Estadísticas</Text>
         <View style={styles.content}>
           <Card
@@ -98,7 +104,7 @@ export const StatsScreen = () => {
             )}
           </Card>
         </View>
-      </View>
+      </ScrollView>
       
       <AppSnackbar
         visible={snackbar.visible}

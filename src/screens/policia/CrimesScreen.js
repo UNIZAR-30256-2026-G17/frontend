@@ -7,12 +7,14 @@ import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import ToggleButton from '../../components/ui/ToggleButton';
 import DateInput from '../../components/ui/DateInput';
-import AppLoading from '../../components/ui/AppLoading';
-
-import FilterPopover from '../../components/ui/FilterPopover';
 import { CreateCrimesTable } from './CreateCrimesTable';
 import { UseCrimesFilter } from './UseCrimesFilter';
 import EmptyState from '../../components/ui/EmptyState';
+import TableSkeleton from '../../components/ui/TableSkeleton';
+import FadeInView from '../../components/animations/FadeInView';
+import SummaryCards from '../../components/ui/SummaryCards';
+import FilterPopover from '../../components/ui/FilterPopover';
+import { useScroll } from '../../context/ScrollContext';
 
 // Filtros predeterminados
 export const ORDER_OPTIONS = [
@@ -106,6 +108,7 @@ export const BEAT_OPTIONS = [
 ];
 
 export function CrimesScreen() {
+  const { handleScroll } = useScroll();
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -139,60 +142,74 @@ export function CrimesScreen() {
 
   return (
     <Container>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.container}
-        scrollEventThrottle={16}
-      >
-        <Text style={styles.pageTitle}>Listado de delitos</Text>
+      <FadeInView style={{ flex: 1 }}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.container}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+        >
+          <Text style={styles.pageTitle}>Listado de delitos</Text>
 
-        {/* ── Barra superior ── */}
-        <View style={styles.topBar}>
-          <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
-            <Button
-              title="Filtrar"
-              icon="filter"
-              variant="primary"
-              onPress={() => setShowFilters(true)}
+          {/* ── Summary Cards ── */}
+          {(!loading && filteredData.length > 0) && (
+            <SummaryCards
+              data={[
+                { label: 'Total Delitos', value: filteredData.length, icon: 'shield', color: theme.colors.primary },
+                { label: 'Distritos', value: new Set(filteredData.map(d => d.distrito)).size, icon: 'map-marker', color: '#F1C40F' },
+                { label: 'Sociedad', value: filteredData.filter(d => d.tipo === 'Delito contra la sociedad').length, icon: 'users', color: '#3498DB' },
+                { label: 'Personas', value: filteredData.filter(d => d.tipo === 'Delito contra personas').length, icon: 'user-secret', color: '#E67E22' },
+              ]}
             />
-            {numFiltrosActivos > 0 && (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
-              </View>
-            )}
+          )}
+
+          {/* ── Barra superior ── */}
+          <View style={styles.topBar}>
+            <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
+              <Button
+                title="Filtrar"
+                icon="filter"
+                variant="primary"
+                onPress={() => setShowFilters(true)}
+              />
+              {numFiltrosActivos > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
+                </View>
+              )}
+            </View>
+            <View style={styles.orderContainer}>
+              <Text style={styles.orderLabel}>Ordenar por</Text>
+              <Dropdown
+                options={ORDER_OPTIONS}
+                selected={order}
+                onSelect={setOrder}
+                placeholder="Ordenar por..."
+              />
+            </View>
           </View>
-          <View style={styles.orderContainer}>
-            <Text style={styles.orderLabel}>Ordenar por</Text>
-            <Dropdown
-              options={ORDER_OPTIONS}
-              selected={order}
-              onSelect={setOrder}
-              placeholder="Ordenar por..."
+
+          {/* ── Tabla de resultados ── */}
+          {loading ? (
+            <TableSkeleton rows={10} cols={4} />
+          ) : filteredData.length > 0 ? (
+            <>
+              <Text style={styles.resultsText}>
+                {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
+              </Text>
+              <CreateCrimesTable data={filteredData} />
+            </>
+          ) : (
+            <EmptyState
+              icon="search-minus"
+              title="No se encontraron delitos"
+              subtitle="Prueba ajustando los filtros para ver más resultados."
+              buttonText="Limpiar filtros"
+              onButtonPress={resetFilters}
             />
-          </View>
-        </View>
-
-        {/* ── Tabla de resultados ── */}
-        {loading ? (
-          <AppLoading message="Cargando listado de delitos..." style={{ marginTop: 40 }} />
-        ) : filteredData.length > 0 ? (
-          <>
-            <Text style={styles.resultsText}>
-              {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
-            </Text>
-            <CreateCrimesTable data={filteredData} />
-          </>
-        ) : (
-          <EmptyState
-            icon="search-minus"
-            title="No se encontraron delitos"
-            subtitle="Prueba ajustando los filtros para ver más resultados."
-            buttonText="Limpiar filtros"
-            onButtonPress={resetFilters}
-          />
-        )}
-
-      </ScrollView>
+          )}
+        </ScrollView>
+      </FadeInView>
 
       {/* ── Modal de filtros ── */}
       <FilterPopover
@@ -205,7 +222,7 @@ export function CrimesScreen() {
             <ToggleButton
               key={opt.value}
               title={opt.label}
-              defaultSelected={tipoFilter?.value === opt.value}
+              selected={tipoFilter?.value === opt.value}
               onToggle={(val) => setTipoFilter(val ? opt : TIPO_OPTIONS[0])}
             />
           ))}

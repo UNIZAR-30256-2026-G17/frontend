@@ -42,13 +42,18 @@ export const colors = {
   successButtonIcon: '#000000',
 
   // Card
-  cardBackground: '#1A1A1A',
-  cardBorder: '#4c4c4c',
+  cardBackground: 'rgba(30, 30, 30, 0.80)',
+  cardBorder: 'rgba(255, 255, 255, 0.10)',
   cardText: '#FFFFFF',
   cardTextSecondary: '#D6D6D6',
   cardIcon: '#FFFFFF',
 
   tagText: '#000000',
+
+  // Glass
+  glassBackground: 'rgba(30, 30, 30, 0.75)',
+  glassBorder: 'rgba(255, 255, 255, 0.10)',
+  glassShadow: 'rgba(255, 209, 0, 0.06)',
 
   // Input
   inputBackground: '#FFFFFF',
@@ -60,13 +65,13 @@ export const colors = {
   inputIcon: '#FFFFFF',
 
   // Dropdown
-  dropdownBackground: '#1A1A1A',
-  dropdownBorder: '#4c4c4c',
+  dropdownBackground: 'rgba(30, 30, 30, 0.80)',
+  dropdownBorder: 'rgba(255, 255, 255, 0.12)',
   dropdownText: '#FFFFFF',
   dropdownIcon: '#FFFFFF',
-  dropdownOptionBackground: '#1A1A1A',
+  dropdownOptionBackground: 'rgba(25, 25, 25, 0.92)',
   dropdownOptionText: '#FFFFFF',
-  dropdownOptionBorder: '#4c4c4c',
+  dropdownOptionBorder: 'rgba(255, 255, 255, 0.08)',
 
   // Checkbox
   checkboxCheckedBackground: '#FFD100',

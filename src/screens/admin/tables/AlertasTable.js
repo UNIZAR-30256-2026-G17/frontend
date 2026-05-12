@@ -4,6 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../../theme';
 import Button from '../../../components/ui/Button';
 import TablePagination from '../../../components/ui/TablePagination';
+import FadeInView from '../../../components/animations/FadeInView';
 
 const COLS_DESKTOP = [
   { key: '_id', header: '#', flex: 0.6 },
@@ -60,34 +61,36 @@ export function AlertasTable({ alertas = [], onToggle }) {
             const statusText = isEliminada ? 'Eliminada' : 'Pendiente';
 
             return (
-              <View key={row._id} style={rowStyle(i)}>
-                <Text style={[styles.cell, { flex: COLS_DESKTOP[0].flex }, styles.desktopLeftAlign, { paddingLeft: 16 }]} numberOfLines={1}>
-                  {row._id.slice(-5)}
-                </Text>
-                <Text style={[styles.cell, { flex: COLS_DESKTOP[1].flex }, styles.desktopLeftAlign]}>
-                  {row.description}
-                </Text>
-                <Text style={[styles.cell, { flex: COLS_DESKTOP[2].flex }, styles.desktopLeftAlign]}>
-                  {row.address}
-                </Text>
-                <Text style={[styles.cell, { flex: COLS_DESKTOP[3].flex }]}>{formatDate(row.createdAt)}</Text>
-                <Text style={[styles.cell, { flex: COLS_DESKTOP[4].flex }]}>
-                  {Array.isArray(row.confirmations) ? row.confirmations.length : 0}
-                </Text>
-                <Text style={[styles.cell, { flex: COLS_DESKTOP[5].flex }]}>
-                  {Array.isArray(row.discards) ? row.discards.length : 0}
-                </Text>
-                <Text style={[styles.cell, { flex: COLS_DESKTOP[6].flex }]}>{statusText}</Text>
-                <View style={styles.actionCellDesktop}>
-                  <Button
-                    title={isEliminada ? 'Restaurar' : 'Eliminar'}
-                    icon={isEliminada ? 'check' : 'times'}
-                    variant={isEliminada ? 'success' : 'danger'}
-                    size="small"
-                    onPress={() => onToggle(row._id, row.status)}
-                  />
+              <FadeInView key={row._id} delay={i * 50} translateY={10}>
+                <View style={rowStyle(i)}>
+                  <Text style={[styles.cell, styles.monoCell, { flex: COLS_DESKTOP[0].flex }, styles.desktopLeftAlign, { paddingLeft: 16 }]} numberOfLines={1}>
+                    {row._id.slice(-5)}
+                  </Text>
+                  <Text style={[styles.cell, { flex: COLS_DESKTOP[1].flex }, styles.desktopLeftAlign]}>
+                    {row.description}
+                  </Text>
+                  <Text style={[styles.cell, { flex: COLS_DESKTOP[2].flex }, styles.desktopLeftAlign]}>
+                    {row.address}
+                  </Text>
+                  <Text style={[styles.cell, { flex: COLS_DESKTOP[3].flex }]}>{formatDate(row.createdAt)}</Text>
+                  <Text style={[styles.cell, { flex: COLS_DESKTOP[4].flex }]}>
+                    {Array.isArray(row.confirmations) ? row.confirmations.length : 0}
+                  </Text>
+                  <Text style={[styles.cell, { flex: COLS_DESKTOP[5].flex }]}>
+                    {Array.isArray(row.discards) ? row.discards.length : 0}
+                  </Text>
+                  <Text style={[styles.cell, { flex: COLS_DESKTOP[6].flex }]}>{statusText}</Text>
+                  <View style={styles.actionCellDesktop}>
+                    <Button
+                      title={isEliminada ? 'Restaurar' : 'Eliminar'}
+                      icon={isEliminada ? 'check' : 'times'}
+                      variant={isEliminada ? 'success' : 'danger'}
+                      size="small"
+                      onPress={() => onToggle(row._id, row.status)}
+                    />
+                  </View>
                 </View>
-              </View>
+              </FadeInView>
             );
           })}
         </>
@@ -109,39 +112,41 @@ export function AlertasTable({ alertas = [], onToggle }) {
           const statusText = isEliminada ? 'Eliminada' : 'Pendiente';
 
           return (
-            <View key={row._id}>
-              <View style={rowStyle(i)}>
-                <Text style={[styles.cell, styles.mId]} numberOfLines={1}>{row._id.slice(-4)}</Text>
-                <Text style={[styles.cell, styles.mDesc]} numberOfLines={1}>{row.description}</Text>
-                <Text style={[styles.cell, styles.mEstado]}>{statusText}</Text>
-                <View style={styles.mActionsContainer}>
-                  <Button
-                    icon={isEliminada ? 'check' : 'times'}
-                    variant={isEliminada ? 'success' : 'danger'}
-                    size="small"
-                    onPress={() => onToggle(row._id, row.status)}
-                  />
-                  <TouchableOpacity
-                    style={styles.expandButton}
-                    onPress={() => setExpandedRow(expanded ? null : row._id)}
-                  >
-                    <FontAwesome
-                      name={expanded ? 'minus-circle' : 'plus-circle'}
-                      size={22}
-                      color={theme.colors.tableText || '#333'}
+            <FadeInView key={row._id} delay={i * 40} translateY={8}>
+              <View>
+                <View style={rowStyle(i)}>
+                  <Text style={[styles.cell, styles.mId]} numberOfLines={1}>{row._id.slice(-4)}</Text>
+                  <Text style={[styles.cell, styles.mDesc]} numberOfLines={1}>{row.description}</Text>
+                  <Text style={[styles.cell, styles.mEstado]}>{statusText}</Text>
+                  <View style={styles.mActionsContainer}>
+                    <Button
+                      icon={isEliminada ? 'check' : 'times'}
+                      variant={isEliminada ? 'success' : 'danger'}
+                      size="small"
+                      onPress={() => onToggle(row._id, row.status)}
                     />
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.expandButton}
+                      onPress={() => setExpandedRow(expanded ? null : row._id)}
+                    >
+                      <FontAwesome
+                        name={expanded ? 'minus-circle' : 'plus-circle'}
+                        size={22}
+                        color={theme.colors.tableText || '#333'}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
+                {expanded && (
+                  <View style={[styles.expandedRow, i % 2 === 0 ? styles.rowEven : styles.rowOdd]}>
+                    <Text style={styles.expText}><Text style={styles.expLabel}>Dirección: </Text>{row.address}</Text>
+                    <Text style={styles.expText}><Text style={styles.expLabel}>Fecha: </Text>{formatDate(row.createdAt)}</Text>
+                    <Text style={styles.expText}><Text style={styles.expLabel}>Confirmaciones: </Text>{row.confirmations?.length || 0}</Text>
+                    <Text style={styles.expText}><Text style={styles.expLabel}>Descartes: </Text>{row.discards?.length || 0}</Text>
+                  </View>
+                )}
               </View>
-              {expanded && (
-                <View style={[styles.expandedRow, i % 2 === 0 ? styles.rowEven : styles.rowOdd]}>
-                  <Text style={styles.expText}><Text style={styles.expLabel}>Dirección: </Text>{row.address}</Text>
-                  <Text style={styles.expText}><Text style={styles.expLabel}>Fecha: </Text>{formatDate(row.createdAt)}</Text>
-                  <Text style={styles.expText}><Text style={styles.expLabel}>Confirmaciones: </Text>{row.confirmations?.length || 0}</Text>
-                  <Text style={styles.expText}><Text style={styles.expLabel}>Descartes: </Text>{row.discards?.length || 0}</Text>
-                </View>
-              )}
-            </View>
+            </FadeInView>
           );
         })}
       </>
@@ -189,9 +194,9 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.tableBorder || '#eee',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   rowEven: { backgroundColor: theme.colors.tableRowEven || '#fff' },
   rowOdd: { backgroundColor: theme.colors.tableRowOdd || '#f9f9f9' },
@@ -201,6 +206,10 @@ const styles = StyleSheet.create({
     color: theme.colors.tableText || '#333',
     fontSize: 12,
     paddingHorizontal: 4,
+  },
+  monoCell: {
+    ...theme.typography.mono,
+    fontSize: 11,
   },
   actionCellDesktop: {
     flex: 1.2,

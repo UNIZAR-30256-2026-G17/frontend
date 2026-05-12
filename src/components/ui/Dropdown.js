@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, ScrollView, findNodeHandle } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, ScrollView, Platform, findNodeHandle } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 
@@ -92,6 +92,13 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         paddingHorizontal: 15,
         paddingVertical: 12,
+        ...Platform.select({
+            web: {
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+            },
+            default: {},
+        }),
     },
     buttonText: {
         color: theme.colors.dropdownText,
@@ -109,6 +116,21 @@ const styles = StyleSheet.create({
         borderColor: theme.colors.dropdownOptionBorder,
         borderRadius: 12,
         maxHeight: 200,
+        ...Platform.select({
+            web: {
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                boxShadow: `0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px ${theme.colors.glassBorder}`,
+            },
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 12 },
+                shadowOpacity: 0.35,
+                shadowRadius: 20,
+            },
+            android: { elevation: 8 },
+            default: {},
+        }),
     },
     option: {
         paddingHorizontal: 15,

@@ -4,11 +4,14 @@ import {
   Platform, Animated,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
 import Button from '../ui/Button';
 
 export const ProfileSidebar = ({ visible, onClose, user, onLogout }) => {
   const slideAnim = useRef(new Animated.Value(300)).current;
+
+  const pulseAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (visible) {
@@ -18,14 +21,40 @@ export const ProfileSidebar = ({ visible, onClose, user, onLogout }) => {
         tension: 70,
         friction: 12,
       }).start();
+
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 1500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 0,
+            duration: 1500,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
     } else {
       Animated.timing(slideAnim, {
         toValue: 300,
         duration: 220,
         useNativeDriver: true,
       }).start();
+      pulseAnim.setValue(0);
     }
   }, [visible]);
+
+  const ringScale = pulseAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.3],
+  });
+
+  const ringOpacity = pulseAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.5, 0],
+  });
 
   if (!user) return null;
 
@@ -60,12 +89,16 @@ export const ProfileSidebar = ({ visible, onClose, user, onLogout }) => {
       <Pressable style={styles.overlay} onPress={onClose} />
 
       <Animated.View style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}>
+        <LinearGradient
+          colors={['#1A1A1A', '#1A1A1A', '#2D2600']}
+          style={StyleSheet.absoluteFill}
+        />
 
         {/* Top row */}
         <View style={styles.topRow}>
           <Text style={styles.panelTitle}>Mi perfil</Text>
           <Pressable onPress={onClose} style={styles.closeButton}>
-            <FontAwesome name="times" size={18} color="rgba(0,0,0,0.45)" />
+            <FontAwesome name="times" size={18} color="#FFFFFF" />
           </Pressable>
         </View>
 
@@ -74,16 +107,22 @@ export const ProfileSidebar = ({ visible, onClose, user, onLogout }) => {
         {/* Avatar + nombre + rol */}
         <View style={styles.avatarSection}>
           <View style={styles.avatarOuter}>
+            <Animated.View 
+              style={[
+                styles.pulseRing,
+                {
+                  transform: [{ scale: ringScale }],
+                  opacity: ringOpacity,
+                }
+              ]} 
+            />
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>{getUserInitial()}</Text>
-            </View>
-            <View style={styles.roleIconBadge}>
-              <FontAwesome name={roleIcon} size={10} color={theme.colors.headerBackground} />
             </View>
           </View>
           <Text style={styles.userName}>{getUserName()}</Text>
           <View style={styles.rolePill}>
-            <FontAwesome name={roleIcon} size={11} color="rgba(0,0,0,0.6)" />
+            <FontAwesome name={roleIcon} size={11} color={theme.colors.primary} />
             <Text style={styles.roleText}>{roleLabel}</Text>
           </View>
         </View>
@@ -94,7 +133,7 @@ export const ProfileSidebar = ({ visible, onClose, user, onLogout }) => {
         <View style={styles.infoSection}>
           <View style={styles.infoRow}>
             <View style={styles.infoIconWrapper}>
-              <FontAwesome name="envelope" size={13} color="rgba(0,0,0,0.5)" />
+              <FontAwesome name="envelope" size={13} color="#FFFFFF" />
             </View>
             <View style={styles.infoContent}>
               <Text style={styles.infoLabel}>Correo electrónico</Text>
@@ -104,7 +143,7 @@ export const ProfileSidebar = ({ visible, onClose, user, onLogout }) => {
 
           <View style={styles.infoRow}>
             <View style={styles.infoIconWrapper}>
-              <FontAwesome name="id-badge" size={13} color="rgba(0,0,0,0.5)" />
+              <FontAwesome name="id-badge" size={13} color="#FFFFFF" />
             </View>
             <View style={styles.infoContent}>
               <Text style={styles.infoLabel}>Rol en el sistema</Text>
@@ -115,7 +154,7 @@ export const ProfileSidebar = ({ visible, onClose, user, onLogout }) => {
           {user.id && (
             <View style={styles.infoRow}>
               <View style={styles.infoIconWrapper}>
-                <FontAwesome name="hashtag" size={13} color="rgba(0,0,0,0.5)" />
+                <FontAwesome name="hashtag" size={13} color="#FFFFFF" />
               </View>
               <View style={styles.infoContent}>
                 <Text style={styles.infoLabel}>ID de usuario</Text>
@@ -149,15 +188,18 @@ const styles = StyleSheet.create({
   sidebar: {
     position: 'absolute',
     top: 0, right: 0, bottom: 0,
-    width: 290,
-    backgroundColor: theme.colors.headerBackground,
-    shadowColor: '#000',
-    shadowOffset: { width: -6, height: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 25,
+    width: 320,
+    backgroundColor: 'rgba(30, 30, 30, 0.85)',
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(255, 255, 255, 0.1)',
+    ...Platform.select({
+      ios: { shadowColor: '#000', shadowOffset: { width: -4, height: 0 }, shadowOpacity: 0.3, shadowRadius: 10 },
+      android: { elevation: 25 },
+      web: { backdropFilter: 'blur(20px)', boxShadow: '-4px 0px 30px rgba(0,0,0,0.5)' },
+    }),
     flexDirection: 'column',
     paddingBottom: 36,
+    zIndex: 2000,
   },
   topRow: {
     flexDirection: 'row',
@@ -168,20 +210,20 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   panelTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: theme.colors.headerText,
-    letterSpacing: 0.2,
+    fontFamily: 'PlusJakarta-ExtraBold',
+    fontSize: 20,
+    color: '#FFFFFF',
+    letterSpacing: -0.4,
   },
   closeButton: {
     padding: 8,
     ...Platform.select({ web: { cursor: 'pointer' }, default: {} }),
   },
   divider: {
-    height: 0.5,
-    backgroundColor: 'rgba(0,0,0,0.12)',
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     marginHorizontal: 20,
-    marginVertical: 6,
+    marginVertical: 12,
   },
 
   // Avatar
@@ -196,53 +238,56 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   avatar: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
-    backgroundColor: 'rgba(0,0,0,0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: 'rgba(0,0,0,0.2)',
-  },
-  avatarText: {
-    color: theme.colors.headerText,
-    fontSize: 32,
-    fontWeight: 'bold',
-  },
-  roleIconBadge: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(255, 204, 0, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: theme.colors.headerBackground,
+    borderColor: theme.colors.primary,
+    zIndex: 2,
+  },
+  pulseRing: {
+    position: 'absolute',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 4,
+    borderColor: theme.colors.primary,
+    zIndex: 1,
+  },
+  avatarText: {
+    color: '#FFFFFF',
+    fontFamily: 'PlusJakarta-Bold',
+    fontSize: 32,
+  },
+  roleIconBadge: {
+    display: 'none',
   },
   userName: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: theme.colors.headerText,
+    fontFamily: 'PlusJakarta-Bold',
+    fontSize: 24,
+    color: '#FFFFFF',
+    marginTop: 8,
   },
   rolePill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(0,0,0,0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingVertical: 6,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   roleText: {
-    fontSize: 12,
-    color: 'rgba(0,0,0,0.6)',
-    fontWeight: '700',
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontFamily: 'Inter-Bold',
     textTransform: 'uppercase',
-    letterSpacing: 0.6,
+    letterSpacing: 1,
   },
 
   // Info rows
@@ -272,16 +317,16 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 10,
-    color: 'rgba(0,0,0,0.4)',
+    color: 'rgba(255, 255, 255, 0.4)',
     textTransform: 'uppercase',
-    letterSpacing: 0.6,
-    marginBottom: 2,
-    fontWeight: '600',
+    letterSpacing: 0.8,
+    marginBottom: 4,
+    fontFamily: 'Inter-Bold',
   },
   infoValue: {
-    fontSize: 14,
-    color: theme.colors.headerText,
-    fontWeight: '600',
+    fontSize: 15,
+    color: '#FFFFFF',
+    fontFamily: 'Inter-SemiBold',
   },
 
   // Footer

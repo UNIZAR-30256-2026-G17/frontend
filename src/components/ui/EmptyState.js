@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 
@@ -38,10 +38,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.cardBackground,
-    borderRadius: 10,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: theme.colors.cardBorder,
     marginTop: 20,
+    ...Platform.select({
+      web: {
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        boxShadow: `0 8px 32px ${theme.colors.glassShadow}, 0 0 0 1px ${theme.colors.glassBorder}`,
+      },
+      ios: {
+        shadowColor: theme.colors.glassShadow,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 1,
+        shadowRadius: 24,
+      },
+      android: { elevation: 4 },
+      default: {},
+    }),
   },
   icon: {
     marginBottom: 16,

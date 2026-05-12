@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Text, ScrollView, StyleSheet, RefreshControl, View } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
+import { useScroll } from '../../context/ScrollContext';
 import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
 import { AlertasTable } from './tables/AlertasTable';
 import EmptyState from '../../components/ui/EmptyState';
 import LoadingOverlay from '../../components/ui/LoadingOverlay';
-import AppLoading from '../../components/ui/AppLoading';
+import TableSkeleton from '../../components/ui/TableSkeleton';
 import AppSnackbar from '../../components/ui/AppSnackBar';
+import FadeInView from '../../components/animations/FadeInView';
 import { API_URL } from '../../config/env';
 
 import Button from '../../components/ui/Button';
@@ -17,8 +19,10 @@ import ToggleButton from '../../components/ui/ToggleButton';
 import DateInput from '../../components/ui/DateInput';
 import FilterPopover from '../../components/ui/FilterPopover';
 import { UseAlertasFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseAlertasFilter';
+import SummaryCards from '../../components/ui/SummaryCards';
 
 export function AdminAlertasScreen() {
+  const { handleScroll } = useScroll();
   const [alertas, setAlertas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -99,77 +103,93 @@ export function AdminAlertasScreen() {
 
   return (
     <Container>
-      <View style={{ flex: 1 }}>
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.container}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={[theme.colors.primary]}
-            />
-          }
-        >
-          <Text style={styles.pageTitle}>Panel de Alertas</Text>
+      <FadeInView style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
+          <ScrollView
+            style={styles.scroll}
+            contentContainerStyle={styles.container}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[theme.colors.primary]}
+              />
+            }
+          >
+            <Text style={styles.pageTitle}>Panel de Alertas</Text>
 
-          {/* ── Barra superior ── */}
+          {/* ── Summary Cards ── */}
           {hasData && (
-            <View style={styles.topBar}>
-              <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
-                <Button
-                  title="Filtrar"
-                  icon="filter"
-                  variant="primary"
-                  onPress={() => setShowFilters(true)}
-                />
-                {numFiltrosActivos > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
-                  </View>
-                )}
-              </View>
-              <View style={styles.orderContainer}>
-                <Text style={styles.orderLabel}>Ordenar por</Text>
-                <Dropdown
-                  options={ORDER_OPTIONS}
-                  selected={order}
-                  onSelect={setOrder}
-                  placeholder="Ordenar por..."
-                />
-              </View>
-            </View>
+            <SummaryCards
+              data={[
+                { label: 'Total Alertas', value: alertas.length, icon: 'list-alt', color: theme.colors.primary },
+                { label: 'Pendientes', value: alertas.filter(a => a.status !== 'deleted').length, icon: 'clock-o', color: '#F5C842' },
+                { label: 'Confirmadas', value: alertas.filter(a => a.confirmations?.length > 0).length, icon: 'check-circle', color: '#2ECC71' },
+                { label: 'Eliminadas', value: alertas.filter(a => a.status === 'deleted').length, icon: 'trash', color: '#E74C3C' },
+              ]}
+            />
           )}
 
-          {loading && !refreshing ? (
-            <AppLoading message="Cargando alertas..." style={styles.centerLoader} />
-          ) : alertas.length === 0 ? (
-            <EmptyState
-              icon="bell-slash"
-              title="No hay alertas registradas"
-              subtitle="El sistema no tiene reportes actuales. Tira hacia abajo para refrescar."
-              buttonText="Buscar nuevas alertas"
-              onButtonPress={fetchAlertas}
-            />
-          ) : filteredData.length === 0 ? (
-            <EmptyState
-              icon="search-minus"
-              title="No se encontraron alertas"
-              subtitle="Prueba ajustando los filtros para ver más resultados."
-              buttonText="Limpiar filtros"
-              onButtonPress={resetFilters}
-            />
-          ) : (
-            <>
-              <Text style={styles.resultsText}>
-                {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
-              </Text>
-              <AlertasTable alertas={filteredData} onToggle={toggleAlerta} />
-            </>
-          )}
+            {/* ── Barra superior ── */}
+            {hasData && (
+              <View style={styles.topBar}>
+                <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
+                  <Button
+                    title="Filtrar"
+                    icon="filter"
+                    variant="primary"
+                    onPress={() => setShowFilters(true)}
+                  />
+                  {numFiltrosActivos > 0 && (
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
+                    </View>
+                  )}
+                </View>
+                <View style={styles.orderContainer}>
+                  <Text style={styles.orderLabel}>Ordenar por</Text>
+                  <Dropdown
+                    options={ORDER_OPTIONS}
+                    selected={order}
+                    onSelect={setOrder}
+                    placeholder="Ordenar por..."
+                  />
+                </View>
+              </View>
+            )}
 
-        </ScrollView>
-      </View>
+            {loading && !refreshing ? (
+              <TableSkeleton rows={8} cols={4} />
+            ) : alertas.length === 0 ? (
+              <EmptyState
+                icon="bell-slash"
+                title="No hay alertas registradas"
+                subtitle="El sistema no tiene reportes actuales. Tira hacia abajo para refrescar."
+                buttonText="Buscar nuevas alertas"
+                onButtonPress={fetchAlertas}
+              />
+            ) : filteredData.length === 0 ? (
+              <EmptyState
+                icon="search-minus"
+                title="No se encontraron alertas"
+                subtitle="Prueba ajustando los filtros para ver más resultados."
+                buttonText="Limpiar filtros"
+                onButtonPress={resetFilters}
+              />
+            ) : (
+              <>
+                <Text style={styles.resultsText}>
+                  {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
+                </Text>
+                <AlertasTable alertas={filteredData} onToggle={toggleAlerta} />
+              </>
+            )}
+
+          </ScrollView>
+        </View>
+      </FadeInView>
 
       {/* ── Modal de filtros ── */}
       <FilterPopover visible={showFilters} onClose={() => setShowFilters(false)}>
@@ -180,7 +200,7 @@ export function AdminAlertasScreen() {
             <ToggleButton
               key={opt.value}
               title={opt.label}
-              defaultSelected={statusFilter?.value === opt.value}
+              selected={statusFilter?.value === opt.value}
               onToggle={(val) => setStatusFilter(val ? opt : null)}
             />
           ))}
@@ -190,7 +210,7 @@ export function AdminAlertasScreen() {
         <View style={styles.toggleGroup}>
           <ToggleButton
             title="Solo con confirmaciones"
-            defaultSelected={soloConConfirmaciones}
+            selected={soloConConfirmaciones}
             onToggle={setSoloConConfirmaciones}
           />
         </View>

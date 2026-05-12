@@ -1,23 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Button from './Button';
 
 export default function ToggleButton({
     title,
     icon,
-    defaultSelected = false,
+    selected = false,
     onToggle,
     disabled = false,
 }) {
-    const [selected, setSelected] = useState(defaultSelected);
-
     const handlePress = () => {
         if (disabled) return;
-
-        const newValue = !selected;
-        setSelected(newValue);
-
         if (onToggle) {
-            onToggle(newValue);
+            onToggle(!selected);
         }
     };
 

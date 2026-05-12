@@ -4,6 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../../theme';
 import Button from '../../../components/ui/Button';
 import TablePagination from '../../../components/ui/TablePagination';
+import FadeInView from '../../../components/animations/FadeInView';
 
 const COLS_DESKTOP = [
   { key: 'id', header: 'Id', flex: 1.5 },
@@ -51,23 +52,25 @@ export function DelitosTable({ delitos = [], onToggle }) {
             const statusText = isDisponible ? 'Disponible' : 'Eliminado';
 
             return (
-              <View key={row._id} style={rowStyle(i)}>
-                <Text style={[styles.cell, { flex: COLS_DESKTOP[0].flex }]} numberOfLines={1}>{row._id}</Text>
-                <Text style={[styles.cell, { flex: COLS_DESKTOP[1].flex }]} numberOfLines={1}>{row.crimename1}</Text>
-                <Text style={[styles.cell, { flex: COLS_DESKTOP[2].flex }]}>{formatDate(row.start_date)}</Text>
-                <Text style={[styles.cell, { flex: COLS_DESKTOP[3].flex }]} numberOfLines={1}>{row.district}</Text>
-                <Text style={[styles.cell, { flex: COLS_DESKTOP[4].flex }]}>{row.beat}</Text>
-                <Text style={[styles.cell, { flex: COLS_DESKTOP[5].flex }]}>{statusText}</Text>
-                <View style={styles.actionCellDesktop}>
-                  <Button
-                    title={isDisponible ? 'Eliminar' : 'Restaurar'}
-                    icon={isDisponible ? 'times' : 'check'}
-                    variant={isDisponible ? 'danger' : 'success'}
-                    size="small"
-                    onPress={() => onToggle(row._id, row.status)}
-                  />
+              <FadeInView key={row._id} delay={i * 50} translateY={10}>
+                <View style={rowStyle(i)}>
+                  <Text style={[styles.cell, styles.monoCell, { flex: COLS_DESKTOP[0].flex }]} numberOfLines={1}>{row._id}</Text>
+                  <Text style={[styles.cell, { flex: COLS_DESKTOP[1].flex }]} numberOfLines={1}>{row.crimename1}</Text>
+                  <Text style={[styles.cell, { flex: COLS_DESKTOP[2].flex }]}>{formatDate(row.start_date)}</Text>
+                  <Text style={[styles.cell, { flex: COLS_DESKTOP[3].flex }]} numberOfLines={1}>{row.district}</Text>
+                  <Text style={[styles.cell, { flex: COLS_DESKTOP[4].flex }]}>{row.beat}</Text>
+                  <Text style={[styles.cell, { flex: COLS_DESKTOP[5].flex }]}>{statusText}</Text>
+                  <View style={styles.actionCellDesktop}>
+                    <Button
+                      title={isDisponible ? 'Eliminar' : 'Restaurar'}
+                      icon={isDisponible ? 'times' : 'check'}
+                      variant={isDisponible ? 'danger' : 'success'}
+                      size="small"
+                      onPress={() => onToggle(row._id, row.status)}
+                    />
+                  </View>
                 </View>
-              </View>
+              </FadeInView>
             );
           })}
         </>
@@ -89,38 +92,40 @@ export function DelitosTable({ delitos = [], onToggle }) {
           const statusText = isDisponible ? 'Disponible' : 'Eliminado';
 
           return (
-            <View key={row._id}>
-              <View style={rowStyle(i)}>
-                <Text style={[styles.cell, styles.mId]} numberOfLines={1}>{row._id}</Text>
-                <Text style={[styles.cell, styles.mTipo]} numberOfLines={1}>{row.crimename1}</Text>
-                <Text style={[styles.cell, styles.mEstado]}>{statusText}</Text>
-                <View style={styles.mActionsContainer}>
-                  <Button
-                    icon={isDisponible ? 'times' : 'check'}
-                    variant={isDisponible ? 'danger' : 'success'}
-                    size="small"
-                    onPress={() => onToggle(row._id, row.status)}
-                  />
-                  <TouchableOpacity
-                    style={styles.expandButton}
-                    onPress={() => setExpandedRow(expanded ? null : row._id)}
-                  >
-                    <FontAwesome
-                      name={expanded ? 'minus-circle' : 'plus-circle'}
-                      size={22}
-                      color={theme.colors.tableText || '#333'}
+            <FadeInView key={row._id} delay={i * 40} translateY={8}>
+              <View>
+                <View style={rowStyle(i)}>
+                  <Text style={[styles.cell, styles.monoCell, styles.mId]} numberOfLines={1}>{row._id}</Text>
+                  <Text style={[styles.cell, styles.mTipo]} numberOfLines={1}>{row.crimename1}</Text>
+                  <Text style={[styles.cell, styles.mEstado]}>{statusText}</Text>
+                  <View style={styles.mActionsContainer}>
+                    <Button
+                      icon={isDisponible ? 'times' : 'check'}
+                      variant={isDisponible ? 'danger' : 'success'}
+                      size="small"
+                      onPress={() => onToggle(row._id, row.status)}
                     />
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.expandButton}
+                      onPress={() => setExpandedRow(expanded ? null : row._id)}
+                    >
+                      <FontAwesome
+                        name={expanded ? 'minus-circle' : 'plus-circle'}
+                        size={22}
+                        color={theme.colors.tableText || '#333'}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
+                {expanded && (
+                  <View style={[styles.expandedRow, i % 2 === 0 ? styles.rowEven : styles.rowOdd]}>
+                    <Text style={styles.expText}><Text style={styles.expLabel}>Fecha: </Text>{formatDate(row.start_date)}</Text>
+                    <Text style={styles.expText}><Text style={styles.expLabel}>Distrito: </Text>{row.district}</Text>
+                    <Text style={styles.expText}><Text style={styles.expLabel}>Beat: </Text>{row.beat}</Text>
+                  </View>
+                )}
               </View>
-              {expanded && (
-                <View style={[styles.expandedRow, i % 2 === 0 ? styles.rowEven : styles.rowOdd]}>
-                  <Text style={styles.expText}><Text style={styles.expLabel}>Fecha: </Text>{formatDate(row.start_date)}</Text>
-                  <Text style={styles.expText}><Text style={styles.expLabel}>Distrito: </Text>{row.district}</Text>
-                  <Text style={styles.expText}><Text style={styles.expLabel}>Beat: </Text>{row.beat}</Text>
-                </View>
-              )}
-            </View>
+            </FadeInView>
           );
         })}
       </>
@@ -168,9 +173,9 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.tableBorder || '#eee',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   rowEven: { backgroundColor: theme.colors.tableRowEven || '#f0f0f0' },
   rowOdd: { backgroundColor: theme.colors.tableRowOdd || '#e6e6e6' },
@@ -179,6 +184,10 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.tableText || '#333',
     fontSize: 12,
+  },
+  monoCell: {
+    ...theme.typography.mono,
+    fontSize: 11,
   },
   actionCellDesktop: {
     flex: 1.2,

@@ -4,6 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 import { useWindowDimensions } from 'react-native';
 import TablePagination from '../../components/ui/TablePagination';
+import FadeInView from '../../components/animations/FadeInView';
 
 const COLS = [
   { header: 'Id',             key: 'id' },
@@ -40,11 +41,15 @@ export function CreateCrimesTable({ data }) {
             ))}
           </View>
           {paginatedData.map((row, i) => (
-            <View key={row.id} style={rowStyle(i)}>
-              {COLS.map((col) => (
-                <Text key={col.key} style={styles.cell}>{row[col.key]}</Text>
-              ))}
-            </View>
+            <FadeInView key={row.id} delay={i * 50} translateY={10}>
+              <View style={rowStyle(i)}>
+                {COLS.map((col) => (
+                  <Text key={col.key} style={[styles.cell, col.key === 'id' && styles.monoCell]}>
+                    {row[col.key]}
+                  </Text>
+                ))}
+              </View>
+            </FadeInView>
           ))}
         </>
       );
@@ -62,33 +67,35 @@ export function CreateCrimesTable({ data }) {
         {paginatedData.map((row, i) => {
           const expanded = expandedRow === row.id;
           return (
-            <View key={row.id}>
-              <View style={rowStyle(i)}>
-                <Text style={[styles.cell, styles.mId]}>{row.id}</Text>
-                <Text style={[styles.cell, styles.mTipo]}>{row.tipo}</Text>
-                <Text style={[styles.cell, styles.mSubtipo]}>{row.subtipo}</Text>
-                <TouchableOpacity
-                  style={styles.mBtn}
-                  onPress={() => setExpandedRow(expanded ? null : row.id)}
-                >
-                  <FontAwesome
-                    name={expanded ? 'minus-circle' : 'plus-circle'}
-                    size={18}
-                    color={theme.colors.tableText}
-                  />
-                </TouchableOpacity>
-              </View>
-              {expanded && (
-                <View style={[styles.expandedRow, i % 2 === 0 ? styles.rowEven : styles.rowOdd]}>
-                  {EXPANDED_KEYS.map((key) => (
-                    <Text key={key} style={styles.expText}>
-                      <Text style={styles.expLabel}>{key.charAt(0).toUpperCase() + key.slice(1)}: </Text>
-                      {row[key]}
-                    </Text>
-                  ))}
+            <FadeInView key={row.id} delay={i * 40} translateY={8}>
+              <View>
+                <View style={rowStyle(i)}>
+                  <Text style={[styles.cell, styles.monoCell, styles.mId]}>{row.id}</Text>
+                  <Text style={[styles.cell, styles.mTipo]}>{row.tipo}</Text>
+                  <Text style={[styles.cell, styles.mSubtipo]}>{row.subtipo}</Text>
+                  <TouchableOpacity
+                    style={styles.mBtn}
+                    onPress={() => setExpandedRow(expanded ? null : row.id)}
+                  >
+                    <FontAwesome
+                      name={expanded ? 'minus-circle' : 'plus-circle'}
+                      size={18}
+                      color={theme.colors.tableText}
+                    />
+                  </TouchableOpacity>
                 </View>
-              )}
-            </View>
+                {expanded && (
+                  <View style={[styles.expandedRow, i % 2 === 0 ? styles.rowEven : styles.rowOdd]}>
+                    {EXPANDED_KEYS.map((key) => (
+                      <Text key={key} style={styles.expText}>
+                        <Text style={styles.expLabel}>{key.charAt(0).toUpperCase() + key.slice(1)}: </Text>
+                        {row[key]}
+                      </Text>
+                    ))}
+                  </View>
+                )}
+              </View>
+            </FadeInView>
           );
         })}
       </>
@@ -131,9 +138,9 @@ const styles = StyleSheet.create({
     },
     row: { 
       flexDirection: 'row', 
-      borderTopWidth: 1, 
-      borderTopColor: theme.colors.tableBorder, 
-      paddingVertical: 10, 
+      borderBottomWidth: 1, 
+      borderBottomColor: 'rgba(255,255,255,0.05)', 
+      paddingVertical: 12, 
       alignItems: 'center' 
     },
     rowEven: { backgroundColor: theme.colors.tableRowEven },
@@ -143,6 +150,10 @@ const styles = StyleSheet.create({
       textAlign: 'center', 
       ...theme.typography.body, 
       color: theme.colors.tableText 
+    },
+    monoCell: {
+      ...theme.typography.mono,
+      fontSize: 11,
     },
     
     mId: { 

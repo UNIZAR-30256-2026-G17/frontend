@@ -3,11 +3,13 @@ import { Text, ScrollView, StyleSheet, RefreshControl, View, TextInput, Touchabl
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
+import { useScroll } from '../../context/ScrollContext';
 import { Container } from '../../components/layout/Container';
 import { UsersTable } from './tables/UsersTable';
 import EmptyState from '../../components/ui/EmptyState';
-import AppLoading from '../../components/ui/AppLoading';
+import TableSkeleton from '../../components/ui/TableSkeleton';
 import AppSnackbar from '../../components/ui/AppSnackBar';
+import FadeInView from '../../components/animations/FadeInView';
 import { API_URL } from '../../config/env';
 
 import Button from '../../components/ui/Button';
@@ -15,9 +17,11 @@ import Dropdown from '../../components/ui/Dropdown';
 import ToggleButton from '../../components/ui/ToggleButton';
 import FilterPopover from '../../components/ui/FilterPopover';
 import { UseUsuariosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseUsuariosFilter';
+import SummaryCards from '../../components/ui/SummaryCards';
 
 export function AdminUsuariosScreen() {
   const { user } = useAuth();
+  const { handleScroll } = useScroll();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -74,100 +78,116 @@ export function AdminUsuariosScreen() {
 
   return (
     <Container>
-      <View style={{ flex: 1 }}>
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.container}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={[theme.colors.primary]}
-            />
-          }
-        >
-          <Text style={styles.pageTitle}>Panel de Usuarios</Text>
+      <FadeInView style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
+          <ScrollView
+            style={styles.scroll}
+            contentContainerStyle={styles.container}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[theme.colors.primary]}
+              />
+            }
+          >
+            <Text style={styles.pageTitle}>Panel de Usuarios</Text>
 
-          {/* ── Barra superior ── */}
-          {hasData && (
-            <View style={styles.topBar}>
-              <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
-                <Button
-                  title="Filtrar"
-                  icon="filter"
-                  variant="primary"
-                  onPress={() => setShowFilters(true)}
-                />
-                {numFiltrosActivos > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
-                  </View>
-                )}
+            {/* ── Summary Cards ── */}
+            {hasData && (
+              <SummaryCards
+                data={[
+                  { label: 'Total Usuarios', value: users.length, icon: 'users', color: theme.colors.primary },
+                  { label: 'Activos', value: users.filter(u => u.status === 'active').length, icon: 'check-circle', color: '#2ECC71' },
+                  { label: 'Bloqueados', value: users.filter(u => u.status !== 'active').length, icon: 'ban', color: '#E74C3C' },
+                  { label: 'Policías', value: users.filter(u => u.role === 'police').length, icon: 'shield', color: '#3498DB' },
+                ]}
+              />
+            )}
+
+            {/* ── Barra superior ── */}
+            {hasData && (
+              <View style={styles.topBar}>
+                <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
+                  <Button
+                    title="Filtrar"
+                    icon="filter"
+                    variant="primary"
+                    onPress={() => setShowFilters(true)}
+                  />
+                  {numFiltrosActivos > 0 && (
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
+                    </View>
+                  )}
+                </View>
+                <View style={styles.orderContainer}>
+                  <Text style={styles.orderLabel}>Ordenar por</Text>
+                  <Dropdown
+                    options={ORDER_OPTIONS}
+                    selected={order}
+                    onSelect={setOrder}
+                    placeholder="Ordenar por..."
+                  />
+                </View>
               </View>
-              <View style={styles.orderContainer}>
-                <Text style={styles.orderLabel}>Ordenar por</Text>
-                <Dropdown
-                  options={ORDER_OPTIONS}
-                  selected={order}
-                  onSelect={setOrder}
-                  placeholder="Ordenar por..."
-                />
+            )}
+
+            {/* ── Buscador de correo ── */}
+            {hasData && (
+              <View style={styles.searchRow}>
+                <View style={styles.searchBox}>
+                  <Ionicons name="search-outline" size={16} color={theme.colors.text} />
+                  <TextInput
+                    style={styles.searchInput}
+                    placeholder="Buscar por correo..."
+                    placeholderTextColor={theme.colors.text}
+                    value={emailSearch}
+                    onChangeText={setEmailSearch}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                  />
+                  {emailSearch.length > 0 && (
+                    <TouchableOpacity onPress={() => setEmailSearch('')} hitSlop={8}>
+                      <Ionicons name="close" size={16} color={theme.colors.text} />
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
-            </View>
-          )}
+            )}
 
-          {/* ── Buscador de correo ── */}
-          {hasData && (
-            <View style={styles.searchRow}>
-              <View style={styles.searchBox}>
-                <Ionicons name="search-outline" size={16} color={theme.colors.text} />
-                <TextInput
-                  style={styles.searchInput}
-                  placeholder="Buscar por correo..."
-                  placeholderTextColor={theme.colors.text}
-                  value={emailSearch}
-                  onChangeText={setEmailSearch}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                />
-                {emailSearch.length > 0 && (
-                  <TouchableOpacity onPress={() => setEmailSearch('')} hitSlop={8}>
-                    <Ionicons name="close" size={16} color={theme.colors.text} />
-                  </TouchableOpacity>
-                )}
-              </View>
-            </View>
-          )}
+            {loading && !refreshing ? (
+              <TableSkeleton rows={6} cols={4} />
+            ) : users.length === 0 ? (
+              <EmptyState
+                icon="users-slash"
+                title="No hay usuarios registrados"
+                subtitle="Tira hacia abajo para refrescar."
+                buttonText="Recargar"
+                onButtonPress={fetchUsers}
+              />
+            ) : filteredData.length === 0 ? (
+              <EmptyState
+                icon="search-minus"
+                title="No se encontraron usuarios"
+                subtitle="Prueba ajustando los filtros para ver más resultados."
+                buttonText="Limpiar filtros"
+                onButtonPress={resetFilters}
+              />
+            ) : (
+              <>
+                <Text style={styles.resultsText}>
+                  {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
+                </Text>
+                <UsersTable users={filteredData} />
+              </>
+            )}
 
-          {loading && !refreshing ? (
-            <AppLoading message="Cargando usuarios..." style={styles.centerLoader} />
-          ) : users.length === 0 ? (
-            <EmptyState
-              icon="users-slash"
-              title="No hay usuarios registrados"
-              subtitle="Tira hacia abajo para refrescar."
-              buttonText="Recargar"
-              onButtonPress={fetchUsers}
-            />
-          ) : filteredData.length === 0 ? (
-            <EmptyState
-              icon="search-minus"
-              title="No se encontraron usuarios"
-              subtitle="Prueba ajustando los filtros para ver más resultados."
-              buttonText="Limpiar filtros"
-              onButtonPress={resetFilters}
-            />
-          ) : (
-            <>
-              <Text style={styles.resultsText}>
-                {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
-              </Text>
-              <UsersTable users={filteredData} />
-            </>
-          )}
-
-        </ScrollView>
-      </View>
+          </ScrollView>
+        </View>
+      </FadeInView>
 
       {/* ── Modal de filtros ── */}
       <FilterPopover visible={showFilters} onClose={() => setShowFilters(false)}>
@@ -178,7 +198,7 @@ export function AdminUsuariosScreen() {
             <ToggleButton
               key={opt.value}
               title={opt.label}
-              defaultSelected={statusFilter?.value === opt.value}
+              selected={statusFilter?.value === opt.value}
               onToggle={(val) => setStatusFilter(val ? opt : null)}
             />
           ))}
@@ -190,7 +210,7 @@ export function AdminUsuariosScreen() {
             <ToggleButton
               key={opt.value}
               title={opt.label}
-              defaultSelected={roleFilter?.value === opt.value}
+              selected={roleFilter?.value === opt.value}
               onToggle={(val) => setRoleFilter(val ? opt : null)}
             />
           ))}

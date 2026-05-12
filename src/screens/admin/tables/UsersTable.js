@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { theme } from '../../../theme';
 import Button from '../../../components/ui/Button';
 import TablePagination from '../../../components/ui/TablePagination';
+import FadeInView from '../../../components/animations/FadeInView';
 
 const COLS_DESKTOP = [
   { key: 'email', header: 'Correo' },
@@ -40,23 +41,25 @@ export function UsersTable({ users = [] }) {
           </View>
 
           {paginatedData.map((row, i) => (
-            <View key={row._id} style={rowStyle(i)}>
-              <Text style={[styles.cell, styles.colEmail]}>{row.email}</Text>
-              <Text style={styles.cell}>{row.badge_number ?? '—'}</Text>
-              <Text style={styles.cell}>{row.role}</Text>
-              <Text style={styles.cell}>
-                {row.status === 'active' ? 'Activo' : 'Bloqueado'}
-              </Text>
-              <View style={styles.actionCell}>
-                <Button
-                  title={row.status === 'active' ? 'Bloquear' : 'Desbloquear'}
-                  icon={row.status === 'active' ? 'times' : 'check'}
-                  variant={row.status === 'active' ? 'danger' : 'success'}
-                  size="small"
-                  onPress={() => { }}
-                />
+            <FadeInView key={row._id} delay={i * 50} translateY={10}>
+              <View style={rowStyle(i)}>
+                <Text style={[styles.cell, styles.colEmail]}>{row.email}</Text>
+                <Text style={styles.cell}>{row.badge_number ?? '—'}</Text>
+                <Text style={styles.cell}>{row.role}</Text>
+                <Text style={styles.cell}>
+                  {row.status === 'active' ? 'Activo' : 'Bloqueado'}
+                </Text>
+                <View style={styles.actionCell}>
+                  <Button
+                    title={row.status === 'active' ? 'Bloquear' : 'Desbloquear'}
+                    icon={row.status === 'active' ? 'times' : 'check'}
+                    variant={row.status === 'active' ? 'danger' : 'success'}
+                    size="small"
+                    onPress={() => { }}
+                  />
+                </View>
               </View>
-            </View>
+            </FadeInView>
           ))}
         </>
       );
@@ -72,25 +75,27 @@ export function UsersTable({ users = [] }) {
         </View>
 
         {paginatedData.map((row, i) => (
-          <View key={row._id} style={rowStyle(i)}>
-            <Text style={[styles.cell, styles.mCorreo]} numberOfLines={1}>
-              {row.email}
-            </Text>
-            <Text style={[styles.cell, styles.mPlaca]}>
-              {row.badge_number ?? '—'}
-            </Text>
-            <Text style={[styles.cell, styles.mEstado]}>
-              {row.status === 'active' ? 'Activo' : 'Bloqueado'}
-            </Text>
-            <View style={styles.mBtnContainer}>
-              <Button
-                icon={row.status === 'active' ? 'times' : 'check'}
-                variant={row.status === 'active' ? 'danger' : 'success'}
-                size="small"
-                onPress={() => { }}
-              />
+          <FadeInView key={row._id} delay={i * 40} translateY={8}>
+            <View style={rowStyle(i)}>
+              <Text style={[styles.cell, styles.mCorreo]} numberOfLines={1}>
+                {row.email}
+              </Text>
+              <Text style={[styles.cell, styles.mPlaca]}>
+                {row.badge_number ?? '—'}
+              </Text>
+              <Text style={[styles.cell, styles.mEstado]}>
+                {row.status === 'active' ? 'Activo' : 'Bloqueado'}
+              </Text>
+              <View style={styles.mBtnContainer}>
+                <Button
+                  icon={row.status === 'active' ? 'times' : 'check'}
+                  variant={row.status === 'active' ? 'danger' : 'success'}
+                  size="small"
+                  onPress={() => { }}
+                />
+              </View>
             </View>
-          </View>
+          </FadeInView>
         ))}
       </>
     );
@@ -134,8 +139,9 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.tableBorder || '#eee',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   rowEven: { backgroundColor: theme.colors.tableRowEven || '#fff' },
   rowOdd: { backgroundColor: theme.colors.tableRowOdd || '#f9f9f9' },

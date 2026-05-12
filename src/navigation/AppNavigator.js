@@ -48,6 +48,8 @@ export default function AppNavigator() {
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: theme.colors.background },
+        animation: 'fade_from_bottom',
+        animationDuration: 300,
       }}
     >
       {!user ? (

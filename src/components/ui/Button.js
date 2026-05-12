@@ -1,8 +1,10 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
+import React, { useRef } from 'react';
+import { Animated, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 
+
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function Button({
   title,
@@ -11,6 +13,27 @@ export default function Button({
   onPress,
   disabled = false,
 }) {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    if (disabled) return;
+    Animated.spring(scaleAnim, {
+      toValue: 0.96,
+      useNativeDriver: true,
+      tension: 100,
+      friction: 10,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    if (disabled) return;
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 100,
+      friction: 10,
+    }).start();
+  };
 
   const isIconOnly = icon && !title;
 
@@ -19,6 +42,7 @@ export default function Button({
       backgroundColor: theme.colors.primaryButtonBackground,
       textColor: theme.colors.primaryButtonText,
       iconColor: theme.colors.primaryButtonIcon,
+      ...theme.shadows.glow(theme.colors.primary, 0.3),
     },
     secondary: {
       backgroundColor: theme.colors.secondaryButtonBackground,
@@ -51,7 +75,10 @@ export default function Button({
   const current = variants[variant] || variants.primary;
 
   return (
-    <TouchableOpacity
+    <AnimatedTouchableOpacity
+      activeOpacity={disabled ? 1 : 0.8}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
       style={[
         styles.button,
         isIconOnly && styles.iconButton,
@@ -60,10 +87,11 @@ export default function Button({
           borderWidth: current.borderColor ? 1 : 0,
           borderColor: current.borderColor,
           opacity: disabled ? 0.2 : 1,
+          transform: [{ scale: scaleAnim }],
+          ...current,
         }
       ]}
       onPress={!disabled ? onPress : null}
-      activeOpacity={disabled ? 1 : 0.8}
       disabled={disabled}
     >
       {icon && (
@@ -79,7 +107,7 @@ export default function Button({
           {title}
         </Text>
       )}
-    </TouchableOpacity>
+    </AnimatedTouchableOpacity>
   );
 }
 
@@ -99,7 +127,7 @@ const styles = StyleSheet.create({
     }),
   },
   text: {
-    ...theme.typography.body,
+    ...theme.typography.bodyBold,
   },
   iconButton: {
     width: 40,

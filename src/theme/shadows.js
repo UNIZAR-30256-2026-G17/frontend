@@ -19,4 +19,14 @@ export const shadows = {
   md: shadow(4),
   lg: shadow(8),
   xl: shadow(16),
+  glow: (color = '#FFD100', intensity = 0.6) => Platform.select({
+    ios: {
+      shadowColor: color,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: intensity,
+      shadowRadius: 15,
+    },
+    android: { elevation: 6 },
+    web: { boxShadow: `0px 0px 20px ${color}88` },
+  }),
 };

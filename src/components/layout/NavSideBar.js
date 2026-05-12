@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, Modal,
   Pressable, Platform, Animated, Image,
@@ -6,25 +6,24 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 
-export const NavSidebar = ({ visible, onClose, tabs, currentRoute, onNavigate, logo }) => {
-  const slideAnim = useRef(new Animated.Value(-260)).current;
+export const NavSidebar = ({ visible, onClose, sections = [], currentRoute, onNavigate, logo }) => {
+  const slideAnim = useRef(new Animated.Value(-280)).current;
+  const [collapsed, setCollapsed] = useState({});
 
   useEffect(() => {
-    if (visible) {
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        useNativeDriver: true,
-        tension: 70,
-        friction: 12,
-      }).start();
-    } else {
-      Animated.timing(slideAnim, {
-        toValue: -260,
-        duration: 220,
-        useNativeDriver: true,
-      }).start();
-    }
+    Animated.timing(slideAnim, {
+      toValue: visible ? 0 : -280,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
   }, [visible]);
+
+  const toggleSection = (title) => {
+    setCollapsed(prev => ({
+      ...prev,
+      [title]: !prev[title]
+    }));
+  };
 
   return (
     <Modal
@@ -33,144 +32,212 @@ export const NavSidebar = ({ visible, onClose, tabs, currentRoute, onNavigate, l
       animationType="none"
       onRequestClose={onClose}
     >
-      <Pressable style={styles.overlay} onPress={onClose} />
+      <View style={styles.overlay}>
+        <Pressable style={styles.backdrop} onPress={onClose} />
+        
+        <Animated.View style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}>
+          {/* Header */}
+          <View style={styles.sidebarHeader}>
+            {logo && <Image source={logo} style={styles.sidebarLogo} />}
+            <View>
+              <Text style={styles.sidebarTitle}>Montgomery</Text>
+              <Text style={styles.sidebarSubtitle}>SafetyMap v2.0</Text>
+            </View>
+            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+              <FontAwesome name="times" size={18} color="rgba(255,255,255,0.6)" />
+            </TouchableOpacity>
+          </View>
 
-      <Animated.View style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}>
+          {/* Navigation */}
+          <View style={styles.navScroll}>
+            {sections.map((section, sIdx) => (
+              <View key={section.title} style={styles.section}>
+                <TouchableOpacity 
+                  style={styles.sectionHeader}
+                  onPress={() => toggleSection(section.title)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.sectionTitle}>{section.title}</Text>
+                  <FontAwesome 
+                    name={collapsed[section.title] ? "chevron-down" : "chevron-up"} 
+                    size={10} 
+                    color="rgba(255,255,255,0.3)" 
+                  />
+                </TouchableOpacity>
 
-        {/* Header */}
-        <View style={styles.sidebarHeader}>
-          {logo && <Image source={logo} style={styles.logo} resizeMode="contain" />}
-          <Text style={styles.appName}>Montgomery{'\n'}SafetyMap</Text>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <FontAwesome name="times" size={18} color="rgba(0,0,0,0.45)" />
-          </TouchableOpacity>
-        </View>
+                {!collapsed[section.title] && (
+                  <View style={styles.sectionContent}>
+                    {section.items.map((item, iIdx) => {
+                      const isActive = currentRoute === item.route;
+                      return (
+                        <TouchableOpacity
+                          key={item.route}
+                          style={[styles.navItem, isActive && styles.navItemActive]}
+                          onPress={() => onNavigate(item.route)}
+                        >
+                          <View style={styles.navItemInner}>
+                            <FontAwesome
+                              name={item.icon}
+                              size={16}
+                              color={isActive ? '#FFFFFF' : 'rgba(255,255,255,0.4)'}
+                              style={styles.navIcon}
+                            />
+                            <Text style={[styles.navLabel, isActive && styles.navLabelActive]}>
+                              {item.label}
+                            </Text>
+                          </View>
+                          {isActive && <View style={styles.activeDot} />}
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
 
-        <View style={styles.divider} />
-
-        {/* Nav items */}
-        <View style={styles.nav}>
-          {tabs.map((tab) => {
-            const isActive = currentRoute === tab.route;
-            return (
-              <TouchableOpacity
-                key={tab.route}
-                style={[styles.navItem, isActive && styles.navItemActive]}
-                onPress={() => onNavigate(tab.route)}
-              >
-                <FontAwesome
-                  name={tab.icon}
-                  size={16}
-                  color={isActive ? theme.colors.headerText : 'rgba(0,0,0,0.38)'}
-                  style={styles.navIcon}
-                />
-                <Text style={[styles.navLabel, isActive && styles.navLabelActive]}>
-                  {tab.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-        {/* Footer */}
-        <View style={styles.footer}>
-          <View style={styles.divider} />
-          <Text style={styles.footerText}>Montgomery County{'\n'}Safety Department</Text>
-        </View>
-
-      </Animated.View>
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Montgomery County Safety Dept</Text>
+          </View>
+        </Animated.View>
+      </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
   overlay: {
-    position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.45)',
+    flex: 1,
+    flexDirection: 'row',
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)',
   },
   sidebar: {
-    position: 'absolute',
-    top: 0, left: 0, bottom: 0,
-    width: 240,
-    backgroundColor: theme.colors.headerBackground,
-    shadowColor: '#000',
-    shadowOffset: { width: 6, height: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 25,
-    flexDirection: 'column',
+    width: 280,
+    backgroundColor: '#1A1A1A',
+    height: '100%',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 4, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 10,
+      },
+      web: {
+        boxShadow: '10px 0px 30px rgba(0,0,0,0.5)',
+      }
+    })
   },
   sidebarHeader: {
+    padding: 24,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 16,
-    paddingTop: 52,
-    paddingBottom: 14,
+    gap: 12,
   },
-  logo: {
-    width: 34,
-    height: 34,
-    borderRadius: 8,
+  sidebarLogo: {
+    width: 32,
+    height: 32,
+    borderRadius: 6,
   },
-  appName: {
+  sidebarTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  sidebarSubtitle: {
+    color: theme.colors.primary,
+    fontSize: 11,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    opacity: 0.8,
+  },
+  closeBtn: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 55 : 35,
+    right: 20,
+    padding: 8,
+  },
+  navScroll: {
     flex: 1,
-    color: theme.colors.headerText,
-    fontSize: 13,
-    fontWeight: '700',
-    lineHeight: 18,
+    paddingVertical: 20,
   },
-  closeButton: {
-    padding: 6,
-    ...Platform.select({ web: { cursor: 'pointer' }, default: {} }),
+  section: {
+    marginBottom: 20,
   },
-  divider: {
-    height: 0.5,
-    backgroundColor: 'rgba(0,0,0,0.12)',
-    marginHorizontal: 16,
-    marginVertical: 4,
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    marginBottom: 10,
   },
-  nav: {
-    flex: 1,
-    paddingVertical: 8,
+  sectionTitle: {
+    color: 'rgba(255,255,255,0.3)',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  sectionContent: {
+    gap: 4,
   },
   navItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
     paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderLeftWidth: 2,
-    borderLeftColor: 'transparent',
-    ...Platform.select({ web: { cursor: 'pointer' }, default: {} }),
+    position: 'relative',
   },
   navItemActive: {
-    backgroundColor: 'rgba(0,0,0,0.08)',
-    borderLeftColor: theme.colors.headerText,
+    backgroundColor: 'rgba(255, 209, 0, 0.08)',
+  },
+  navItemInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
   },
   navIcon: {
-    width: 18,
+    width: 20,
     textAlign: 'center',
   },
   navLabel: {
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    fontWeight: '500',
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 15,
+    fontWeight: '600',
   },
   navLabelActive: {
-    color: theme.colors.headerText,
+    color: theme.colors.primary,
     fontWeight: '700',
   },
+  activeDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: theme.colors.primary,
+    ...theme.shadows.glow(theme.colors.primary, 0.5),
+  },
   footer: {
-    paddingBottom: 32,
+    padding: 24,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.05)',
   },
   footerText: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    fontSize: 11,
-    color: 'rgba(0,0,0,0.3)',
-    lineHeight: 16,
-    fontWeight: '500',
+    color: 'rgba(255,255,255,0.2)',
+    fontSize: 10,
+    textAlign: 'center',
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
 });

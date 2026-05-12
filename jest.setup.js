@@ -6,6 +6,7 @@ jest.mock('expo-font', () => ({
   loadAsync: jest.fn(),
   isLoaded: jest.fn(() => true),
   isLoading: jest.fn(() => false),
+  useFonts: jest.fn(() => [true, null]),
 }));
 
 // Mock expo-modules-core
@@ -21,6 +22,34 @@ jest.mock('@expo/vector-icons', () => ({
   Ionicons: 'Ionicons',
   MaterialIcons: 'MaterialIcons',
   FontAwesome: 'FontAwesome',
+}));
+
+// Mock expo-blur
+jest.mock('expo-blur', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    BlurView: (props) => React.createElement(View, props),
+  };
+});
+
+// Mock expo-linear-gradient
+jest.mock('expo-linear-gradient', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    LinearGradient: (props) => React.createElement(View, props),
+  };
+});
+
+// Mock ScrollContext to avoid issues in all screens
+jest.mock('./src/context/ScrollContext', () => ({
+  useScroll: () => ({
+    scrollY: 0,
+    setScrollY: jest.fn(),
+    handleScroll: jest.fn(),
+  }),
+  ScrollProvider: ({ children }) => children,
 }));
 
 // Mock Header to avoid navigation state issues in screen tests

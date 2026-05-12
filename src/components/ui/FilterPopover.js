@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Modal,
   ScrollView,
+  Platform,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme'; // Ruta a tu index.js del theme
@@ -67,14 +68,26 @@ const styles = StyleSheet.create({
     maxWidth: 640,
   },
   card: {
-    backgroundColor: theme.colors.cardBackground,
-    borderRadius: 10,
+    backgroundColor: theme.colors.glassBackground,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: theme.colors.cardBorder,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 5,
+    borderColor: theme.colors.glassBorder,
+    ...Platform.select({
+      web: {
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        backgroundColor: 'rgba(20, 20, 20, 0.85)',
+        boxShadow: `0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px ${theme.colors.glassBorder}`,
+      },
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 16 },
+        shadowOpacity: 0.4,
+        shadowRadius: 32,
+      },
+      android: { elevation: 10, backgroundColor: 'rgba(20, 20, 20, 0.95)' },
+      default: {},
+    }),
   },
   header: {
     flexDirection: 'row',

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, Image, Platform,
+  View, Text, StyleSheet, TouchableOpacity, Image, Platform, Animated,
 } from 'react-native';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { useWindowDimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
+import { useScroll } from '../../context/ScrollContext';
 import { NavSidebar } from './NavSideBar';
 import { ProfileSidebar } from './ProfileSideBar';
 import Button from '../ui/Button';
@@ -18,6 +20,28 @@ export const Header = () => {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const { user, logout } = useAuth();
+  const { scrollY } = useScroll();
+  const isScrolled = scrollY > 50;
+
+  const bgColor = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    Animated.timing(bgColor, {
+      toValue: isScrolled ? 1 : 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  }, [isScrolled]);
+
+  const animatedBackground = bgColor.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['#FFCC00', 'rgba(255, 204, 0, 0.85)'],
+  });
+
+  const animatedBlur = bgColor.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 25],
+  });
 
   const [navOpen, setNavOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -26,23 +50,54 @@ export const Header = () => {
   const isAdmin = user?.role === 'admin';
   const isPolice = user?.role === 'police';
 
-  const tabs = isAdmin
+  const sections = React.useMemo(() => isAdmin
     ? [
-        { label: 'Usuarios',     route: 'Panel de Usuarios',   icon: 'user' },
-        { label: 'Delitos',      route: 'Panel de Delitos',  icon: 'warning' },
-        { label: 'Alertas',      route: 'Panel de Alertas',  icon: 'bell' },
-      ]
+      {
+        title: 'GESTIÓN',
+        items: [
+          { label: 'Usuarios', route: 'Panel de Usuarios', icon: 'user' },
+          { label: 'Alertas', route: 'Panel de Alertas', icon: 'bell' },
+        ]
+      },
+      {
+        title: 'DATOS',
+        items: [
+          { label: 'Delitos', route: 'Panel de Delitos', icon: 'warning' },
+        ]
+      },
+    ]
     : isPolice
       ? [
-          { label: 'Mapa',          route: 'Mapa Policial',    icon: 'map-marker' },
-          { label: 'Delitos',       route: 'Listado de Delitos', icon: 'exclamation-triangle' },
-          { label: 'Alertas',       route: 'Gestión de Alertas', icon: 'bell' },
-          { label: 'Estadísticas',  route: 'Estadísticas Policiales',  icon: 'bar-chart' },
-        ]
+        {
+          title: 'MAPA',
+          items: [{ label: 'Explorar', route: 'Mapa Policial', icon: 'map-marker' }]
+        },
+        {
+          title: 'GESTIÓN',
+          items: [
+            { label: 'Alertas', route: 'Gestión de Alertas', icon: 'bell' },
+            { label: 'Rutas', route: 'Rutas de Patrullaje', icon: 'road' },
+          ]
+        },
+        {
+          title: 'DATOS',
+          items: [
+            { label: 'Delitos', route: 'Listado de Delitos', icon: 'exclamation-triangle' },
+            { label: 'Estadísticas', route: 'Estadísticas Policiales', icon: 'bar-chart' },
+          ]
+        },
+      ]
       : [
-          { label: 'Mapa',         route: 'Mapa',   icon: 'map-marker' },
-          { label: 'Estadísticas', route: 'Estadísticas', icon: 'bar-chart' },
-        ];
+        {
+          title: 'EXPLORAR',
+          items: [
+            { label: 'Mapa', route: 'Mapa', icon: 'map-marker' },
+            { label: 'Estadísticas', route: 'Estadísticas', icon: 'bar-chart' },
+          ]
+        }
+      ], [isAdmin, isPolice]);
+
+  const allTabs = React.useMemo(() => sections.flatMap(s => s.items), [sections]);
 
   const currentRoute = useNavigationState(
     (state) => state?.routes[state.index]?.name
@@ -62,9 +117,28 @@ export const Header = () => {
   const getUserInitial = () =>
     user?.email ? user.email.charAt(0).toUpperCase() : '?';
 
+  const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
+
   return (
     <>
-      <View style={styles.header}>
+      <Animated.View
+        style={[
+          styles.header,
+          { backgroundColor: animatedBackground },
+          Platform.OS === 'web' && {
+            backdropFilter: isScrolled ? 'blur(16px)' : 'none',
+            WebkitBackdropFilter: isScrolled ? 'blur(16px)' : 'none',
+            transition: 'background-color 0.3s ease, backdrop-filter 0.3s ease',
+          }
+        ]}
+      >
+        {Platform.OS !== 'web' && (
+          <AnimatedBlurView
+            intensity={animatedBlur}
+            style={StyleSheet.absoluteFill}
+            tint="light"
+          />
+        )}
 
         {/* ── LEFT: hamburger (mobile) + logo + nombre (desktop) ── */}
         <View style={isMobile ? styles.sideSection : styles.leftSection}>
@@ -76,7 +150,7 @@ export const Header = () => {
           {!isMobile && (
             <TouchableOpacity
               style={styles.logoArea}
-              onPress={() => !isAdmin && navigation.navigate('Inicio')}
+              onPress={() => isPolice && navigation.navigate('Mapa Policial') || !isAdmin && !isPolice && navigation.navigate('Inicio')}
             >
               <Image source={LOGO} style={styles.logo} resizeMode="contain" />
               <Text style={styles.title}>Montgomery SafetyMap</Text>
@@ -85,12 +159,13 @@ export const Header = () => {
         </View>
 
         {isMobile && (
-          <TouchableOpacity
-            style={styles.logoAreaMobile}
-            onPress={() => !isAdmin && navigation.navigate('Inicio')}
-          >
-            <Image source={LOGO} style={styles.logo} resizeMode="contain" />
-          </TouchableOpacity>
+          <View style={styles.logoAreaMobile} pointerEvents="box-none">
+            <TouchableOpacity
+              onPress={() => !isAdmin && navigation.navigate('Inicio')}
+            >
+              <Image source={LOGO} style={styles.logo} resizeMode="contain" />
+            </TouchableOpacity>
+          </View>
         )}
 
         {/* ── RIGHT: tabs (desktop) + avatar/login ── */}
@@ -99,7 +174,7 @@ export const Header = () => {
           {/* Tabs solo en desktop */}
           {!isMobile && (
             <View style={styles.tabs}>
-              {tabs.map((tab) => {
+              {allTabs.map((tab) => {
                 const isActive = currentRoute === tab.route;
                 return (
                   <TouchableOpacity
@@ -139,13 +214,13 @@ export const Header = () => {
             />
           )}
         </View>
-      </View>
+      </Animated.View>
 
       {/* ── SIDEBARS ── */}
       <NavSidebar
-        visible={isMobile && navOpen}
+        visible={navOpen}
         onClose={() => setNavOpen(false)}
-        tabs={tabs}
+        sections={sections}
         currentRoute={currentRoute}
         onNavigate={handleNavigate}
         logo={LOGO}
@@ -167,14 +242,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: theme.colors.headerBackground,
     paddingHorizontal: 20,
     paddingVertical: 12,
-  },
-  headerMobileContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 64,
   },
   leftSection: {
     flexDirection: 'row',
@@ -225,6 +301,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 3,
     borderBottomColor: theme.colors.headerTabActiveBorder,
     backgroundColor: theme.colors.headerTabActiveBackground,
+    ...theme.shadows.glow(theme.colors.headerTabActiveBorder, 0.6),
   },
   tabText: {
     fontSize: 16,
@@ -252,6 +329,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: theme.colors.headerButtonText,
+    ...theme.shadows.glow(theme.colors.primary, 0.2),
     ...Platform.select({ web: { cursor: 'pointer' }, default: {} }),
   },
   avatarText: {

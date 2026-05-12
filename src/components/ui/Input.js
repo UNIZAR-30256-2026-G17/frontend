@@ -21,11 +21,16 @@ export default function Input({
                 : theme.colors.inputBorder,
             backgroundColor: theme.colors.inputBackground,
         },
-        textInput: {
+        input: {
+            flex: 1,
             color: theme.colors.inputText,
+            ...theme.typography.body,
+            paddingVertical: 12,
+            paddingRight: 10,
         },
         label: {
             color: theme.colors.inputLabel,
+            ...theme.typography.bodyBold,
         },
     };
 

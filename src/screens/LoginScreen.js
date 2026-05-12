@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, ScrollView, Platform } from 'react-nativ
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/AuthContext';
 import { theme } from '../theme';
+import { useScroll } from '../context/ScrollContext';
 
 import { Container } from '../components/layout/Container';
 import Card from '../components/ui/Card';
@@ -16,6 +17,7 @@ import { API_URL } from '../config/env';
 export const LoginScreen = () => {
   const navigation = useNavigation();
   const { login } = useAuth();
+  const { handleScroll } = useScroll();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -74,6 +76,8 @@ export const LoginScreen = () => {
       <ScrollView
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
       >
         <Text style={styles.pageTitle}>Iniciar sesión</Text>
 

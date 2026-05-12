@@ -6,6 +6,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
+import { Container } from '../components/layout/Container';
+import { useScroll } from '../context/ScrollContext';
 
 // ─── DESIGN TOKENS ──────────────────────────────────────────────
 const C = {
@@ -202,6 +204,7 @@ export const HomeScreen = () => {
   const navigation = useNavigation();
   const { width } = useWindowDimensions();
   const m = width < 768; // isMobile shorthand
+  const { handleScroll } = useScroll();
 
   const heroOp = useRef(new Animated.Value(0)).current;
   const heroY  = useRef(new Animated.Value(40)).current;
@@ -214,7 +217,13 @@ export const HomeScreen = () => {
   }, []);
 
   return (
-    <ScrollView style={s.scroll} showsVerticalScrollIndicator={false}>
+    <Container>
+      <ScrollView 
+        style={s.scroll} 
+        showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+      >
 
       {/* ── HERO ── */}
       <View style={[s.hero, m && s.heroM]}>
@@ -345,6 +354,7 @@ export const HomeScreen = () => {
       </View>
 
     </ScrollView>
+    </Container>
   );
 };
 
@@ -356,7 +366,7 @@ const s = StyleSheet.create({
   hero: {
     backgroundColor: C.dark, flexDirection: 'row', alignItems: 'center',
     justifyContent: 'space-between', paddingHorizontal: SPACE.xl,
-    paddingTop: 64, paddingBottom: 0, minHeight: 500, overflow: 'hidden',
+    paddingTop: 0, paddingBottom: 0, minHeight: 500, overflow: 'hidden',
   },
   heroM: { flexDirection: 'column', paddingHorizontal: SPACE.lg, paddingTop: SPACE.xl },
   accent: { position: 'absolute', borderRadius: 999, backgroundColor: '#fff' },
@@ -405,8 +415,8 @@ const s = StyleSheet.create({
   },
   statItem: { flex: 1, alignItems: 'center' },
   statDivider: { width: 1, backgroundColor: 'rgba(0,0,0,0.12)', marginVertical: 4 },
-  statValue: { fontSize: 28, fontWeight: '800', color: C.dark, marginBottom: 3 },
-  statLabel: { fontSize: 11, color: 'rgba(0,0,0,0.5)', textAlign: 'center', fontWeight: '600', letterSpacing: 0.2 },
+  statValue: { fontSize: 28, fontFamily: 'PlusJakarta-ExtraBold', color: C.dark, marginBottom: 3 },
+  statLabel: { fontSize: 11, color: 'rgba(0,0,0,0.5)', textAlign: 'center', fontFamily: 'Inter-Medium', letterSpacing: 0.2 },
 
   // SECTION
   section: { paddingVertical: SPACE.xxl, paddingHorizontal: SPACE.lg },
@@ -416,9 +426,9 @@ const s = StyleSheet.create({
     borderRadius: 20, marginBottom: 14,
   },
   tagPillLight: { backgroundColor: C.surface, borderWidth: 1, borderColor: C.border },
-  tagText: { fontSize: 11, fontWeight: '700', color: C.yellow, letterSpacing: 1.2, textTransform: 'uppercase' },
+  tagText: { fontSize: 11, fontFamily: 'Inter-Bold', color: C.yellow, letterSpacing: 1.2, textTransform: 'uppercase' },
   tagTextLight: { color: C.textMute },
-  sectionTitle: { fontSize: 28, fontWeight: '800', color: C.dark, textAlign: 'center', lineHeight: 38, letterSpacing: -0.3 },
+  sectionTitle: { fontSize: 28, fontFamily: 'PlusJakarta-ExtraBold', color: C.dark, textAlign: 'center', lineHeight: 38, letterSpacing: -0.3 },
   sectionTitleLight: { color: C.white },
 
   // GRIDS
@@ -437,13 +447,13 @@ const s = StyleSheet.create({
     }),
   },
   featureIcon: { width: 46, height: 46, borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginBottom: 14 },
-  featureTitle: { fontSize: 15, fontWeight: '700', color: C.dark, marginBottom: 6 },
-  featureDesc: { fontSize: 13, color: C.textMute, lineHeight: 21 },
+  featureTitle: { fontSize: 15, fontFamily: 'PlusJakarta-Bold', color: C.dark, marginBottom: 6 },
+  featureDesc: { fontSize: 13, fontFamily: 'Inter-Regular', color: C.textMute, lineHeight: 21 },
 
   // ROLE CARD
   roleCard: { flex: 1, borderRadius: 16, padding: SPACE.lg, minWidth: 190, maxWidth: 290 },
   roleIcon: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', marginBottom: 14 },
-  roleTitle: { fontSize: 17, fontWeight: '800', marginBottom: 14 },
+  roleTitle: { fontSize: 17, fontFamily: 'PlusJakarta-ExtraBold', marginBottom: 14 },
   perkRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 6 },
   perkDot: { width: 5, height: 5, borderRadius: 3, marginTop: 7, flexShrink: 0 },
   perkText: { fontSize: 13, lineHeight: 20, flex: 1 },

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 
@@ -62,6 +62,21 @@ const styles = StyleSheet.create({
         borderColor: theme.colors.cardBorder,
         borderRadius: 16,
         padding: 16,
+        ...Platform.select({
+            web: {
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                boxShadow: `0 8px 32px ${theme.colors.glassShadow}, 0 0 0 1px ${theme.colors.glassBorder}`,
+            },
+            ios: {
+                shadowColor: theme.colors.glassShadow,
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 1,
+                shadowRadius: 24,
+            },
+            android: { elevation: 4 },
+            default: {},
+        }),
     },
     header: {
         flexDirection: 'row',

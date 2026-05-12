@@ -2,25 +2,39 @@
 
 export const typography = {
     title: {
+        fontFamily: 'PlusJakarta-Bold',
         fontSize: 48,
-        fontWeight: 'bold',
     },
     pageTitle: {
+        fontFamily: 'PlusJakarta-Bold',
         fontSize: 24,
-        fontWeight: 'bold',
     },
     body: {
+        fontFamily: 'Inter-Regular',
+        fontSize: 14,
+    },
+    bodyMedium: {
+        fontFamily: 'Inter-Medium',
+        fontSize: 14,
+    },
+    bodyBold: {
+        fontFamily: 'Inter-Bold',
         fontSize: 14,
     },
     cardTitle: {
+        fontFamily: 'PlusJakarta-Bold',
         fontSize: 16,
-        fontWeight: 'bold',
     },
     cardDescription: {
+        fontFamily: 'Inter-Regular',
         fontSize: 14,
     },
     statsPercentage: {
+        fontFamily: 'PlusJakarta-Bold',
         fontSize: 24,
-        fontWeight: 'bold',
     },
+    mono: {
+        fontFamily: 'JetBrains-Mono',
+        fontSize: 12,
+    }
 };

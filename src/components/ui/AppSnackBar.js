@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Snackbar } from 'react-native-paper';
 import { theme } from '../../theme';
 
@@ -14,16 +14,17 @@ export default function AppSnackbar({ visible, message, variant = 'normal', onDi
         duration={duration}
         style={[
             styles.snackbar,
-            { backgroundColor: isError ? theme.colors.danger : '#323232' }
+            { backgroundColor: isError ? '#B71C1C' : '#1A1A1A' }
         ]}
         wrapperStyle={styles.snackbarWrapper}
         action={{
           label: 'Cerrar',
-          textColor: isError ? theme.colors.dangerButtonText : theme.colors.primaryButtonText,
+          textColor: isError ? '#000000' : theme.colors.primary,
           onPress: onDismiss,
+          labelStyle: { fontWeight: 'bold' }
         }}
       >
-        {message}
+        <Text style={styles.messageText}>{message}</Text>
       </Snackbar>
     </View>
   );
@@ -37,16 +38,23 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     paddingBottom: 20,
-    zIndex: 1000,
+    zIndex: 9999,
   },
   snackbarWrapper: {
     width: 'auto',
-    minWidth: 300,
+    minWidth: 320,
     maxWidth: '90%',
     position: 'relative',
     bottom: 0,
   },
   snackbar: {
-    borderRadius: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  messageText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '500',
   }
 });

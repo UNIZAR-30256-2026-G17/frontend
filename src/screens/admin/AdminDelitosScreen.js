@@ -4,21 +4,25 @@ import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
 import { useAuth } from '../../context/AuthContext';
+import { useScroll } from '../../context/ScrollContext';
 import { DelitosTable } from './tables/DelitosTable';
 import LoadingOverlay from '../../components/ui/LoadingOverlay';
-import AppLoading from '../../components/ui/AppLoading';
+import TableSkeleton from '../../components/ui/TableSkeleton';
 import AppSnackbar from '../../components/ui/AppSnackBar';
+import FadeInView from '../../components/animations/FadeInView';
+import SummaryCards from '../../components/ui/SummaryCards';
 import { API_URL } from '../../config/env';
 
 import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import ToggleButton from '../../components/ui/ToggleButton';
 import DateInput from '../../components/ui/DateInput';
-import FilterPopover from '../../components/ui/FilterPopover'; // ajusta la ruta si difiere
+import FilterPopover from '../../components/ui/FilterPopover';
 import { UseDelitosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseDelitosFilter';
 
 export function AdminDelitosScreen() {
   const { user } = useAuth();
+  const { handleScroll } = useScroll();
   const [delitos, setDelitos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -91,13 +95,27 @@ export function AdminDelitosScreen() {
 
   return (
     <Container>
-      <View style={{ flex: 1 }}>
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.container}
-          scrollEventThrottle={16}
-        >
-          <Text style={styles.pageTitle}>Panel de delitos</Text>
+      <FadeInView style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
+          <ScrollView
+            style={styles.scroll}
+            contentContainerStyle={styles.container}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+          >
+            <Text style={styles.pageTitle}>Panel de delitos</Text>
+
+            {/* ── Summary Cards ── */}
+            {(!loading && delitos.length > 0) && (
+              <SummaryCards
+                data={[
+                  { label: 'Total Delitos', value: delitos.length, icon: 'shield', color: theme.colors.primary },
+                  { label: 'Disponibles', value: delitos.filter(d => d.status === 'available').length, icon: 'check-circle', color: '#2ECC71' },
+                  { label: 'Eliminados', value: delitos.filter(d => d.status === 'deleted').length, icon: 'trash', color: '#E74C3C' },
+                  { label: 'Distritos', value: new Set(delitos.map(d => d.district)).size, icon: 'map-o', color: '#F1C40F' },
+                ]}
+              />
+            )}
 
           {/* ── Barra superior ── */}
           {!loading && (
@@ -128,7 +146,7 @@ export function AdminDelitosScreen() {
           )}
 
           {loading ? (
-            <AppLoading message="Cargando delitos..." style={styles.centerLoader} />
+            <TableSkeleton rows={10} cols={4} />
           ) : (
             <>
               <Text style={styles.resultsText}>
@@ -140,6 +158,7 @@ export function AdminDelitosScreen() {
 
         </ScrollView>
       </View>
+    </FadeInView>
 
       {/* ── Modal de filtros ── */}
       <FilterPopover visible={showFilters} onClose={() => setShowFilters(false)}>
@@ -150,7 +169,7 @@ export function AdminDelitosScreen() {
             <ToggleButton
               key={opt.value}
               title={opt.label}
-              defaultSelected={tipoFilter?.value === opt.value}
+              selected={tipoFilter?.value === opt.value}
               onToggle={(val) => setTipoFilter(val ? opt : null)}
             />
           ))}
@@ -162,7 +181,7 @@ export function AdminDelitosScreen() {
             <ToggleButton
               key={opt.value}
               title={opt.label}
-              defaultSelected={statusFilter?.value === opt.value}
+              selected={statusFilter?.value === opt.value}
               onToggle={(val) => setStatusFilter(val ? opt : null)}
             />
           ))}
