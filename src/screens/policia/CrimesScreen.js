@@ -130,6 +130,13 @@ export function CrimesScreen() {
     return () => clearTimeout(timer);
   }, []);
 
+  const numFiltrosActivos = [
+    tipoFilter?.value,
+    distritoFilter?.value,
+    beatFilter?.value,
+    dateFrom,
+  ].filter(Boolean).length;
+
   return (
     <Container>
       <ScrollView
@@ -141,12 +148,19 @@ export function CrimesScreen() {
 
         {/* ── Barra superior ── */}
         <View style={styles.topBar}>
+          <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
           <Button
             title="Filtrar"
             icon="filter"
             variant="primary"
             onPress={() => setShowFilters(true)}
           />
+          {numFiltrosActivos > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
+            </View>
+          )}
+        </View>
           <View style={styles.orderContainer}>
             <Text style={styles.orderLabel}>Ordenar por</Text>
             <Dropdown
@@ -287,5 +301,27 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.text,
     marginBottom: 8,
+  },
+  badge: {
+    position: 'absolute',
+    top: -3,
+    right: -3,
+    backgroundColor: theme.colors.tableBorder,
+    borderRadius: 9999,
+    minWidth: 18,
+    height: 18,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+    // Borde para separarlo visualmente del botón
+    borderWidth: 2,
+    borderColor: theme.colors.background,
+  },
+  badgeText: {
+    color: theme.colors.primaryButtonText,
+    fontSize: 10,
+    fontWeight: '700',
+    includeFontPadding: false,
   },
 });

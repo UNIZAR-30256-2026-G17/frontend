@@ -10,12 +10,33 @@ import AppLoading from '../../components/ui/AppLoading';
 import AppSnackbar from '../../components/ui/AppSnackBar';
 import { API_URL } from '../../config/env';
 
+import Button from '../../components/ui/Button';
+import Dropdown from '../../components/ui/Dropdown';
+import ToggleButton from '../../components/ui/ToggleButton';
+import DateInput from '../../components/ui/DateInput';
+import FilterPopover from '../policia/FilterPopover'; // ajusta la ruta si difiere
+import { UseDelitosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './UseDelitosFilter';
+
 export function AdminDelitosScreen() {
   const { user } = useAuth();
-  const [delitos, setDelitos] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [delitos, setDelitos]         = useState([]);
+  const [loading, setLoading]         = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
+  const [snackbar, setSnackbar]       = useState({ visible: false, message: '', variant: 'normal' });
+  const [showFilters, setShowFilters] = useState(false);
+
+  const {
+    filteredData,
+    order, setOrder,
+    tipoFilter, setTipoFilter,
+    distritoFilter, setDistritoFilter,
+    beatFilter, setBeatFilter,
+    statusFilter, setStatusFilter,
+    dateFrom, setDateFrom,
+    tipoOptions, distritoOptions, beatOptions,
+    numFiltrosActivos,
+    resetFilters,
+  } = UseDelitosFilter(delitos);
 
   useEffect(() => {
     if (user?.token) fetchDelitos();
@@ -30,25 +51,16 @@ export function AdminDelitosScreen() {
   const fetchDelitos = async () => {
     try {
       setLoading(true);
-      const token = user?.token;
-
       const response = await fetch(`${API_URL}/crimes?limit=50`, {
-        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${user.token}`,
+        },
       });
-
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Error al obtener los delitos');
-      }
-
+      if (!response.ok) throw new Error(data.message || 'Error al obtener los delitos');
       setDelitos(data.crimes || []);
     } catch (error) {
-      console.error('Error fetching delitos:', error);
       showSnackbar('No se pudieron cargar los delitos', 'error');
     } finally {
       setLoading(false);
@@ -59,31 +71,18 @@ export function AdminDelitosScreen() {
     try {
       setActionLoading(true);
       const newStatus = currentStatus === 'available' ? 'deleted' : 'available';
-      const token = user?.token;
-
       const response = await fetch(`${API_URL}/crimes/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${user.token}`,
         },
-        body: JSON.stringify({ status: newStatus })
+        body: JSON.stringify({ status: newStatus }),
       });
-
-      if (!response.ok) {
-        throw new Error('No se pudo actualizar el estado en el servidor');
-      }
-
-      setDelitos((prev) =>
-        prev.map((d) =>
-          d._id === id ? { ...d, status: newStatus } : d
-        )
-      );
-      
+      if (!response.ok) throw new Error();
+      setDelitos(prev => prev.map(d => d._id === id ? { ...d, status: newStatus } : d));
       showSnackbar(newStatus === 'deleted' ? 'Delito eliminado' : 'Delito restaurado');
-
-    } catch (error) {
-      console.error('Error toggling delito:', error);
+    } catch {
       showSnackbar('Error al cambiar el estado del delito', 'error');
     } finally {
       setActionLoading(false);
@@ -100,14 +99,103 @@ export function AdminDelitosScreen() {
         >
           <Text style={styles.pageTitle}>Delitos</Text>
 
+          {/* ── Barra superior ── */}
+          {!loading && (
+            <View style={styles.topBar}>
+              <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
+                <Button
+                  title="Filtrar"
+                  icon="filter"
+                  variant="primary"
+                  onPress={() => setShowFilters(true)}
+                />
+                {numFiltrosActivos > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
+                  </View>
+                )}
+              </View>
+              <View style={styles.orderContainer}>
+                <Text style={styles.orderLabel}>Ordenar por</Text>
+                <Dropdown
+                  options={ORDER_OPTIONS}
+                  selected={order}
+                  onSelect={setOrder}
+                  placeholder="Ordenar por..."
+                />
+              </View>
+            </View>
+          )}
+
           {loading ? (
             <AppLoading message="Cargando delitos..." style={styles.centerLoader} />
           ) : (
-            <DelitosTable delitos={delitos} onToggle={toggleDelito} />
+            <>
+              <Text style={styles.resultsText}>
+                {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
+              </Text>
+              <DelitosTable delitos={filteredData} onToggle={toggleDelito} />
+            </>
           )}
 
         </ScrollView>
       </View>
+
+      {/* ── Modal de filtros ── */}
+      <FilterPopover visible={showFilters} onClose={() => setShowFilters(false)}>
+
+        <Text style={styles.filterGroupTitle}>Tipo de delito</Text>
+        <View style={styles.toggleGroup}>
+          {tipoOptions.filter(o => o.value).map((opt) => (
+            <ToggleButton
+              key={opt.value}
+              title={opt.label}
+              defaultSelected={tipoFilter?.value === opt.value}
+              onToggle={(val) => setTipoFilter(val ? opt : null)}
+            />
+          ))}
+        </View>
+
+        <Text style={styles.filterGroupTitle}>Estado</Text>
+        <View style={styles.toggleGroup}>
+          {STATUS_OPTIONS.map((opt) => (
+            <ToggleButton
+              key={opt.value}
+              title={opt.label}
+              defaultSelected={statusFilter?.value === opt.value}
+              onToggle={(val) => setStatusFilter(val ? opt : null)}
+            />
+          ))}
+        </View>
+
+        <View style={styles.threeColRow}>
+          {[
+            { label: 'Distrito', options: distritoOptions, selected: distritoFilter, onSelect: setDistritoFilter },
+            { label: 'Beat',     options: beatOptions,     selected: beatFilter,     onSelect: setBeatFilter },
+          ].map(({ label, options, selected, onSelect }) => (
+            <View key={label} style={styles.col}>
+              <Text style={styles.filterGroupTitle}>{label}</Text>
+              <Dropdown
+                options={options}
+                selected={selected}
+                onSelect={onSelect}
+                placeholder={label}
+              />
+            </View>
+          ))}
+        </View>
+
+        <Text style={styles.filterGroupTitle}>Fecha desde</Text>
+        <View style={styles.dateGroup}>
+          <DateInput
+            value={dateFrom}
+            onChange={setDateFrom}
+            placeholder="01-02-2026"
+            icon={null}
+          />
+        </View>
+
+      </FilterPopover>
 
       <LoadingOverlay visible={actionLoading} message="Procesando..." />
       <AppSnackbar
@@ -121,25 +209,39 @@ export function AdminDelitosScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
+  scroll:     { flex: 1, backgroundColor: theme.colors.background },
+  container:  { padding: 24, paddingBottom: 40, width: '100%', maxWidth: 1200, alignSelf: 'center' },
+  pageTitle:  { ...theme.typography.pageTitle, color: theme.colors.text, textAlign: 'center', marginBottom: 24, marginTop: 20 },
+  topBar:     { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20 },
+  orderContainer: { width: 320 },
+  orderLabel: { ...theme.typography.body, color: theme.colors.text, marginBottom: 4 },
+  resultsText:{ ...theme.typography.body, color: theme.colors.text, marginBottom: 8 },
+  filterGroupTitle: { ...theme.typography.cardTitle, color: theme.colors.cardText, marginBottom: 8, marginTop: 18 },
+  toggleGroup:{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  threeColRow:{ flexDirection: 'row', gap: 12 },
+  col:        { flex: 1 },
+  dateGroup:  { width: 160 },
+  centerLoader: { marginTop: 60 },
+  badge: {
+    position: 'absolute',
+    top: -3,
+    right: -3,
+    backgroundColor: theme.colors.tableBorder,
+    borderRadius: 9999,
+    minWidth: 18,
+    height: 18,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+    // Borde para separarlo visualmente del botón
+    borderWidth: 2,
+    borderColor: theme.colors.background,
   },
-  container: {
-    padding: 24,
-    paddingBottom: 40,
-    width: '100%',
-    maxWidth: 1200,
-    alignSelf: 'center',
+  badgeText: {
+    color: theme.colors.primaryButtonText,
+    fontSize: 10,
+    fontWeight: '700',
+    includeFontPadding: false,
   },
-  pageTitle: {
-    ...theme.typography.pageTitle,
-    color: theme.colors.text,
-    textAlign: 'center',
-    marginBottom: 40,
-    marginTop: 20,
-  },
-  centerLoader: {
-    marginTop: 60,
-  }
 });
