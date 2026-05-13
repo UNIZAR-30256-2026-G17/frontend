@@ -352,6 +352,7 @@ export const MapScreen = () => {
                             renderItem={({ item }) => (
                                 <AlertCard
                                     alert={item}
+                                    userRole='citizen'
                                     isMobile={true}
                                     onConfirm={confirmAlert}
                                     onDiscard={discardAlert}

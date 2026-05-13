@@ -24,7 +24,7 @@ const GROW_PX = 14;
  */
 export const CrimesByDistrictChart = ({ data }) => {
     const [hoveredId, setHoveredId] = useState(null);
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const [setMousePos] = useState({ x: 0, y: 0 });
 
     // Estado para medir el ancho responsivo del contenedor
     const [dimensions, setDimensions] = useState({ width: 0, height: 320 });
@@ -107,7 +107,7 @@ export const CrimesByDistrictChart = ({ data }) => {
                 .attr('fill', isHovered ? '#FFFFFF' : (isAny ? '#444' : '#888'))
                 .attr('opacity', isAny && !isHovered ? 0.4 : 1);
         });
-    }, [hoveredId, chartData, dimensions]);
+    }, [hoveredId, chartData, dimensions, margin.left, margin.top]);
 
     return (
         <Card title="Número de delitos por distrito">

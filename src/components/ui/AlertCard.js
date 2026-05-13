@@ -18,7 +18,7 @@ import Button from './Button';
  * @param {Function} onDiscard - Función para descartar (ciudadano)
  * @param {Boolean} isMobile - Si se está visualizando en móvil
  */
-export default function AlertCard({ alert, onDelete, onAttend, onConfirm, onDiscard, isMobile }) {
+export default function AlertCard({ alert, userRole, onDelete, onAttend, onConfirm, onDiscard, isMobile }) {
   const isPending = alert.status === 'pending';
   const isAttended = alert.status === 'attended';
   const isDeleted = alert.status === 'deleted';
@@ -26,6 +26,8 @@ export default function AlertCard({ alert, onDelete, onAttend, onConfirm, onDisc
   const confirmedByMe = alert.confirmedByMe;
   const discardedByMe = alert.discardedByMe;
   const hasActed = confirmedByMe || discardedByMe;
+
+  const isStaff = userRole === 'police' || userRole === 'admin';
 
   /**
    * Obtiene el nombre del icono de FontAwesome según el estado
@@ -105,10 +107,14 @@ export default function AlertCard({ alert, onDelete, onAttend, onConfirm, onDisc
           label="Confirmada por"
           value={`${alert.confirmations ?? 0} usuario${alert.confirmations !== 1 ? 's' : ''}`}
         />
+        <DetailItem
+          label="Descartada por"
+          value={`${alert.discards ?? 0} usuario${alert.discards !== 1 ? 's' : ''}`}
+        />
       </View>
 
       {/* Acciones según rol/estado */}
-      {isPending && !hasActed && (
+      {isPending && !hasActed && !isStaff && (
         <View style={styles.alertActions}>
           <Button
             title="Descartar"

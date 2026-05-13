@@ -4,12 +4,12 @@
  * Permite filtrar por estado y fecha, y realizar acciones sobre las alertas.
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, useWindowDimensions, RefreshControl } from 'react-native';
 import { theme } from '../../theme';
 import { Container } from '../../components/layout/Container';
 import FadeInView from '../../components/animations/FadeInView';
-import SummaryCards from '../../components/ui/SummaryCards';
+import SummaryCardsComponent from '../../components/ui/SummaryCards';
 import ToggleButton from '../../components/ui/ToggleButton';
 import Dropdown from '../../components/ui/Dropdown';
 import AlertCard from '../../components/ui/AlertCard';
@@ -43,7 +43,7 @@ export const AlertsScreen = () => {
   const isMobile = width < 768;
   const { user } = useAuth();
   const { handleScroll } = useScroll();
-  
+
   const [allAlerts, setAllAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -51,11 +51,6 @@ export const AlertsScreen = () => {
   const [selectedStatus, setSelectedStatus] = useState('Pendientes');
   const [dateFilter, setDateFilter] = useState(FECHA_OPTIONS[0]);
   const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
-
-  // Carga inicial y cuando cambia el filtro de fecha
-  useEffect(() => {
-    if (user?.token) fetchAlerts();
-  }, [user, dateFilter]);
 
   /**
    * Muestra un mensaje en el snackbar
@@ -72,12 +67,12 @@ export const AlertsScreen = () => {
   /**
    * Obtiene las alertas de la API según los filtros
    */
-  const fetchAlerts = async () => {
+  const fetchAlerts = useCallback(async () => {
     try {
       setLoading(true);
-      
+
       let url = `${API_URL}/alerts?`;
-      
+
       // Aplicar filtro de fecha en la query
       if (dateFilter.value === 'today') {
         const today = new Date().toISOString().split('T')[0];
@@ -104,7 +99,13 @@ export const AlertsScreen = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [user?.token, dateFilter.value]);
+
+  // Carga inicial y cuando cambia el filtro de fecha
+  useEffect(() => {
+    fetchAlerts();
+  }, [fetchAlerts]);
+
 
   /**
    * Manejador para refrescar la lista (pull-to-refresh)
@@ -129,7 +130,7 @@ export const AlertsScreen = () => {
         body: JSON.stringify({ status: newStatus }),
       });
       if (!response.ok) throw new Error('Error al actualizar la alerta');
-      
+
       showSnackbar(newStatus === 'deleted' ? 'Alerta eliminada' : 'Alerta atendida');
       fetchAlerts();
     } catch (error) {
@@ -194,7 +195,7 @@ export const AlertsScreen = () => {
           </View>
 
           {/* ── Summary Cards ── */}
-          <SummaryCards
+          <SummaryCardsComponent
             data={[
               { label: 'Atendidas', value: counts.attended, icon: 'check-circle', color: theme.colors.success },
               { label: 'Eliminadas', value: counts.deleted, icon: 'trash', color: theme.colors.danger },
@@ -204,7 +205,7 @@ export const AlertsScreen = () => {
 
           {/* ── Grid de Alertas ── */}
           {filteredAlerts.length === 0 && !loading ? (
-            <EmptyState 
+            <EmptyState
               icon="search"
               title="No hay alertas con este estado"
               subtitle="Intenta cambiar el filtro para ver otros resultados."
@@ -215,6 +216,7 @@ export const AlertsScreen = () => {
                 <AlertCard
                   key={alert._id}
                   alert={alert}
+                  userRole='police'
                   isMobile={isMobile}
                   onDelete={(id) => updateAlertStatus(id, 'deleted')}
                   onAttend={(id) => updateAlertStatus(id, 'attended')}
@@ -225,7 +227,7 @@ export const AlertsScreen = () => {
 
         </ScrollView>
       </FadeInView>
-      
+
       <LoadingOverlay visible={actionLoading} message="Procesando..." />
       <AppSnackbar
         visible={snackbar.visible}
@@ -239,17 +241,17 @@ export const AlertsScreen = () => {
 
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: theme.colors.background },
-  container: { 
-    padding: theme.spacing.xl, 
-    paddingBottom: theme.spacing.xxxl, 
-    width: '100%', 
-    maxWidth: 1200, 
-    alignSelf: 'center' 
+  container: {
+    padding: theme.spacing.xl,
+    paddingBottom: theme.spacing.xxxl,
+    width: '100%',
+    maxWidth: 1200,
+    alignSelf: 'center'
   },
-  pageTitle: { 
-    ...theme.typography.pageTitle, 
-    color: theme.colors.text, 
-    textAlign: 'center', 
+  pageTitle: {
+    ...theme.typography.pageTitle,
+    color: theme.colors.text,
+    textAlign: 'center',
     marginBottom: theme.spacing.xxl,
     fontSize: 32,
   },

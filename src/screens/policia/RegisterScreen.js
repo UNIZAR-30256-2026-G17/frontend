@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import { theme } from '../../theme';
@@ -91,10 +91,10 @@ export const RegisterScreen = () => {
       }
 
       // Guardar sesión en el contexto
-      await login({ 
-        role: 'police', 
+      await login({
+        role: 'police',
         email: loginData.user?.email || email,
-        token: loginData.token 
+        token: loginData.token
       });
 
       // Navegación a la pantalla policial

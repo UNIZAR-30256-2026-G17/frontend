@@ -2,7 +2,7 @@
  * @file DateInput.js
  * @description Componente de entrada de fecha con soporte multiplataforma (Android y Web).
  */
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
@@ -23,7 +23,6 @@ export default function DateInput({
     onChange,
     placeholder = 'Selecciona una fecha',
 }) {
-    const [isFocused, setIsFocused] = useState(false);
 
     /**
      * Abre el selector de fecha nativo de Android
