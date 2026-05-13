@@ -50,7 +50,9 @@ export const EstadisticasScreen = () => {
   const [lastUpdate, setLastUpdate] = useState('');
   const [pieData, setPieData] = useState([]);
   const [statsData, setStatsData] = useState([]);
-  const [selectedOption, setSelectedOption] = useState(options[1]); // Por defecto: último mes
+  const [selectedOptionDistrict, setSelectedOptionDistrict] = useState(options[1]); // Por defecto: último mes
+  const [selectedOptionHour, setSelectedOptionHour] = useState(options[1]);
+  const [selectedOptionVictims, setSelectedOptionVictims] = useState(options[1]);
 
   /**
    * Obtiene estadísticas por nombre de categoría de delito (Crimename1)
@@ -58,7 +60,7 @@ export const EstadisticasScreen = () => {
   const fetchCrimeNames1 = useCallback(async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
-      const from = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0];
+      const from = new Date(Date.now() - selectedOptionVictims.value * 86400000).toISOString().split('T')[0];
       const response = await fetch(
         `${API_URL}/crimes/byCrimename1?from=${from}&to=${today}`,
         { headers: { 'Authorization': `Bearer ${user?.token}` } }
@@ -82,7 +84,7 @@ export const EstadisticasScreen = () => {
     } catch (error) {
       console.error('Error fetching crime names:', error);
     }
-  }, [user?.token]);
+  }, [user?.token, selectedOptionVictims]);
 
   /**
    * Obtiene el número de delitos en un rango de fechas desglosado por distrito
@@ -90,7 +92,7 @@ export const EstadisticasScreen = () => {
   const fetchCrimesByDistrict = useCallback(async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
-      const from = new Date(Date.now() - selectedOption.value * 86400000).toISOString().split('T')[0];
+      const from = new Date(Date.now() - selectedOptionDistrict.value * 86400000).toISOString().split('T')[0];
       const response = await fetch(
         `${API_URL}/crimes/byDistrict?from=${from}&to=${today}`,
         { headers: { 'Authorization': `Bearer ${user?.token}` } }
@@ -107,16 +109,19 @@ export const EstadisticasScreen = () => {
     } catch (error) {
       console.error('Error fetching crimes by district:', error);
     }
-  }, [user?.token, selectedOption]);
+  }, [user?.token, selectedOptionDistrict]);
 
   /**
-   * Obtiene el número de delitos de ayer desglosado por franja horaria
+   * Obtiene el número de delitos en un rango de fechas desglosado por franja horaria
    */
   const fetchCrimesByHour = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/crimes/yesterday/byHour`, {
-        headers: { 'Authorization': `Bearer ${user?.token}` }
-      });
+      const today = new Date().toISOString().split('T')[0];
+      const from = new Date(Date.now() - selectedOptionHour.value * 86400000).toISOString().split('T')[0];
+      const response = await fetch(
+        `${API_URL}/crimes/byHour?from=${from}&to=${today}`,
+        { headers: { 'Authorization': `Bearer ${user?.token}` } }
+      );
       const json = await response.json();
       setLineData(json.results.map(item => ({
         time: item.hour,
@@ -125,7 +130,7 @@ export const EstadisticasScreen = () => {
     } catch (error) {
       console.error('Error fetching crimes by hour:', error);
     }
-  }, [user?.token]);
+  }, [user?.token, selectedOptionHour]);
 
   // Cargar todos los datos estadísticos al montar el componente
   useEffect(() => {
@@ -154,13 +159,22 @@ export const EstadisticasScreen = () => {
               right={
                 <Dropdown
                   options={options}
-                  selected={selectedOption}
-                  onSelect={(opt) => setSelectedOption(opt)}
+                  selected={selectedOptionDistrict}
+                  onSelect={(opt) => setSelectedOptionDistrict(opt)}
                 />
               }
             />
             <View style={{ height: theme.spacing.md }} />
-            <VictimsTodayChart data={pieData} />
+            <VictimsTodayChart
+              data={pieData}
+              right={
+                <Dropdown
+                  options={options}
+                  selected={selectedOptionVictims}
+                  onSelect={(opt) => setSelectedOptionVictims(opt)}
+                />
+              }
+            />
           </View>
 
           {!isMobile && <View style={{ width: theme.spacing.md }} />}
@@ -168,7 +182,16 @@ export const EstadisticasScreen = () => {
 
           {/* Columna Derecha / Inferior */}
           <View style={[styles.section, !isMobile && { flex: 1 }]}>
-            <CrimesTodayChart data={lineData} />
+            <CrimesTodayChart
+              data={lineData}
+              right={
+                <Dropdown
+                  options={options}
+                  selected={selectedOptionHour}
+                  onSelect={(opt) => setSelectedOptionHour(opt)}
+                />
+              }
+            />
             <View style={{ height: theme.spacing.md }} />
             <CrimeTypesStats data={statsData} />
           </View>

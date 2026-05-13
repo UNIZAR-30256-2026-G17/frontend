@@ -15,8 +15,9 @@ const systemFont = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helve
 /**
  * Componente CrimesTodayChart
  * @param {Array} data - Lista de objetos { time: string, value: number }
+ * @param {React.ReactNode} right - Elemento opcional para mostrar en la parte derecha de la cabecera del Card
  */
-export const CrimesTodayChart = ({ data }) => {
+export const CrimesTodayChart = ({ data, right }) => {
     // Estado para responsividad y tooltips interactivos
     const [dimensions, setDimensions] = useState({ width: 0, height: 250 });
     const [hoveredPoint, setHoveredPoint] = useState(null);
@@ -58,7 +59,7 @@ export const CrimesTodayChart = ({ data }) => {
     const handlePointerMove = (e) => {
         const bounds = e.currentTarget.getBoundingClientRect();
         const pointerX = e.clientX - bounds.left - margin.left;
-        
+
         setMousePos({ x: e.clientX - bounds.left, y: e.clientY - bounds.top });
 
         // Buscamos el punto con la menor distancia en el eje X
@@ -76,8 +77,8 @@ export const CrimesTodayChart = ({ data }) => {
     };
 
     return (
-        <Card title="Delitos de ayer">
-            <View 
+        <Card title="Número de delitos por hora" right={right}>
+            <View
                 style={styles.chartContainer}
                 onLayout={(e) => setDimensions({ width: e.nativeEvent.layout.width, height: 250 })}
             >
@@ -109,22 +110,22 @@ export const CrimesTodayChart = ({ data }) => {
                 )}
 
                 {dimensions.width > 0 && (
-                    <svg 
-                        width="100%" 
+                    <svg
+                        width="100%"
                         height="100%"
                         onPointerMove={handlePointerMove}
                         onPointerLeave={() => setHoveredPoint(null)}
                     >
                         <g transform={`translate(${margin.left}, ${margin.top})`}>
-                            
+
                             {/* --- GRID Y --- */}
                             {yTicks.map(tick => (
                                 <g key={`grid-${tick}`} transform={`translate(0, ${yScale(tick)})`}>
-                                    <line 
-                                        x1={0} 
-                                        x2={innerWidth} 
-                                        stroke={theme.colors.tableBorder} 
-                                        strokeDasharray="3 3" 
+                                    <line
+                                        x1={0}
+                                        x2={innerWidth}
+                                        stroke={theme.colors.tableBorder}
+                                        strokeDasharray="3 3"
                                     />
                                     <text
                                         x={-10}
@@ -164,7 +165,7 @@ export const CrimesTodayChart = ({ data }) => {
                                 strokeWidth={3}
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
-                                style={{ filter: 'drop-shadow(0px 2px 4px rgba(255, 183, 77, 0.3))' }} 
+                                style={{ filter: 'drop-shadow(0px 2px 4px rgba(255, 183, 77, 0.3))' }}
                             />
 
                             {/* --- INDICADOR DE HOVER --- */}
@@ -190,12 +191,12 @@ export const CrimesTodayChart = ({ data }) => {
                                     />
                                 </g>
                             )}
-                            
+
                             {/* Rectángulo invisible para capturar eventos de puntero */}
-                            <rect 
-                                width={innerWidth} 
-                                height={innerHeight} 
-                                fill="transparent" 
+                            <rect
+                                width={innerWidth}
+                                height={innerHeight}
+                                fill="transparent"
                             />
                         </g>
                     </svg>
@@ -206,9 +207,9 @@ export const CrimesTodayChart = ({ data }) => {
 };
 
 const styles = StyleSheet.create({
-    chartContainer: { 
-        height: 250, 
-        marginTop: theme.spacing.sm, 
-        position: 'relative' 
+    chartContainer: {
+        height: 250,
+        marginTop: theme.spacing.sm,
+        position: 'relative'
     },
 });
