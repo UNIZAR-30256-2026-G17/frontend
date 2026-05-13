@@ -1,8 +1,22 @@
+/**
+ * @file TablePagination.js
+ * @description Componente de paginación para tablas. Muestra el rango actual de elementos
+ * y botones para navegar entre páginas.
+ */
+
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 
+/**
+ * Componente TablePagination
+ * @param {Number} page - Página actual (0-indexed)
+ * @param {Number} numberOfPages - Total de páginas
+ * @param {Function} onPageChange - Función al cambiar de página
+ * @param {Number} totalItems - Total de elementos en la lista
+ * @param {Number} itemsPerPage - Elementos por página
+ */
 export default function TablePagination({ 
   page, 
   numberOfPages, 
@@ -46,12 +60,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: theme.spacing.lg,
     borderTopWidth: 1,
     borderTopColor: theme.colors.tableBorder,
     backgroundColor: theme.colors.tableHeaderBackground,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: theme.radii.md,
+    borderBottomRightRadius: theme.radii.md,
   },
   label: {
     ...theme.typography.body,

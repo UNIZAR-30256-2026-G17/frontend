@@ -1,3 +1,9 @@
+/**
+ * @file AdminDelitosScreen.js
+ * @description Pantalla de administración para la gestión global del catálogo de delitos.
+ * Permite filtrar, ordenar, visualizar y habilitar/deshabilitar delitos en el sistema.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Text, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { theme } from '../../theme';
@@ -20,6 +26,9 @@ import DateInput from '../../components/ui/DateInput';
 import FilterPopover from '../../components/ui/FilterPopover';
 import { UseDelitosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseDelitosFilter';
 
+/**
+ * Componente AdminDelitosScreen
+ */
 export function AdminDelitosScreen() {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
@@ -31,6 +40,7 @@ export function AdminDelitosScreen() {
   const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
   const [showFilters, setShowFilters] = useState(false);
 
+  // Hook personalizado para la lógica de filtrado de delitos
   const {
     filteredData,
     order, setOrder,
@@ -44,16 +54,26 @@ export function AdminDelitosScreen() {
     resetFilters,
   } = UseDelitosFilter(delitos);
 
+  // Cargar delitos al montar el componente
   useEffect(() => {
     if (user?.token) fetchDelitos();
   }, [user]);
 
+  /**
+   * Muestra un mensaje en el snackbar
+   */
   const showSnackbar = (message, variant = 'normal') =>
     setSnackbar({ visible: true, message, variant });
 
+  /**
+   * Oculta el snackbar
+   */
   const hideSnackbar = () =>
     setSnackbar(prev => ({ ...prev, visible: false }));
 
+  /**
+   * Obtiene la lista de delitos desde la API
+   */
   const fetchDelitos = async () => {
     try {
       setLoading(true);
@@ -73,6 +93,11 @@ export function AdminDelitosScreen() {
     }
   };
 
+  /**
+   * Cambia el estado de un delito (Habilitar/Deshabilitar)
+   * @param {String} id - ID del delito
+   * @param {String} currentStatus - Estado actual ('available' o 'deleted')
+   */
   const toggleDelito = async (id, currentStatus) => {
     try {
       setActionLoading(true);
@@ -107,7 +132,7 @@ export function AdminDelitosScreen() {
           >
             <Text style={styles.pageTitle}>Panel de delitos</Text>
 
-            {/* ── Summary Cards ── */}
+            {/* ── Tarjetas de Resumen KPI ── */}
             {(!loading && delitos.length > 0) && (
               <SummaryCards
                 data={[
@@ -119,7 +144,7 @@ export function AdminDelitosScreen() {
               />
             )}
 
-          {/* ── Barra superior ── */}
+          {/* ── Barra superior de Acciones ── */}
           {!loading && (
             <View style={[styles.topBar, isMobile && styles.topBarMobile]}>
               <View style={styles.filterButtonWrapper}>
@@ -147,6 +172,7 @@ export function AdminDelitosScreen() {
             </View>
           )}
 
+          {/* ── Esqueleto / Tabla ── */}
           {loading ? (
             <TableSkeleton rows={10} cols={4} />
           ) : (
@@ -162,7 +188,7 @@ export function AdminDelitosScreen() {
       </View>
     </FadeInView>
 
-      {/* ── Modal de filtros ── */}
+      {/* ── Modal de Filtros Avanzados ── */}
       <FilterPopover visible={showFilters} onClose={() => setShowFilters(false)}>
 
         <Text style={styles.filterGroupTitle}>Tipo de delito</Text>
@@ -231,34 +257,68 @@ export function AdminDelitosScreen() {
 
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: theme.colors.background },
-  container: { padding: 24, paddingBottom: 40, width: '100%', maxWidth: 1200, alignSelf: 'center' },
-  pageTitle: { ...theme.typography.pageTitle, color: theme.colors.text, textAlign: 'center', marginBottom: 24, marginTop: 20 },
-  topBar: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20, flexWrap: 'wrap' },
+  container: { 
+    padding: theme.spacing.xl, 
+    paddingBottom: theme.spacing.xxxl, 
+    width: '100%', 
+    maxWidth: 1200, 
+    alignSelf: 'center' 
+  },
+  pageTitle: { 
+    ...theme.typography.pageTitle, 
+    color: theme.colors.text, 
+    textAlign: 'center', 
+    marginBottom: theme.spacing.xl, 
+    marginTop: theme.spacing.lg 
+  },
+  topBar: { 
+    flexDirection: 'row', 
+    alignItems: 'flex-end', 
+    justifyContent: 'flex-end', 
+    gap: theme.spacing.xl, 
+    marginBottom: theme.spacing.lg, 
+    flexWrap: 'wrap' 
+  },
   topBarMobile: { justifyContent: 'flex-start' },
   filterButtonWrapper: { position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 },
   orderContainer: { width: 320 },
   fullWidth: { width: '100%' },
-  orderLabel: { ...theme.typography.body, color: theme.colors.text, marginBottom: 4 },
-  resultsText: { ...theme.typography.body, color: theme.colors.text, marginBottom: 8 },
-  filterGroupTitle: { ...theme.typography.cardTitle, color: theme.colors.cardText, marginBottom: 8, marginTop: 18 },
-  toggleGroup: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  orderLabel: { 
+    ...theme.typography.body, 
+    color: theme.colors.text, 
+    marginBottom: theme.spacing.xs 
+  },
+  resultsText: { 
+    ...theme.typography.body, 
+    color: theme.colors.text, 
+    marginBottom: theme.spacing.sm 
+  },
+  filterGroupTitle: { 
+    ...theme.typography.cardTitle, 
+    color: theme.colors.cardText, 
+    marginBottom: theme.spacing.sm, 
+    marginTop: theme.spacing.lg 
+  },
+  toggleGroup: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    gap: theme.spacing.sm 
+  },
   threeColRow: { flexDirection: 'row', gap: 12 },
   col: { flex: 1 },
   dateGroup: { width: 160 },
-  centerLoader: { marginTop: 60 },
   badge: {
     position: 'absolute',
     top: -3,
     right: -3,
     backgroundColor: theme.colors.tableBorder,
-    borderRadius: 9999,
+    borderRadius: theme.radii.full,
     minWidth: 18,
     height: 18,
     paddingHorizontal: 4,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
-    // Borde para separarlo visualmente del botón
     borderWidth: 2,
     borderColor: theme.colors.background,
   },

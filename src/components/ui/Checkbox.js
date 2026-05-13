@@ -1,8 +1,20 @@
+/**
+ * @file Checkbox.js
+ * @description Componente de checkbox personalizado con estilos integrados en el tema.
+ */
+
 import React, { useState } from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 
+/**
+ * Componente Checkbox
+ * @param {String} label - Etiqueta del checkbox
+ * @param {Boolean} defaultValue - Valor inicial
+ * @param {Function} onChange - Función que recibe el nuevo valor al cambiar
+ * @param {Boolean} disabled - Si el componente está deshabilitado
+ */
 export default function Checkbox({
     label,
     defaultValue = false,
@@ -11,6 +23,9 @@ export default function Checkbox({
 }) {
     const [checked, setChecked] = useState(defaultValue);
 
+    /**
+     * Maneja el cambio de estado del checkbox
+     */
     const handlePress = () => {
         if (disabled) return;
 
@@ -59,14 +74,14 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 10,
-        marginVertical: 8,
+        gap: theme.spacing.sm,
+        marginVertical: theme.spacing.sm,
     },
     box: {
         width: 20,
         height: 20,
         borderWidth: 1.5,
-        borderRadius: 4,
+        borderRadius: theme.radii.sm,
         justifyContent: 'center',
         alignItems: 'center',
     },

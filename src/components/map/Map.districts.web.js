@@ -1,3 +1,9 @@
+/**
+ * @file Map.districts.web.js
+ * @description Componente de mapa basado en Leaflet para ciudadanos.
+ * Muestra alertas activas, distritos coloreados por IC y rutas seguras calculadas.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { theme } from '../../theme';
@@ -7,14 +13,18 @@ import L from 'leaflet';
 import { getRoutePath } from '../../utils/getRoutePath';
 import { districtsCoordinates } from '../../config/districts';
 
+// Corrección para los iconos de Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
-
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
     iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
     shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
+/**
+ * Determina el color del distrito basado en su Índice de Criminalidad (IC) para ciudadanos
+ * @param {Number} value - Valor del IC del distrito
+ */
 const getColorForDistrictIC = (value) => {
     if (value >= 28) return theme.colors.ic1;
     if (value >= 24) return theme.colors.ic2;
@@ -25,6 +35,7 @@ const getColorForDistrictIC = (value) => {
     return theme.colors.ic7;
 };
 
+// Iconos personalizados para origen y destino
 const originIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -43,6 +54,9 @@ const destinationIcon = new L.Icon({
     shadowSize: [41, 41]
 });
 
+/**
+ * Componente MapDistricts
+ */
 export default function MapDistricts({
     showMarkers = true,
     showDistricts = true,
@@ -52,6 +66,7 @@ export default function MapDistricts({
 }) {
     const [routePath, setRoutePath] = useState([]);
 
+    // Efecto para calcular la ruta segura cuando cambian los puntos de origen/destino
     useEffect(() => {
         const fetchRoute = async () => {
             if (routePoints?.origin && routePoints?.destination) {
@@ -59,7 +74,7 @@ export default function MapDistricts({
                 if (path) {
                     setRoutePath(path);
                 } else {
-                    // Fallback to straight line if API fails
+                    // Fallback a línea recta si falla la API de OSRM
                     setRoutePath([
                         [routePoints.origin.latitude, routePoints.origin.longitude],
                         [routePoints.destination.latitude, routePoints.destination.longitude]
@@ -73,9 +88,13 @@ export default function MapDistricts({
         fetchRoute();
     }, [routePoints]);
 
+    /**
+     * Normaliza nombres para búsqueda en configuración
+     */
     const normalize = (str) =>
         str?.toUpperCase().replace(/\s+/g, ' ').trim();
 
+    // Procesamos los distritos vinculando ICs con coordenadas del centroide
     const processedDistricts = districtICs
         .map(d => {
             const coord = districtsCoordinates.find(
@@ -89,7 +108,7 @@ export default function MapDistricts({
                 color: getColorForDistrictIC(d.id),
             };
         })
-        .filter(d => d.coords) // evita nulls
+        .filter(d => d.coords);
 
     return (
         <View style={{ flex: 1, minHeight: 300 }}>
@@ -100,14 +119,15 @@ export default function MapDistricts({
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
+                {/* Marcadores de alertas ciudadanas */}
                 {showMarkers && markers
                     .filter(a => a.location?.coordinates?.length === 2)
                     .map(alert => (
                         <Marker
                             key={alert._id}
                             position={[
-                                alert.location.coordinates[1], // lat
-                                alert.location.coordinates[0], // lng
+                                alert.location.coordinates[1], // latitud
+                                alert.location.coordinates[0], // longitud
                             ]}
                         >
                             <Popup>
@@ -118,6 +138,7 @@ export default function MapDistricts({
                     ))
                 }
 
+                {/* Visualización de la ruta segura calculada */}
                 {routePoints && (
                     <>
                         <Marker
@@ -134,7 +155,6 @@ export default function MapDistricts({
                             <Popup><strong>Destino de la ruta</strong></Popup>
                         </Marker>
 
-                        {/* Ruta real obtenida de OSM (o línea recta como fallback) */}
                         {routePath.length > 0 && (
                             <Polyline
                                 positions={routePath}
@@ -147,11 +167,12 @@ export default function MapDistricts({
                     </>
                 )}
 
+                {/* Círculos de calor por distrito */}
                 {showDistricts && processedDistricts.map((district, index) => (
                     <React.Fragment key={index}>
                         <Circle
                             center={district.coords}
-                            radius={2700} // metros
+                            radius={2700} // Radio visual para cobertura de distrito
                             pathOptions={{
                                 color: district.color,
                                 fillColor: district.color,

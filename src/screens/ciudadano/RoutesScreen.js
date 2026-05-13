@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+/**
+ * @file RoutesScreen.js
+ * @description Pantalla para la visualización de rutas seguras para los ciudadanos.
+ * Muestra la trayectoria más segura entre el origen y destino seleccionados.
+ */
+
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 
 import { Container } from '../../components/layout/Container';
@@ -8,12 +14,17 @@ import MapDistricts from '../../components/map/Map.districts.web';
 
 import { theme } from '../../theme';
 
+/**
+ * Componente RoutesScreen
+ */
 export const RoutesScreen = () => {
     const route = useRoute();
 
+    // Recuperamos los datos de la ruta desde los parámetros de navegación
     const { routeData = {} } = route.params || {};
     const { initialAddress, finalAddress, originCoords, destCoords, districtICs } = routeData;
 
+    // Estructuramos los puntos para el componente de mapa
     const routePoints = originCoords && destCoords ? {
         origin: originCoords,
         destination: destCoords
@@ -23,25 +34,22 @@ export const RoutesScreen = () => {
         <Container>
             <View style={styles.container}>
                 <Text style={styles.title}>
-                    Rutas
+                    Ruta Segura
                 </Text>
-                [diff_block_end]
 
-                [diff_block_start]
                 <View style={styles.content}>
                     <View style={styles.mapControls}>
-                        <Card
-                            title="Ruta generada"
-                        >
+                        <Card title="Detalles del trayecto">
                             <Text style={styles.cardText}>
-                                <Text style={styles.cardTextTitle}>Dirección de partida:</Text> {initialAddress || 'No especificada'}
+                                <Text style={styles.cardTextTitle}>Origen:</Text> {initialAddress || 'No especificada'}
                             </Text>
                             <Text style={styles.cardText}>
-                                <Text style={styles.cardTextTitle}>Dirección de destino:</Text> {finalAddress || 'No especificada'}
+                                <Text style={styles.cardTextTitle}>Destino:</Text> {finalAddress || 'No especificada'}
                             </Text>
                         </Card>
                     </View>
 
+                    {/* Mapa de distritos con la ruta segura trazada */}
                     <View style={styles.mapContainer}>
                         <MapDistricts
                             showMarkers={false}
@@ -64,19 +72,15 @@ const styles = StyleSheet.create({
     title: {
         ...theme.typography.pageTitle,
         color: theme.colors.text,
-        marginTop: 16,
+        marginTop: theme.spacing.lg,
         alignSelf: 'center',
-    },
-    text: {
-        ...theme.typography.body,
-        color: theme.colors.text,
     },
     content: {
         flex: 1,
-        margin: 16,
+        margin: theme.spacing.lg,
     },
     mapControls: {
-        marginBottom: 8,
+        marginBottom: theme.spacing.sm,
     },
     mapContainer: {
         flex: 1,
@@ -84,8 +88,10 @@ const styles = StyleSheet.create({
     cardText: {
         ...theme.typography.cardDescription,
         color: theme.colors.cardTextSecondary,
+        marginBottom: theme.spacing.xs,
     },
     cardTextTitle: {
-        fontWeight: 'bold',
+        ...theme.typography.bodyBold,
+        color: theme.colors.cardText,
     },
 });

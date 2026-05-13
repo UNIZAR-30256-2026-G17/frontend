@@ -1,8 +1,16 @@
+/**
+ * @file getRoutePathBeat.js
+ * @description Utilidad para obtener una ruta "táctica" (de mayor riesgo) entre dos puntos basándose en el IC de los Beats.
+ * Se utiliza principalmente para sugerir rutas de patrullaje que pasen por zonas con mayor índice de criminalidad.
+ */
+
 import { beatsCoordinates } from '../config/beats';
 
 /**
- * Calculates the average risk score for a given path based on the criminal index (IC)
- * of the nearest districts for each point in the path.
+ * Calcula el nivel de riesgo promedio de una ruta basado en el IC de los beats más cercanos.
+ * @param {Array} path - Lista de coordenadas [lat, lng] de la ruta.
+ * @param {Array} beatICs - Lista de objetos con el IC de cada beat.
+ * @returns {Number} - Puntuación de riesgo promedio.
  */
 const calculatePathRisk = (path, beatICs) => {
     if (!beatICs || beatICs.length === 0) return 0;
@@ -13,7 +21,7 @@ const calculatePathRisk = (path, beatICs) => {
         let nearestIC = 0;
 
         for (const beat of beatsCoordinates) {
-            // Simple Euclidean distance for approximation
+            // Distancia euclidiana simple para aproximación rápida
             const d = Math.sqrt(Math.pow(lat - beat.coords[0], 2) + Math.pow(lng - beat.coords[1], 2));
             if (d < minDistance) {
                 minDistance = d;
@@ -29,18 +37,18 @@ const calculatePathRisk = (path, beatICs) => {
 };
 
 /**
- * Fetches driving route alternatives between two points and selects the safest one.
+ * Obtiene alternativas de ruta entre origen y destino y selecciona la que tiene MAYOR riesgo (táctica).
  * 
  * @param {Object} origin - {latitude, longitude}
  * @param {Object} destination - {latitude, longitude}
- * @param {Array} districtICs - Array of {district, id} objects
- * @returns {Promise<Array|null>} Safest path as [lat, lng] coordinates
+ * @param {Array} beatICs - Lista de {beat, id} (donde id es el IC)
+ * @returns {Promise<Array|null>} - Lista de coordenadas [lat, lng] de la ruta táctica.
  */
 export const getRoutePathBeat = async (origin, destination, beatICs = []) => {
     if (!origin || !destination) return null;
 
     try {
-        // Request alternatives from OSRM
+        // Solicitamos rutas alternativas a OSRM
         const response = await fetch(
             `https://router.project-osrm.org/route/v1/driving/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?overview=full&geometries=geojson&alternatives=true`,
             {
@@ -61,22 +69,22 @@ export const getRoutePathBeat = async (origin, destination, beatICs = []) => {
                 return { path, risk };
             });
 
-            // Log risks for debugging
-            console.log('Route alternatives evaluated:', processedRoutes.map(r => r.risk));
+            // Log de riesgos para depuración
+            console.log('Alternativas de ruta evaluadas (riesgo):', processedRoutes.map(r => r.risk));
 
-            // Select the route with the minimum risk
+            // Seleccionamos la ruta con el MAYOR riesgo (para patrullaje táctico)
             const tacticalRoute = processedRoutes.reduce((prev, curr) =>
                 prev.risk > curr.risk ? prev : curr
             );
 
-            console.log('Tactical route selected with risk score:', tacticalRoute.risk);
+            console.log('Ruta táctica seleccionada con riesgo:', tacticalRoute.risk);
             return tacticalRoute.path;
         }
 
-        console.warn('No route found between points:', data.code);
+        console.warn('No se encontró ninguna ruta entre los puntos:', data.code);
         return null;
     } catch (error) {
-        console.error('Error fetching route from OSRM:', error);
+        console.error('Error al obtener ruta de OSRM:', error);
         return null;
     }
 };

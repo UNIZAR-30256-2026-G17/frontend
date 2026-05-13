@@ -1,3 +1,9 @@
+/**
+ * @file crimes.constants.js
+ * @description Centralización de constantes, opciones de filtrado y datos de ejemplo para el módulo de delitos policiales.
+ * Incluye la definición de columnas de tablas y mapeos de distritos y sectores.
+ */
+
 export const COLS = [
   { header: 'Id',             key: 'id' },
   { header: 'Tipo de delito', key: 'tipo' },
@@ -11,7 +17,7 @@ export const COLS = [
 
 export const EXPANDED_KEYS = ['fecha', 'hora', 'distrito', 'beat', 'sector'];
 
-// ── Datos de prueba ─────────────────────────────────────────────────────────
+// ── Datos de prueba (Mock data) ──────────────────────────────────────────────
 export const SAMPLE_DATA = [
   { id: '201561908', tipo: 'Delito contra la sociedad',  subtipo: 'Otros delitos', fecha: '01-02-2026', hora: '20:48', distrito: 'TAKOMA PARK',   beat: 'T', sector: '8T2' },
   { id: '201561909', tipo: 'Delito contra la sociedad',  subtipo: 'Otros delitos', fecha: '01-02-2026', hora: '21:10', distrito: 'TAKOMA PARK',   beat: 'T', sector: '8T2' },
@@ -23,7 +29,7 @@ export const SAMPLE_DATA = [
   { id: '201561915', tipo: 'Delito contra la sociedad',  subtipo: 'Otros delitos', fecha: '04-02-2026', hora: '16:55', distrito: 'BETHESDA',      beat: 'B', sector: '2B1' },
 ];
 
-// Filtros predeterminados
+// Opciones de ordenación
 export const ORDER_OPTIONS = [
   { label: 'Fecha: de más reciente a más antigua', value: 'date_desc' },
   { label: 'Fecha: de más antigua a más reciente', value: 'date_asc' },
@@ -31,7 +37,7 @@ export const ORDER_OPTIONS = [
   { label: 'Tipo de delito (A-Z)',                  value: 'type_asc' },
 ];
 
-// Tipos de delitos
+// Categorías de delitos
 export const TIPO_OPTIONS = [
   { label: 'Todos',                        value: '' },
   { label: 'Delito contra la sociedad',    value: 'Delito contra la sociedad' },
@@ -39,7 +45,7 @@ export const TIPO_OPTIONS = [
   { label: 'Delito contra la propiedad',   value: 'Delito contra la propiedad' },
 ];
 
-// Distritos disponibles
+// Distritos del Condado
 export const DISTRITO_OPTIONS = [
   { label: 'Todos',         value: '' },
   { label: 'Takoma Park',   value: 'Takoma Park' },
@@ -51,6 +57,7 @@ export const DISTRITO_OPTIONS = [
   { label: 'Wheaton',       value: 'Wheaton' },
 ];
 
+// Mapeo exhaustivo de Beats
 export const BEAT_OPTIONS = [
   { label: 'Todos', value: '' },
   { label: '1A1', value: '1A1' },
@@ -114,6 +121,7 @@ export const BEAT_OPTIONS = [
   { label: '-PG', value: '-PG' },
 ];
 
+// Opciones de Sectores
 export const SECTOR_OPTIONS = [
   { label: 'Todos', value: '' },
   { label: 'A', value: 'A' },

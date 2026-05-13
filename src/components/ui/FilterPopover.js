@@ -1,3 +1,9 @@
+/**
+ * @file FilterPopover.js
+ * @description Modal tipo "popover" para mostrar opciones de filtrado.
+ * Incluye un diseño "Glassmorphism" y soporte para scroll de contenido.
+ */
+
 import React from 'react';
 import {
   View,
@@ -9,8 +15,14 @@ import {
   Platform,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { theme } from '../../theme'; // Ruta a tu index.js del theme
+import { theme } from '../../theme';
 
+/**
+ * Componente FilterPopover
+ * @param {Boolean} visible - Controla la visibilidad del modal
+ * @param {Function} onClose - Función al cerrar el modal
+ * @param {ReactNode} children - Contenido de filtros a mostrar
+ */
 export default function FilterPopover({ visible, onClose, children }) {
   return (
     <Modal
@@ -56,8 +68,6 @@ export default function FilterPopover({ visible, onClose, children }) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    // Usamos rgba para el overlay porque tu fondo general es negro sólido (#000000)
-    // y aquí necesitamos transparencia
     backgroundColor: 'rgba(0,0,0,0.7)', 
   },
   modalContainer: {
@@ -69,7 +79,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: theme.colors.glassBackground,
-    borderRadius: 16,
+    borderRadius: theme.radii.lg,
     borderWidth: 1,
     borderColor: theme.colors.glassBorder,
     ...Platform.select({
@@ -93,7 +103,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: theme.spacing.lg,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.cardBorder,
   },
@@ -103,13 +113,13 @@ const styles = StyleSheet.create({
   },
   closeBtn: {
     position: 'absolute',
-    right: 16,
+    right: theme.spacing.lg,
     padding: 4,
   },
   scroll: {
     maxHeight: 500,
   },
   content: {
-    padding: 20,
+    padding: theme.spacing.xl,
   },
 });

@@ -1,11 +1,23 @@
+/**
+ * @file Button.js
+ * @description Componente de botón animado y personalizable con diferentes variantes de estilo.
+ */
+
 import React, { useRef } from 'react';
 import { Animated, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 
-
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
+/**
+ * Componente Button
+ * @param {String} title - Texto del botón
+ * @param {String} icon - Nombre del icono de FontAwesome
+ * @param {String} variant - Variante de estilo (primary, secondary, tertiary, header, danger, success)
+ * @param {Function} onPress - Función al pulsar
+ * @param {Boolean} disabled - Si el botón está deshabilitado
+ */
 export default function Button({
   title,
   icon,
@@ -15,6 +27,9 @@ export default function Button({
 }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
+  /**
+   * Animación al presionar (encoger)
+   */
   const handlePressIn = () => {
     if (disabled) return;
     Animated.spring(scaleAnim, {
@@ -25,6 +40,9 @@ export default function Button({
     }).start();
   };
 
+  /**
+   * Animación al soltar (volver a tamaño original)
+   */
   const handlePressOut = () => {
     if (disabled) return;
     Animated.spring(scaleAnim, {
@@ -37,6 +55,7 @@ export default function Button({
 
   const isIconOnly = icon && !title;
 
+  // Definición de estilos por variante
   const variants = {
     primary: {
       backgroundColor: theme.colors.primaryButtonBackground,
@@ -116,10 +135,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 25,
+    gap: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.xl,
+    borderRadius: theme.radii.full,
     marginVertical: 4,
     ...Platform.select({
       web: { cursor: 'pointer' },

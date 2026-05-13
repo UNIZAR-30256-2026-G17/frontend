@@ -1,34 +1,43 @@
+/**
+ * @file CrimesByDistrictChart.js
+ * @description Componente de gráfico de barras horizontales animado para visualizar delitos por distrito.
+ * Utiliza D3.js para la lógica de escalado y animaciones de física (efecto empuje y crecimiento).
+ */
+
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as d3 from 'd3';
 import Card from '../../components/ui/Card';
-import Dropdown from '../../components/ui/Dropdown';
+import { theme } from '../../theme';
 
 const systemFont = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
-// Configuración de físicas
+// Configuración de físicas y transiciones
 const TRANSITION_MS = 380;
 const EASE = d3.easeCubicInOut;
 const PUSH_PX = 14; 
 const GROW_PX = 14; 
 
+/**
+ * Componente CrimesByDistrictChart
+ * @param {Array} data - Lista de objetos { name: string, value: number, color: string }
+ */
 export const CrimesByDistrictChart = ({ data }) => {
-    const [selectedMonth, setSelectedMonth] = useState({ label: 'Último mes', value: '1m' });
     const [hoveredId, setHoveredId] = useState(null);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     
-    // Usamos el estado para medir el ancho responsivo del contenedor
+    // Estado para medir el ancho responsivo del contenedor
     const [dimensions, setDimensions] = useState({ width: 0, height: 320 });
     const svgRef = useRef(null);
 
-    // 1. Datos preparados y ordenados (Bethesda arriba)
+    // Preparación de datos ordenados por valor descendente
     const chartData = useMemo(() => {
         return [...data]
             .sort((a, b) => b.value - a.value)
             .map(d => ({ ...d, id: d.name }));
     }, [data]);
 
-    // 2. Escalas matemáticas de D3
+    // Definición de márgenes y escalas D3
     const margin = { top: 20, right: 60, bottom: 20, left: 160 };
     const innerWidth = Math.max(0, dimensions.width - margin.left - margin.right);
     const innerHeight = Math.max(0, dimensions.height - margin.top - margin.bottom);
@@ -42,10 +51,10 @@ export const CrimesByDistrictChart = ({ data }) => {
         return d3.scaleBand()
             .domain(chartData.map(d => d.id))
             .range([0, innerHeight])
-            .padding(0.3); // Mantiene las barras gruesas
+            .padding(0.3);
     }, [chartData, innerHeight]);
 
-    // 3. Físicas y animaciones controladas 100% por D3
+    // Efecto de animación controlado por D3 cuando cambia el hover o los datos
     useEffect(() => {
         if (!svgRef.current || dimensions.width === 0) return;
 
@@ -68,7 +77,7 @@ export const CrimesByDistrictChart = ({ data }) => {
                 .ease(EASE)
                 .attr('transform', `translate(${margin.left}, ${margin.top + translateY})`);
 
-            // --- B. Animación de la barra (Crecimiento centralizado) ---
+            // --- B. Animación de la barra (Crecimiento y opacidad) ---
             const rect = g.select('.bar-rect');
             const origY = +rect.attr('data-orig-y');
             const origH = +rect.attr('data-orig-h');
@@ -81,7 +90,7 @@ export const CrimesByDistrictChart = ({ data }) => {
                 .attr('opacity', isAny && !isHovered ? 0.25 : 1)
                 .style('filter', isHovered ? 'brightness(1.15)' : 'none');
 
-            // --- C. Animación de la etiqueta izquierda ---
+            // --- C. Animación de las etiquetas y valores ---
             g.select('.bar-label').transition()
                 .duration(TRANSITION_MS)
                 .ease(EASE)
@@ -90,7 +99,6 @@ export const CrimesByDistrictChart = ({ data }) => {
                 .attr('fill', isHovered ? '#FFFFFF' : (isAny ? '#444' : '#888'))
                 .attr('opacity', isAny && !isHovered ? 0.3 : 1);
 
-            // --- D. Animación del valor derecho ---
             g.select('.bar-value').transition()
                 .duration(TRANSITION_MS)
                 .ease(EASE)
@@ -99,19 +107,14 @@ export const CrimesByDistrictChart = ({ data }) => {
                 .attr('fill', isHovered ? '#FFFFFF' : (isAny ? '#444' : '#888'))
                 .attr('opacity', isAny && !isHovered ? 0.4 : 1);
         });
-    }, [hoveredId, chartData, dimensions, margin.top, margin.left]);
+    }, [hoveredId, chartData, dimensions]);
 
     return (
-        <Card
-            title="Número de delitos por distrito"
-        >
+        <Card title="Número de delitos por distrito">
             <View 
                 style={styles.chartContainer}
-                // Capturamos el ancho real del contenedor para hacer el SVG responsivo
                 onLayout={(e) => setDimensions({ width: e.nativeEvent.layout.width, height: 320 })}
             >
-                
-
                 {dimensions.width > 0 && (
                     <svg 
                         ref={svgRef} 
@@ -132,10 +135,9 @@ export const CrimesByDistrictChart = ({ data }) => {
                                 <g 
                                     key={d.id} 
                                     className="bar-group" 
-                                    // Estado inicial del transform
                                     transform={`translate(${margin.left}, ${margin.top})`}
                                 >
-                                    {/* Etiqueta */}
+                                    {/* Etiqueta del distrito */}
                                     <text
                                         className="bar-label"
                                         x={-30}
@@ -149,22 +151,21 @@ export const CrimesByDistrictChart = ({ data }) => {
                                         {d.id}
                                     </text>
 
-                                    {/* Barra Base */}
+                                    {/* Rectángulo de la barra */}
                                     <rect
                                         className="bar-rect"
                                         x={0}
                                         y={y}
                                         width={w}
                                         height={h}
-                                        // Guardamos los valores originales para que D3 sepa desde dónde interpolar
                                         data-orig-y={y}
                                         data-orig-h={h}
                                         fill={d.color}
-                                        rx={4}
+                                        rx={theme.radii.xs}
                                         style={{ cursor: 'pointer' }}
                                     />
 
-                                    {/* Valor Numérico */}
+                                    {/* Valor cuantitativo */}
                                     <text
                                         className="bar-value"
                                         x={w + 15}
@@ -179,7 +180,7 @@ export const CrimesByDistrictChart = ({ data }) => {
                                         {d.value}
                                     </text>
 
-                                    {/* Área de Hover invisible (más gruesa que la barra) para evitar "parpadeos" */}
+                                    {/* Área de captura de eventos invisible */}
                                     <rect
                                         x={-100} 
                                         y={y - 10}
@@ -201,5 +202,10 @@ export const CrimesByDistrictChart = ({ data }) => {
 };
 
 const styles = StyleSheet.create({
-    chartContainer: { height: 320, width: '100%', marginTop: 5, position: 'relative' },
+    chartContainer: { 
+        height: 320, 
+        width: '100%', 
+        marginTop: theme.spacing.xs, 
+        position: 'relative' 
+    },
 });

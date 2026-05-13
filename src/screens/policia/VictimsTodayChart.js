@@ -1,48 +1,60 @@
+/**
+ * @file VictimsTodayChart.js
+ * @description Componente de gráfico de tarta (pie chart) animado para visualizar víctimas por categoría.
+ * Utiliza D3.js para el cálculo de arcos y transiciones de expansión al pasar el cursor.
+ */
+
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import * as d3 from 'd3';
 import Card from '../../components/ui/Card';
+import { theme } from '../../theme';
 
 const systemFont = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
-// Configuración de físicas: Mucho más suave, sin rebotes extraños
+// Configuración de físicas para las transiciones de los arcos
 const TRANSITION_MS = 350;
 const EASE = d3.easeCubicOut; 
 
+/**
+ * Componente VictimsTodayChart
+ * @param {Array} data - Lista de objetos { name: string, value: number, color: string }
+ */
 export const VictimsTodayChart = ({ data }) => {
     const [dimensions, setDimensions] = useState({ width: 0, height: 200 });
     const [hoveredId, setHoveredId] = useState(null);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const svgRef = useRef(null);
 
-    // 1. Cálculos de D3 para la tarta
-    const margin = 12; // Margen para la expansión del hover
+    // Cálculos de radio y márgenes
+    const margin = 12; 
     const radius = Math.max(0, Math.min(dimensions.width, dimensions.height) / 2 - margin);
     
+    // Generador de datos de tarta D3
     const pieData = useMemo(() => {
         const pieGenerator = d3.pie()
             .value(d => d.value)
             .sort(null)
-            // Un padAngle menor hace que los trozos estén más juntos, viéndose más circular
             .padAngle(0.015); 
         return pieGenerator(data);
     }, [data]);
 
+    // Generadores de arcos (normal y expandido para hover)
     const arcGenerator = useMemo(() => {
         return d3.arc()
             .innerRadius(0)
             .outerRadius(radius)
-            .cornerRadius(3); // Bordes redondeados sutiles para no deformar el círculo
+            .cornerRadius(3);
     }, [radius]);
 
     const arcHover = useMemo(() => {
         return d3.arc()
             .innerRadius(0)
-            .outerRadius(radius + 8) // Expansión limpia
+            .outerRadius(radius + 8) 
             .cornerRadius(3);
     }, [radius]);
 
-    // 2. Efecto de animación D3
+    // Efecto de animación D3 para suavizar la expansión de los arcos
     useEffect(() => {
         if (!svgRef.current || dimensions.width === 0) return;
         
@@ -64,26 +76,27 @@ export const VictimsTodayChart = ({ data }) => {
                 style={styles.pieContainer}
                 onLayout={(e) => setDimensions({ width: e.nativeEvent.layout.width, height: 200 })}
             >
+                {/* Tooltip personalizado para la vista web */}
                 {hoveredId && (
                     <div style={{
                         position: 'absolute',
                         top: mousePos.y - 50,
                         left: mousePos.x,
                         transform: 'translateX(-50%)',
-                        background: '#2a2a2a',
-                        color: '#eee',
+                        background: theme.colors.cardBackground,
+                        color: theme.colors.cardText,
                         padding: '8px 14px',
-                        borderRadius: '8px',
+                        borderRadius: theme.radii.md,
                         fontSize: '13px',
                         fontFamily: systemFont,
-                        border: '1px solid #444',
+                        border: `1px solid ${theme.colors.cardBorder}`,
                         boxShadow: '0 5px 15px rgba(0,0,0,0.4)',
                         pointerEvents: 'none',
                         zIndex: 100,
                         transition: 'opacity 0.15s ease-out'
                     }}>
                         <strong>{hoveredId}</strong>
-                        <div style={{ color: '#aaa', marginTop: 3 }}>
+                        <div style={{ color: theme.colors.cardTextSecondary, marginTop: 3 }}>
                             Víctimas: {data.find(d => d.name === hoveredId)?.value}
                         </div>
                     </div>
@@ -108,7 +121,7 @@ export const VictimsTodayChart = ({ data }) => {
                                         className="arc-path"
                                         d={arcGenerator(d)} 
                                         fill={d.data.color}
-                                        stroke="#1e1e1e" 
+                                        stroke={theme.colors.cardBackground} 
                                         strokeWidth="1"
                                         style={{ 
                                             cursor: 'pointer',
@@ -124,6 +137,7 @@ export const VictimsTodayChart = ({ data }) => {
                     )}
                 </View>
 
+                {/* Leyenda personalizada debajo del gráfico */}
                 <View style={styles.legendContainer}>
                     {data.map((item, index) => (
                         <View key={index} style={styles.legendItem}>
@@ -138,9 +152,29 @@ export const VictimsTodayChart = ({ data }) => {
 };
 
 const styles = StyleSheet.create({
-    pieContainer: { marginTop: 10, position: 'relative', minHeight: 280 },
-    legendContainer: { marginTop: 16, paddingHorizontal: 10 },
-    legendItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
-    legendColor: { width: 12, height: 12, marginRight: 8, borderRadius: 2 },
-    legendText: { color: '#CCCCCC', fontSize: 12, fontFamily: systemFont },
+    pieContainer: { 
+        marginTop: theme.spacing.sm, 
+        position: 'relative', 
+        minHeight: 280 
+    },
+    legendContainer: { 
+        marginTop: theme.spacing.lg, 
+        paddingHorizontal: theme.spacing.sm 
+    },
+    legendItem: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        marginBottom: 6 
+    },
+    legendColor: { 
+        width: 12, 
+        height: 12, 
+        marginRight: 8, 
+        borderRadius: 2 
+    },
+    legendText: { 
+        color: theme.colors.cardTextSecondary, 
+        fontSize: 12, 
+        fontFamily: systemFont 
+    },
 });

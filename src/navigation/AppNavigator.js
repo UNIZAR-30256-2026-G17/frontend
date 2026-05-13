@@ -1,3 +1,9 @@
+/**
+ * @file AppNavigator.js
+ * @description Navegador principal de la aplicación.
+ * Define las rutas públicas y protegidas basándose en el estado de autenticación y el rol del usuario.
+ */
+
 import React, { useContext } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -5,24 +11,32 @@ import { theme } from '../theme';
 import { AuthContext } from '../context/AuthContext';
 import { withProtection } from './ProtectedScreen';
 
+// Pantallas Ciudadano / Públicas
 import { HomeScreen } from '../screens/HomeScreen';
 import { StatsScreen } from '../screens/ciudadano/StatsScreen';
 import { MapScreen } from '../screens/ciudadano/MapScreen';
+import { RoutesScreen } from '../screens/ciudadano/RoutesScreen';
+
+// Pantallas Autenticación
 import { LoginScreen } from '../screens/LoginScreen';
 import { RegisterScreen } from '../screens/policia/RegisterScreen';
+
+// Pantallas Policía
 import { CrimesScreen } from '../screens/policia/CrimesScreen';
-import { RoutesScreen } from '../screens/ciudadano/RoutesScreen';
 import { MapPoliceScreen } from '../screens/policia/MapPoliceScreen';
 import { AlertsScreen } from '../screens/policia/AlertsScreen';
 import { EstadisticasScreen } from '../screens/policia/EstadisticasScreen';
+import { RoutesPoliceScreen } from '../screens/policia/RoutesPoliceScreen';
+
+// Pantallas Administrador
 import { AdminUsuariosScreen } from '../screens/admin/AdminUsuariosScreen';
 import { AdminDelitosScreen } from '../screens/admin/AdminDelitosScreen';
 import { AdminAlertasScreen } from '../screens/admin/AdminAlertasScreen';
-import { RoutesPoliceScreen } from '../screens/policia/RoutesPoliceScreen';
 
 const Stack = createNativeStackNavigator();
 
-// Pantallas protegidas — se crean fuera del componente para evitar re-renders
+// ─── PANTALLAS PROTEGIDAS ───
+// Se envuelven en el HOC withProtection para validar el rol antes de permitir el acceso.
 const AlertasAdminProtected = withProtection(AdminAlertasScreen, ['admin']);
 const DelitosAdminProtected = withProtection(AdminDelitosScreen, ['admin']);
 const UsersAdminProtected = withProtection(AdminUsuariosScreen, ['admin']);
@@ -32,9 +46,13 @@ const MapPoliceProtected = withProtection(MapPoliceScreen, ['police']);
 const AlertsPoliceProtected = withProtection(AlertsScreen, ['police']);
 const RoutesPoliceProtected = withProtection(RoutesPoliceScreen, ['police']);
 
+/**
+ * Componente AppNavigator
+ */
 export default function AppNavigator() {
   const { user, loading } = useContext(AuthContext);
 
+  // Mientras se recupera la sesión, mostramos un cargador
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', backgroundColor: theme.colors.background }}>
@@ -54,7 +72,7 @@ export default function AppNavigator() {
     >
       {!user ? (
         <>
-          {/* Públicas */}
+          {/* RUTAS PÚBLICAS (No autenticado) */}
           <Stack.Screen name="Inicio" component={HomeScreen} />
           <Stack.Screen name="Mapa" component={MapScreen} />
           <Stack.Screen name="Estadísticas" component={StatsScreen} />
@@ -65,14 +83,14 @@ export default function AppNavigator() {
         </>
       ) : user.role === 'admin' ? (
         <>
-          {/* Protegidas admin */}
+          {/* RUTAS ADMINISTRADOR */}
           <Stack.Screen name="Panel de Alertas" component={AlertasAdminProtected} />
           <Stack.Screen name="Panel de Delitos" component={DelitosAdminProtected} />
           <Stack.Screen name="Panel de Usuarios" component={UsersAdminProtected} />
         </>
       ) : (
         <>
-          {/* Protegidas policía */}
+          {/* RUTAS POLICÍA */}
           <Stack.Screen name="Mapa Policial" component={MapPoliceProtected} />
           <Stack.Screen name="Estadísticas Policiales" component={EstadisticasProtected} />
           <Stack.Screen name="Listado de Delitos" component={CrimesProtected} />

@@ -1,3 +1,9 @@
+/**
+ * @file UseUsuariosFilter.js
+ * @description Hook personalizado para la gestión de búsqueda y filtrado de usuarios en el panel administrativo.
+ * Soporta búsqueda por email, filtrado por rol dinámico y estado de cuenta.
+ */
+
 import { useState, useMemo } from 'react';
 
 export const ORDER_OPTIONS = [
@@ -10,19 +16,23 @@ export const STATUS_OPTIONS = [
   { label: 'Bloqueado', value: 'blocked' },
 ];
 
+/**
+ * Hook UseUsuariosFilter
+ * @param {Array} users - Lista de usuarios del sistema
+ */
 export function UseUsuariosFilter(users = []) {
   const [order,        setOrder]        = useState(ORDER_OPTIONS[0]);
   const [statusFilter, setStatusFilter] = useState(null);
   const [roleFilter,   setRoleFilter]   = useState(null);
   const [emailSearch, setEmailSearch] = useState('');
 
-
-  // Roles dinámicos extraídos de los datos
+  // Genera opciones de roles basadas en los roles existentes en la base de datos
   const roleOptions = useMemo(() => {
     const unique = [...new Set(users.map(u => u.role).filter(Boolean))];
     return unique.map(r => ({ label: r.charAt(0).toUpperCase() + r.slice(1), value: r }));
   }, [users]);
 
+  // Procesa la lista de usuarios según los criterios de búsqueda y filtros
   const filteredData = useMemo(() => {
     return users
       .filter((row) => {
@@ -37,12 +47,18 @@ export function UseUsuariosFilter(users = []) {
       });
   }, [order, statusFilter, roleFilter, emailSearch, users]);
 
+  /**
+   * Restablece todos los campos de búsqueda y filtros
+   */
   const resetFilters = () => {
     setStatusFilter(null);
     setRoleFilter(null);
     setEmailSearch('');
   };
 
+  /**
+   * Cuenta los filtros activos para la visualización del badge
+   */
   const numFiltrosActivos = [
     statusFilter?.value,
     roleFilter?.value,

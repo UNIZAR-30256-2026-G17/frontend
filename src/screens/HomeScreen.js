@@ -1,4 +1,9 @@
-// HomeScreen.tsx — Versión mejorada
+/**
+ * @file HomeScreen.js
+ * @description Pantalla de inicio (Landing Page) de la aplicación. 
+ * Presenta las funcionalidades, roles y estadísticas principales con un diseño visualmente atractivo.
+ */
+
 import React, { useRef, useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
@@ -8,8 +13,9 @@ import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Container } from '../components/layout/Container';
 import { useScroll } from '../context/ScrollContext';
+import { theme } from '../theme';
 
-// ─── DESIGN TOKENS ──────────────────────────────────────────────
+// ─── DESIGN TOKENS (Locales para mantener el diseño específico de la landing) ───
 const C = {
   yellow:   '#F5C842',
   dark:     '#111111',
@@ -76,7 +82,9 @@ const STATS = [
   { value: 98,   suffix: '%', label: 'Uptime del sistema' },
 ];
 
-// ─── ANIMATED COUNTER ────────────────────────────────────────────
+/**
+ * Contador animado para las estadísticas
+ */
 const AnimatedStat = ({ value, suffix, label }) => {
   const anim = useRef(new Animated.Value(0)).current;
   const [display, setDisplay] = useState(0);
@@ -95,7 +103,9 @@ const AnimatedStat = ({ value, suffix, label }) => {
   );
 };
 
-// ─── FADE CARD ───────────────────────────────────────────────────
+/**
+ * Tarjeta con animación de entrada (FadeIn + SlideUp)
+ */
 const FadeCard = ({ children, delay = 0, style }) => {
   const opacity    = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(24)).current;
@@ -114,7 +124,9 @@ const FadeCard = ({ children, delay = 0, style }) => {
   );
 };
 
-// ─── SECTION HEADER ──────────────────────────────────────────────
+/**
+ * Cabecera de sección común
+ */
 const SectionHeader = ({ tag, title, light = false }) => (
   <View style={s.sectionHeader}>
     <View style={[s.tagPill, light && s.tagPillLight]}>
@@ -124,7 +136,9 @@ const SectionHeader = ({ tag, title, light = false }) => (
   </View>
 );
 
-// ─── MAP ILLUSTRATION ────────────────────────────────────────────
+/**
+ * Ilustración animada de un mapa de calor simplificado
+ */
 const MapIllustration = () => {
   const pulse = useRef(new Animated.Value(1)).current;
   useEffect(() => {
@@ -199,7 +213,9 @@ const MapIllustration = () => {
   );
 };
 
-// ─── MAIN SCREEN ─────────────────────────────────────────────────
+/**
+ * Componente HomeScreen principal
+ */
 export const HomeScreen = () => {
   const navigation = useNavigation();
   const { width } = useWindowDimensions();
@@ -415,8 +431,8 @@ const s = StyleSheet.create({
   },
   statItem: { flex: 1, alignItems: 'center' },
   statDivider: { width: 1, backgroundColor: 'rgba(0,0,0,0.12)', marginVertical: 4 },
-  statValue: { fontSize: 28, fontFamily: 'PlusJakarta-ExtraBold', color: C.dark, marginBottom: 3 },
-  statLabel: { fontSize: 11, color: 'rgba(0,0,0,0.5)', textAlign: 'center', fontFamily: 'Inter-Medium', letterSpacing: 0.2 },
+  statValue: { fontSize: 28, fontFamily: theme.typography.bodyBold.fontFamily, color: C.dark, marginBottom: 3 },
+  statLabel: { fontSize: 11, color: 'rgba(0,0,0,0.5)', textAlign: 'center', fontFamily: theme.typography.body.fontFamily, letterSpacing: 0.2 },
 
   // SECTION
   section: { paddingVertical: SPACE.xxl, paddingHorizontal: SPACE.lg },
@@ -426,9 +442,9 @@ const s = StyleSheet.create({
     borderRadius: 20, marginBottom: 14,
   },
   tagPillLight: { backgroundColor: C.surface, borderWidth: 1, borderColor: C.border },
-  tagText: { fontSize: 11, fontFamily: 'Inter-Bold', color: C.yellow, letterSpacing: 1.2, textTransform: 'uppercase' },
+  tagText: { fontSize: 11, fontFamily: theme.typography.bodyBold.fontFamily, color: C.yellow, letterSpacing: 1.2, textTransform: 'uppercase' },
   tagTextLight: { color: C.textMute },
-  sectionTitle: { fontSize: 28, fontFamily: 'PlusJakarta-ExtraBold', color: C.dark, textAlign: 'center', lineHeight: 38, letterSpacing: -0.3 },
+  sectionTitle: { fontSize: 28, fontFamily: theme.typography.bodyBold.fontFamily, color: C.dark, textAlign: 'center', lineHeight: 38, letterSpacing: -0.3 },
   sectionTitleLight: { color: C.white },
 
   // GRIDS
@@ -447,13 +463,13 @@ const s = StyleSheet.create({
     }),
   },
   featureIcon: { width: 46, height: 46, borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginBottom: 14 },
-  featureTitle: { fontSize: 15, fontFamily: 'PlusJakarta-Bold', color: C.dark, marginBottom: 6 },
-  featureDesc: { fontSize: 13, fontFamily: 'Inter-Regular', color: C.textMute, lineHeight: 21 },
+  featureTitle: { fontSize: 15, fontFamily: theme.typography.bodyBold.fontFamily, color: C.dark, marginBottom: 6 },
+  featureDesc: { fontSize: 13, fontFamily: theme.typography.body.fontFamily, color: C.textMute, lineHeight: 21 },
 
   // ROLE CARD
   roleCard: { flex: 1, borderRadius: 16, padding: SPACE.lg, minWidth: 190, maxWidth: 290 },
   roleIcon: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', marginBottom: 14 },
-  roleTitle: { fontSize: 17, fontFamily: 'PlusJakarta-ExtraBold', marginBottom: 14 },
+  roleTitle: { fontSize: 17, fontFamily: theme.typography.bodyBold.fontFamily, marginBottom: 14 },
   perkRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: 6 },
   perkDot: { width: 5, height: 5, borderRadius: 3, marginTop: 7, flexShrink: 0 },
   perkText: { fontSize: 13, lineHeight: 20, flex: 1 },

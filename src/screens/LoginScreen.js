@@ -1,3 +1,8 @@
+/**
+ * @file LoginScreen.js
+ * @description Pantalla de inicio de sesión para el personal autorizado (policía y administradores).
+ */
+
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +19,9 @@ import AppSnackbar from '../components/ui/AppSnackBar';
 
 import { API_URL } from '../config/env';
 
+/**
+ * Componente LoginScreen
+ */
 export const LoginScreen = () => {
   const navigation = useNavigation();
   const { login } = useAuth();
@@ -24,12 +32,21 @@ export const LoginScreen = () => {
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
 
+  /**
+   * Muestra un mensaje en el snackbar
+   */
   const showSnackbar = (message, variant = 'normal') =>
     setSnackbar({ visible: true, message, variant });
 
+  /**
+   * Oculta el snackbar
+   */
   const hideSnackbar = () =>
     setSnackbar(prev => ({ ...prev, visible: false }));
 
+  /**
+   * Maneja el proceso de autenticación con la API
+   */
   const handleLogin = async () => {
     try {
       if (!email.trim() || !password.trim()) {
@@ -51,12 +68,14 @@ export const LoginScreen = () => {
         throw new Error(data.message || 'Credenciales incorrectas');
       }
 
+      // Guardar datos en el contexto de autenticación
       await login({
         email: data.user.email,
         role: data.user.role,
         token: data.token,
       });
 
+      // Navegación según el rol del usuario
       if (data.user.role === 'admin') {
         navigation.navigate('Panel de Alertas');
       } else {
@@ -146,13 +165,13 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     alignItems: 'center',
     paddingVertical: 40,
-    paddingHorizontal: 20,
+    paddingHorizontal: theme.spacing.lg,
   },
   pageTitle: {
     ...theme.typography.pageTitle,
     color: theme.colors.text,
     textAlign: 'center',
-    marginBottom: 32,
+    marginBottom: theme.spacing.xxl,
   },
   cardWrapper: {
     width: '100%',
@@ -160,17 +179,17 @@ const styles = StyleSheet.create({
   },
   institutionHeader: {
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: theme.spacing.sm,
   },
   institutionName: {
     ...theme.typography.cardTitle,
     color: theme.colors.cardText,
-    marginBottom: 12,
+    marginBottom: theme.spacing.md,
     textAlign: 'center',
   },
   logo: {
     width: 100,
     height: 100,
-    marginBottom: 8,
+    marginBottom: theme.spacing.sm,
   },
 });

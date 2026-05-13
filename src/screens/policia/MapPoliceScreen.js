@@ -1,8 +1,13 @@
+/**
+ * @file MapPoliceScreen.js
+ * @description Pantalla del mapa táctico para el personal policial.
+ * Permite visualizar el Índice de Criminalidad (IC) por beat y generar rutas de patrullaje optimizadas.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useWindowDimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { ActivityIndicator } from 'react-native-paper';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 
@@ -20,6 +25,7 @@ import { generatePatrolRoutes } from '../../utils/routeGenerator';
 
 import { API_URL } from '../../config/env';
 
+// Definición de colores según el Índice de Criminalidad (IC)
 const ICs = [
     { label: '> 5', color: theme.colors.ic1 },
     { label: '4 - 5', color: theme.colors.ic2 },
@@ -30,6 +36,9 @@ const ICs = [
     { label: '< 2', color: theme.colors.ic7 },
 ];
 
+/**
+ * Componente MapPoliceScreen
+ */
 export const MapPoliceScreen = () => {
     const { user, loading: authLoading } = useAuth();
     const navigation = useNavigation();
@@ -45,18 +54,28 @@ export const MapPoliceScreen = () => {
 
     const [modalGenerateRoutesVisible, setModalGenerateRoutesVisible] = useState(false);
 
+    // Cargar los ICs de los beats al iniciar la pantalla
     useEffect(() => {
         if (user && user.token) {
             fetchBeatsICsLastDay();
         }
     }, [user]);
 
+    /**
+     * Muestra un mensaje en el snackbar
+     */
     const showSnackbar = (message, variant = 'normal') =>
       setSnackbar({ visible: true, message, variant });
 
+    /**
+     * Oculta el snackbar
+     */
     const hideSnackbar = () =>
       setSnackbar(prev => ({ ...prev, visible: false }));
 
+    /**
+     * Obtiene los ICs de los beats para las últimas 24 horas desde la API
+     */
     const fetchBeatsICsLastDay = async () => {
         try {
             setLoadingMap(true);
@@ -85,6 +104,10 @@ export const MapPoliceScreen = () => {
         }
     };
 
+    /**
+     * Maneja la generación de rutas de patrullaje tácticas
+     * @param {Object} data - Datos del modal de generación { numPatrullas }
+     */
     const handleGenerateRoutes = async (data) => {
         const n = parseInt(data.numPatrullas);
 
@@ -97,6 +120,7 @@ export const MapPoliceScreen = () => {
 
             setModalGenerateRoutesVisible(false);
 
+            // Redirigir a la pantalla de visualización de rutas con los datos generados
             navigation.navigate('Rutas de Patrullaje', {
                 isMultiple: true,
                 routes: validRoutes,
@@ -112,6 +136,7 @@ export const MapPoliceScreen = () => {
         }
     };
 
+    // Spinner mientras se carga el mapa o se verifica la sesión
     if (authLoading || (loadingMap && beatICs.length === 0)) {
         return (
             <View style={styles.centerContainer}>
@@ -154,6 +179,7 @@ export const MapPoliceScreen = () => {
                         />
                     </View>
 
+                    {/* Leyenda del IC */}
                     {ICSelected && (
                         <Card title="Índice de criminalidad">
                             <View style={styles.sameRow}>
@@ -170,6 +196,7 @@ export const MapPoliceScreen = () => {
                     )}
                 </View>
 
+                {/* Modal para configurar la generación de rutas */}
                 <GenerateRoutesModal
                     visible={modalGenerateRoutesVisible}
                     onClose={() => setModalGenerateRoutesVisible(false)}
@@ -197,22 +224,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: theme.colors.background,
-        gap: 12,
-    },
-    loadingText: {
-        color: theme.colors.textSecondary,
-        fontSize: 14,
+        gap: theme.spacing.md,
     },
     title: {
         ...theme.typography.pageTitle,
         color: theme.colors.text,
-        marginTop: 16,
+        marginTop: theme.spacing.lg,
         alignSelf: 'center',
     },
     layoutContainer: {
         flex: 1,
-        margin: 16,
-        gap: 8,
+        margin: theme.spacing.lg,
+        gap: theme.spacing.sm,
     },
     buttonRightContainer: {
         alignItems: 'flex-end',
@@ -220,7 +243,7 @@ const styles = StyleSheet.create({
     sameRow: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 8,
+        gap: theme.spacing.sm,
     },
     mapContainer: {
         flex: 1,
@@ -228,6 +251,7 @@ const styles = StyleSheet.create({
     icBox: {
         width: 30,
         height: 20,
+        borderRadius: theme.radii.xs,
     },
     cardText: {
         ...theme.typography.cardDescription,

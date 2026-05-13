@@ -1,8 +1,13 @@
+/**
+ * @file CreateCrimesTable.js
+ * @description Componente de tabla para la visualización del listado de delitos.
+ * Implementa un diseño responsivo con expansión de filas en dispositivos móviles.
+ */
+
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
-import { useWindowDimensions } from 'react-native';
 import TablePagination from '../../components/ui/TablePagination';
 import FadeInView from '../../components/animations/FadeInView';
 
@@ -20,18 +25,27 @@ const COLS = [
 const EXPANDED_KEYS = ['fecha', 'hora', 'distrito', 'beat', 'sector'];
 const ITEMS_PER_PAGE = 10;
 
+/**
+ * Componente CreateCrimesTable
+ * @param {Array} data - Lista de delitos a mostrar
+ */
 export function CreateCrimesTable({ data }) {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const [expandedRow, setExpandedRow] = useState(null);
   const [page, setPage] = useState(0);
 
+  // Lógica de paginación en el cliente
   const paginatedData = data.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
   const numberOfPages = Math.ceil(data.length / ITEMS_PER_PAGE);
 
   const rowStyle = (i) => [styles.row, i % 2 === 0 ? styles.rowEven : styles.rowOdd];
 
+  /**
+   * Renderiza el contenido de la tabla según el tamaño de la pantalla
+   */
   const renderTableContent = () => {
+    // ── Vista de Escritorio ──
     if (!isMobile) {
       return (
         <>
@@ -55,7 +69,7 @@ export function CreateCrimesTable({ data }) {
       );
     }
 
-    // Vista Móvil
+    // ── Vista Móvil (Compacta con expansión) ──
     return (
       <>
         <View style={styles.headerRow}>
@@ -118,29 +132,30 @@ export function CreateCrimesTable({ data }) {
 
 const styles = StyleSheet.create({ 
     table: { 
-      borderRadius: 10, 
+      borderRadius: theme.radii.lg, 
       overflow: 'hidden', 
       borderColor: theme.colors.tableBorder, 
-      borderWidth: 1
+      borderWidth: 1,
+      backgroundColor: theme.colors.cardBackground
     },
     headerRow: { 
       flexDirection: 'row', 
       backgroundColor: theme.colors.tableHeaderBackground, 
-      paddingVertical: 12, 
+      paddingVertical: theme.spacing.md, 
       alignItems: 'center' 
     },
     headerCell: { 
       flex: 1, 
-      ...theme.typography.body, 
+      ...theme.typography.bodyBold, 
       color: theme.colors.tableHeaderText, 
-      fontWeight: 'bold', 
-      textAlign: 'center' 
+      textAlign: 'center',
+      fontSize: 13
     },
     row: { 
       flexDirection: 'row', 
       borderBottomWidth: 1, 
       borderBottomColor: 'rgba(255,255,255,0.05)', 
-      paddingVertical: 12, 
+      paddingVertical: theme.spacing.md, 
       alignItems: 'center' 
     },
     rowEven: { backgroundColor: theme.colors.tableRowEven },
@@ -149,7 +164,8 @@ const styles = StyleSheet.create({
       flex: 1, 
       textAlign: 'center', 
       ...theme.typography.body, 
-      color: theme.colors.tableText 
+      color: theme.colors.tableText,
+      fontSize: 12
     },
     monoCell: {
       ...theme.typography.mono,
@@ -158,25 +174,27 @@ const styles = StyleSheet.create({
     
     mId: { 
       flex: 1.2, 
-      fontSize: 12 
+      fontSize: 11 
     },
-    mTipo: { flex: 2 },
-    mSubtipo: { flex: 1.5 },
+    mTipo: { flex: 2, fontSize: 11 },
+    mSubtipo: { flex: 1.5, fontSize: 11 },
     mBtn: { width: 32, alignItems: 'center' },
     
     expandedRow: { 
-      paddingHorizontal: 16, 
-      paddingVertical: 10, 
+      paddingHorizontal: theme.spacing.xl, 
+      paddingVertical: theme.spacing.md, 
       borderTopWidth: 1, 
       borderTopColor: theme.colors.tableBorder, 
       gap: 4 
     },
     expText: { 
       ...theme.typography.body, 
-      color: theme.colors.tableText 
+      color: theme.colors.tableText,
+      fontSize: 12
     },
     expLabel: { 
-      fontWeight: 'bold', 
-      color: theme.colors.tableText 
+      ...theme.typography.bodyBold,
+      color: theme.colors.tableText,
+      fontSize: 12
     },
 });

@@ -1,3 +1,9 @@
+/**
+ * @file ProfileSidebar.js
+ * @description Barra lateral deslizante que muestra la información del perfil del usuario 
+ * y permite cerrar la sesión. Incluye animaciones y diseño premium.
+ */
+
 import React, { useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, Modal, Pressable,
@@ -8,11 +14,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../theme';
 import Button from '../ui/Button';
 
+/**
+ * Componente ProfileSidebar
+ * @param {Boolean} visible - Controla la visibilidad de la barra lateral
+ * @param {Function} onClose - Función al cerrar la barra lateral
+ * @param {Object} user - Objeto con los datos del usuario autenticado
+ * @param {Function} onLogout - Función para cerrar sesión
+ */
 export const ProfileSidebar = ({ visible, onClose, user, onLogout }) => {
   const slideAnim = useRef(new Animated.Value(300)).current;
-
   const pulseAnim = useRef(new Animated.Value(0)).current;
 
+  // Manejo de animaciones de entrada/salida y pulso del avatar
   useEffect(() => {
     if (visible) {
       Animated.spring(slideAnim, {
@@ -58,9 +71,15 @@ export const ProfileSidebar = ({ visible, onClose, user, onLogout }) => {
 
   if (!user) return null;
 
+  /**
+   * Obtiene la inicial del correo para el avatar
+   */
   const getUserInitial = () =>
     user?.email ? user.email.charAt(0).toUpperCase() : '?';
 
+  /**
+   * Formatea el nombre de usuario a partir del correo
+   */
   const getUserName = () => {
     if (!user?.email) return '—';
     const local = user.email.split('@')[0];
@@ -198,16 +217,16 @@ const styles = StyleSheet.create({
       web: { backdropFilter: 'blur(20px)', boxShadow: '-4px 0px 30px rgba(0,0,0,0.5)' },
     }),
     flexDirection: 'column',
-    paddingBottom: 36,
+    paddingBottom: theme.spacing.xxxl,
     zIndex: 2000,
   },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: theme.spacing.xl,
     paddingTop: 52,
-    paddingBottom: 16,
+    paddingBottom: theme.spacing.lg,
   },
   panelTitle: {
     fontFamily: theme.typography.pageTitle.fontFamily,
@@ -217,21 +236,21 @@ const styles = StyleSheet.create({
     letterSpacing: -0.4,
   },
   closeButton: {
-    padding: 8,
+    padding: theme.spacing.sm,
     ...Platform.select({ web: { cursor: 'pointer' }, default: {} }),
   },
   divider: {
     height: 1,
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    marginHorizontal: 20,
-    marginVertical: 12,
+    marginHorizontal: theme.spacing.xl,
+    marginVertical: theme.spacing.md,
   },
 
   // Avatar
   avatarSection: {
     alignItems: 'center',
-    paddingVertical: 24,
-    paddingHorizontal: 20,
+    paddingVertical: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.xl,
     gap: 10,
   },
   avatarOuter: {
@@ -264,9 +283,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 32,
   },
-  roleIconBadge: {
-    display: 'none',
-  },
   userName: {
     fontFamily: theme.typography.title.fontFamily,
     fontWeight: '700',
@@ -297,7 +313,7 @@ const styles = StyleSheet.create({
   // Info rows
   infoSection: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: theme.spacing.xl,
     paddingTop: 10,
   },
   infoRow: {
@@ -311,7 +327,7 @@ const styles = StyleSheet.create({
   infoIconWrapper: {
     width: 30,
     height: 30,
-    borderRadius: 8,
+    borderRadius: theme.radii.sm,
     backgroundColor: 'rgba(0,0,0,0.08)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -337,7 +353,7 @@ const styles = StyleSheet.create({
 
   // Footer
   footer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: theme.spacing.xl,
     paddingTop: 16,
   },
 });

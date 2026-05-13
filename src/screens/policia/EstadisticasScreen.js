@@ -1,15 +1,24 @@
+/**
+ * @file EstadisticasScreen.js
+ * @description Pantalla de visualización de analíticas para el personal policial.
+ * Muestra gráficos detallados sobre criminalidad por distrito, hora, tipos de delitos y víctimas.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
 import { Container } from '../../components/layout/Container';
 import { useAuth } from '../../context/AuthContext';
 import { API_URL } from '../../config/env';
+import { theme } from '../../theme';
 
 import { CrimesByDistrictChart } from './CrimesByDistrictChart';
 import { CrimesTodayChart } from './CrimesTodayChart';
 import { VictimsTodayChart } from './VictimsTodayChart';
 import { CrimeTypesStats } from './CrimeTypesStats';
 
-
+/**
+ * Componente EstadisticasScreen
+ */
 export const EstadisticasScreen = () => {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
@@ -20,16 +29,21 @@ export const EstadisticasScreen = () => {
   const [lastUpdate, setLastUpdate] = useState('');
   const [pieData, setPieData] = useState([]);
   const [statsData, setStatsData] = useState([]);
+
+  // Mapas de colores y nombres para los tipos de delitos
   const colorMap = {
     'Crime Against Person':   '#B22222',
     'Crime Against Property': '#DAA520',
     'Crime Against Society':  '#4682B4',
   };
+  
   const nameMap = {
     'Crime Against Person':   'Delitos contra personas',
     'Crime Against Property': 'Delitos contra la propiedad',
     'Crime Against Society':  'Delitos contra la sociedad',
   };
+
+  // Cargar todos los datos estadísticos al montar el componente
   useEffect(() => {
     if (user?.token) {
       fetchCrimesByDistrict();
@@ -38,6 +52,9 @@ export const EstadisticasScreen = () => {
     }
   }, [user]);
 
+  /**
+   * Obtiene estadísticas por nombre de categoría de delito (Crimename1)
+   */
   const fetchCrimeNames1 = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
@@ -48,14 +65,14 @@ export const EstadisticasScreen = () => {
       );
       const json = await response.json();
 
-      // Para el pie chart (VictimsTodayChart)
+      // Procesar datos para el gráfico de sectores (Víctimas)
       setPieData(json.results.map(item => ({
         name: nameMap[item.crimename1] ?? item.crimename1,
         value: item.num_victims,
         color: colorMap[item.crimename1] ?? '#888',
       })));
 
-      // Para las stats (CrimeTypesStats)
+      // Procesar datos para la lista de estadísticas (Porcentajes)
       setStatsData(json.results.map(item => ({
         label: nameMap[item.crimename1] ?? item.crimename1,
         value: `${Math.round(item.percentage)}%`,
@@ -66,13 +83,16 @@ export const EstadisticasScreen = () => {
       console.error('Error fetching crime names:', error);
     }
   };
+
+  /**
+   * Obtiene el número de delitos de ayer desglosado por distrito
+   */
   const fetchCrimesByDistrict = async () => {
     try {
       const response = await fetch(`${API_URL}/crimes/yesterday/byDistrict`, {
         headers: { 'Authorization': `Bearer ${user?.token}` }
       });
       const json = await response.json();
-      console.log('Response:', JSON.stringify(json));
 
       const colors = ['#8B0000','#B22222','#CD5C5C','#D2691E','#DAA520','#BDB76B','#8FBC8F'];
       setBarData(json.results.map((item, i) => ({
@@ -86,6 +106,9 @@ export const EstadisticasScreen = () => {
     }
   };
 
+  /**
+   * Obtiene el número de delitos de ayer desglosado por franja horaria
+   */
   const fetchCrimesByHour = async () => {
     try {
       const response = await fetch(`${API_URL}/crimes/yesterday/byHour`, {
@@ -112,18 +135,20 @@ export const EstadisticasScreen = () => {
 
         <View style={[styles.mainLayout, { flexDirection: isMobile ? 'column' : 'row' }]}>
 
+          {/* Columna Izquierda / Superior */}
           <View style={[styles.section, !isMobile && { flex: 1.2 }]}>
             <CrimesByDistrictChart data={barData} />
-            <View style={{ height: 16 }} />
+            <View style={{ height: theme.spacing.md }} />
             <VictimsTodayChart data={pieData} />
           </View>
 
-          {!isMobile && <View style={{ width: 16 }} />}
-          {isMobile && <View style={{ height: 16 }} />}
+          {!isMobile && <View style={{ width: theme.spacing.md }} />}
+          {isMobile && <View style={{ height: theme.spacing.md }} />}
 
+          {/* Columna Derecha / Inferior */}
           <View style={[styles.section, !isMobile && { flex: 1 }]}>
             <CrimesTodayChart data={lineData} />
-            <View style={{ height: 16 }} />
+            <View style={{ height: theme.spacing.md }} />
             <CrimeTypesStats data={statsData} />
           </View>
 
@@ -135,10 +160,25 @@ export const EstadisticasScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  scrollContent: { padding: 16, paddingBottom: 40 },
-  headerContainer: { marginBottom: 24, alignItems: 'center' },
-  mainTitle: { fontSize: 28, fontWeight: 'bold', color: '#FFFFFF', textAlign: 'center' },
-  updateText: { fontSize: 12, color: '#AAAAAA', marginTop: 4 },
+  scrollContent: { 
+    padding: theme.spacing.md, 
+    paddingBottom: theme.spacing.xxxl 
+  },
+  headerContainer: { 
+    marginBottom: theme.spacing.xl, 
+    alignItems: 'center' 
+  },
+  mainTitle: { 
+    ...theme.typography.pageTitle,
+    color: theme.colors.text, 
+    textAlign: 'center' 
+  },
+  updateText: { 
+    fontSize: 12, 
+    color: theme.colors.textSecondary, 
+    marginTop: 4,
+    fontFamily: theme.typography.body.fontFamily 
+  },
   mainLayout: { width: '100%' },
   section: { width: '100%' },
 });

@@ -1,9 +1,22 @@
+/**
+ * @file DateInput.js
+ * @description Componente de entrada de fecha con soporte multiplataforma (Android y Web).
+ */
+
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { theme } from '../../theme';
 
+/**
+ * Componente DateInput
+ * @param {String} label - Etiqueta superior
+ * @param {String} icon - Nombre del icono de FontAwesome
+ * @param {Date} value - Valor actual de la fecha
+ * @param {Function} onChange - Función que recibe la nueva fecha seleccionada
+ * @param {String} placeholder - Texto a mostrar cuando no hay fecha seleccionada
+ */
 export default function DateInput({
     label,
     icon = 'calendar',
@@ -12,8 +25,10 @@ export default function DateInput({
     placeholder = 'Selecciona una fecha',
 }) {
     const [isFocused, setIsFocused] = useState(false);
-    const [showWebPicker, setShowWebPicker] = useState(false);
 
+    /**
+     * Abre el selector de fecha nativo de Android
+     */
     const openAndroidPicker = () => {
         DateTimePickerAndroid.open({
             value: value || new Date(),
@@ -26,6 +41,10 @@ export default function DateInput({
         });
     };
 
+    /**
+     * Formatea la fecha para mostrarla al usuario
+     * @param {Date} date - Fecha a formatear
+     */
     const formatDate = (date) => {
         if (!date) return '';
         return date.toLocaleDateString('es-ES');
@@ -82,15 +101,15 @@ export default function DateInput({
 
 const styles = StyleSheet.create({
     wrapper: {
-        marginVertical: 10,
+        marginVertical: theme.spacing.sm,
     },
     labelContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 5,
+        marginBottom: theme.spacing.xs,
     },
     icon: {
-        marginRight: 8,
+        marginRight: theme.spacing.sm,
     },
     label: {
         fontSize: 14,
@@ -99,7 +118,7 @@ const styles = StyleSheet.create({
     },
     input: {
         padding: 10,
-        borderRadius: 10,
+        borderRadius: theme.radii.md,
         borderWidth: 1,
         borderColor: theme.colors.inputBorder,
         backgroundColor: theme.colors.inputBackground,

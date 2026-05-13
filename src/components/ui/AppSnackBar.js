@@ -1,8 +1,21 @@
+/**
+ * @file AppSnackBar.js
+ * @description Componente de notificación (snackbar) para mostrar mensajes de éxito o error al usuario.
+ */
+
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Snackbar } from 'react-native-paper';
 import { theme } from '../../theme';
 
+/**
+ * Componente AppSnackbar
+ * @param {Boolean} visible - Controla si el snackbar se muestra o no
+ * @param {String} message - Mensaje a mostrar
+ * @param {String} variant - Tipo de mensaje ('normal' o 'error')
+ * @param {Function} onDismiss - Función al cerrar el snackbar
+ * @param {Number} duration - Duración del mensaje en milisegundos
+ */
 export default function AppSnackbar({ visible, message, variant = 'normal', onDismiss, duration = 3000 }) {
   const isError = variant === 'error';
 
@@ -14,12 +27,12 @@ export default function AppSnackbar({ visible, message, variant = 'normal', onDi
         duration={duration}
         style={[
             styles.snackbar,
-            { backgroundColor: isError ? '#B71C1C' : '#1A1A1A' }
+            { backgroundColor: isError ? theme.colors.danger : theme.colors.cardBackground }
         ]}
         wrapperStyle={styles.snackbarWrapper}
         action={{
           label: 'Cerrar',
-          textColor: isError ? '#000000' : theme.colors.primary,
+          textColor: isError ? '#FFFFFF' : theme.colors.primary,
           onPress: onDismiss,
           labelStyle: { fontWeight: 'bold' }
         }}
@@ -37,7 +50,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
-    paddingBottom: 20,
+    paddingBottom: theme.spacing.xl,
     zIndex: 9999,
   },
   snackbarWrapper: {
@@ -48,7 +61,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   snackbar: {
-    borderRadius: 12,
+    borderRadius: theme.radii.md,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },

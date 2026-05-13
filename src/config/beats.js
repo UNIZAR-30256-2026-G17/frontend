@@ -1,3 +1,9 @@
+/**
+ * @file beats.js
+ * @description Listado de coordenadas centrales de los Sectores (Beats) del Condado de Montgomery.
+ * Permite identificar la posición geográfica de cada beat para cálculos de criminalidad y rutas.
+ */
+
 export const beatsCoordinates = [
     // Distrito 1 (Rockville)
     { name: '1A1', coords: [39.0840, -77.1520] },

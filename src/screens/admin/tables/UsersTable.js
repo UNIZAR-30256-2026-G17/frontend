@@ -1,3 +1,8 @@
+/**
+ * @file UsersTable.js
+ * @description Componente de tabla para mostrar la lista de usuarios con paginación y acciones.
+ */
+
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { theme } from '../../../theme';
@@ -5,6 +10,7 @@ import Button from '../../../components/ui/Button';
 import TablePagination from '../../../components/ui/TablePagination';
 import FadeInView from '../../../components/animations/FadeInView';
 
+// Configuración de columnas para escritorio
 const COLS_DESKTOP = [
   { key: 'email', header: 'Correo' },
   { key: 'badge_number', header: 'Número de placa' },
@@ -14,16 +20,29 @@ const COLS_DESKTOP = [
 
 const ITEMS_PER_PAGE = 10;
 
-export function UsersTable({ users = [] }) {
+/**
+ * Componente UsersTable
+ * @param {Array} users - Lista de usuarios
+ * @param {Function} onToggleStatus - Función para cambiar el estado del usuario
+ */
+export function UsersTable({ users = [], onToggleStatus }) {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const [page, setPage] = useState(0);
 
+  // Lógica de paginación
   const paginatedData = users.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
   const numberOfPages = Math.ceil(users.length / ITEMS_PER_PAGE);
 
+  /**
+   * Determina el estilo de la fila según si es par o impar
+   * @param {Number} i - Índice de la fila
+   */
   const rowStyle = (i) => [styles.row, i % 2 === 0 ? styles.rowEven : styles.rowOdd];
 
+  /**
+   * Renderiza el contenido de la tabla (desktop o móvil)
+   */
   const renderContent = () => {
     if (!isMobile) {
       return (
@@ -55,7 +74,7 @@ export function UsersTable({ users = [] }) {
                     icon={row.status === 'active' ? 'times' : 'check'}
                     variant={row.status === 'active' ? 'danger' : 'success'}
                     size="small"
-                    onPress={() => { }}
+                    onPress={() => onToggleStatus && onToggleStatus(row._id, row.status)}
                   />
                 </View>
               </View>
@@ -65,6 +84,7 @@ export function UsersTable({ users = [] }) {
       );
     }
 
+    // Renderizado móvil
     return (
       <>
         <View style={styles.headerRow}>
@@ -91,7 +111,7 @@ export function UsersTable({ users = [] }) {
                   icon={row.status === 'active' ? 'times' : 'check'}
                   variant={row.status === 'active' ? 'danger' : 'success'}
                   size="small"
-                  onPress={() => { }}
+                  onPress={() => onToggleStatus && onToggleStatus(row._id, row.status)}
                 />
               </View>
             </View>
@@ -117,16 +137,16 @@ export function UsersTable({ users = [] }) {
 
 const styles = StyleSheet.create({
   table: {
-    borderRadius: 10,
+    borderRadius: theme.radii.md,
     overflow: 'hidden',
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.cardBackground,
     borderColor: theme.colors.tableBorder || '#eee',
     borderWidth: 1,
   },
   headerRow: {
     flexDirection: 'row',
     backgroundColor: theme.colors.tableHeaderBackground || '#000',
-    paddingVertical: 12,
+    paddingVertical: theme.spacing.md,
     alignItems: 'center',
   },
   headerCell: {
@@ -139,7 +159,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: theme.spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.05)',
   },
@@ -153,10 +173,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   headerBtnSpace: { flex: 1.2 },
-  actionCell: { flex: 1.2, alignItems: 'center', justifyContent: 'center', paddingRight: 8 },
-  colEmail: { flex: 2, textAlign: 'left', paddingLeft: 24 },
-  mCorreo: { flex: 2, textAlign: 'left', paddingLeft: 12, fontSize: 11 },
+  actionCell: { flex: 1.2, alignItems: 'center', justifyContent: 'center', paddingRight: theme.spacing.sm },
+  colEmail: { flex: 2, textAlign: 'left', paddingLeft: theme.spacing.xl },
+  mCorreo: { flex: 2, textAlign: 'left', paddingLeft: theme.spacing.md, fontSize: 11 },
   mPlaca: { flex: 1, fontSize: 11 },
   mEstado: { flex: 1.2, fontSize: 11 },
-  mBtnContainer: { width: 50, alignItems: 'center', justifyContent: 'center', paddingRight: 16 },
+  mBtnContainer: { width: 50, alignItems: 'center', justifyContent: 'center', paddingRight: theme.spacing.lg },
 });

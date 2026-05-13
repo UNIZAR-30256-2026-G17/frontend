@@ -1,8 +1,18 @@
+/**
+ * @file CrimeTypesStats.js
+ * @description Componente de visualización de métricas clave por tipo de delito.
+ * Muestra tarjetas con porcentajes descriptivos utilizando un sistema de cuadrícula flexible.
+ */
+
 import React from 'react';
 import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import Card from '../../components/ui/Card'; 
 import { theme } from '../../theme';
 
+/**
+ * Componente CrimeTypesStats
+ * @param {Array} data - Lista de objetos { label: string, value: string, color: string }
+ */
 export const CrimeTypesStats = ({ data }) => {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
@@ -15,7 +25,7 @@ export const CrimeTypesStats = ({ data }) => {
             key={index} 
             style={[
               styles.statBox, 
-              // En móvil forzamos 100%, en escritorio permitimos que crezcan
+              // Ajuste de ancho responsivo: 100% en móvil, ~30% en escritorio
               { flexBasis: isMobile ? '100%' : '30%' }
             ]}
           >
@@ -34,28 +44,29 @@ const styles = StyleSheet.create({
   statsGrid: { 
     flexDirection: 'row', 
     flexWrap: 'wrap', 
-    gap: 12, 
-    marginTop: 10,
-    justifyContent: 'space-between' // Para que el espacio sea uniforme
+    gap: theme.spacing.sm, 
+    marginTop: theme.spacing.sm,
+    justifyContent: 'space-between'
   },
   statBox: {
-    // flexBasis se maneja dinámicamente arriba
     flexGrow: 1,
-    backgroundColor: '#2A2A2A', 
+    backgroundColor: theme.colors.cardBackground, 
     borderWidth: 1, 
-    borderColor: '#444',
-    borderRadius: 12, // Un poco más redondeado como en la foto
-    padding: 16, 
-    minHeight: 100, // Asegura un tamaño consistente
+    borderColor: theme.colors.cardBorder,
+    borderRadius: theme.radii.lg,
+    padding: theme.spacing.lg, 
+    minHeight: 100,
     justifyContent: 'center',
   },
   statLabel: { 
-    color: '#FFFFFF', 
+    color: theme.colors.cardText, 
     fontSize: 14, 
-    marginBottom: 8,
+    marginBottom: theme.spacing.xs,
+    fontFamily: theme.typography.body.fontFamily,
   },
   statValue: { 
-    fontSize: 32, // Un poco más grande para resaltar el porcentaje
+    fontSize: 32,
     fontWeight: 'bold',
+    fontFamily: theme.typography.title.fontFamily,
   },
 });

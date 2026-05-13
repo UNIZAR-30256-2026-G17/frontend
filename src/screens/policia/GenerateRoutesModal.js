@@ -1,3 +1,9 @@
+/**
+ * @file GenerateRoutesModal.js
+ * @description Modal interactivo para solicitar la generación automática de rutas de patrullaje.
+ * Permite al personal policial especificar el número de patrullas requeridas.
+ */
+
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { theme } from '../../theme';
@@ -6,20 +12,26 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 
-
+/**
+ * Componente GenerateRoutesModal
+ */
 export default function GenerateRoutesModal({ visible, onClose, onConfirm }) {
 
     const [numPatrullas, setNumPatrullas] = useState(1);
-
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    /**
+     * Asegura que solo se introduzcan valores numéricos
+     */
     const handleTextChange = (text) => {
-        // Filtra para que solo permita dígitos (0-9)
         const numericValue = text.replace(/[^0-9]/g, '');
         setNumPatrullas(numericValue);
     };
 
+    /**
+     * Inicia el proceso de generación de rutas
+     */
     const handleGenerateRoutesPressed = async () => {
         if (!numPatrullas || parseInt(numPatrullas) <= 0) {
             setError('*Introduce un número válido mayor a 0');
@@ -30,18 +42,21 @@ export default function GenerateRoutesModal({ visible, onClose, onConfirm }) {
         setLoading(true);
 
         try {
-            // Esperamos a que la función de confirmación (que es async en el padre) termine
+            // Se ejecuta la lógica de generación pesada (con llamadas a OSRM)
             await onConfirm({ numPatrullas: parseInt(numPatrullas) });
             setNumPatrullas('1');
         } catch (e) {
-            // El error se maneja en el padre, pero aquí detenemos el loading
+            // El error se gestiona mediante el Snackbar del padre
         } finally {
             setLoading(false);
         }
     };
 
+    /**
+     * Cierra el modal limpiando estados, impidiendo cierre durante carga
+     */
     const handleClose = () => {
-        if (loading) return; // Evitar cerrar mientras genera
+        if (loading) return; 
         setError('');
         onClose();
     };
@@ -53,20 +68,20 @@ export default function GenerateRoutesModal({ visible, onClose, onConfirm }) {
             animationType="fade"
             onRequestClose={onClose}
         >
-            {/* Overlay */}
+            {/* Fondo oscurecido (Overlay) */}
             <TouchableOpacity
                 style={styles.overlay}
                 activeOpacity={1}
                 onPress={onClose}
             />
 
-            {/* Modal content */}
+            {/* Contenido del Modal */}
             <View style={styles.modalContainer}>
                 <Card title="Generar rutas de patrullaje">
                     {loading ? (
                         <View style={styles.loadingContainer}>
                             <ActivityIndicator size="large" color={theme.colors.primary} />
-                            <Text style={[styles.text, { marginTop: 15, textAlign: 'center' }]}>
+                            <Text style={styles.loadingText}>
                                 Generando rutas inteligentes...
                             </Text>
                         </View>
@@ -126,24 +141,31 @@ const styles = StyleSheet.create({
         maxWidth: 800,
     },
     loadingContainer: {
-        padding: 20,
+        padding: theme.spacing.lg,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    loadingText: {
+        ...theme.typography.body,
+        color: theme.colors.cardText,
+        marginTop: theme.spacing.md,
+        textAlign: 'center'
     },
     sameRow: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 4,
+        gap: theme.spacing.xs,
         justifyContent: 'flex-end',
     },
     text: {
         ...theme.typography.body,
         color: theme.colors.cardText,
-        marginBottom: 15,
+        marginBottom: theme.spacing.md,
     },
     errorText: {
+        ...theme.typography.body,
         color: theme.colors.danger,
-        marginBottom: 10,
+        marginBottom: theme.spacing.sm,
         fontSize: 14,
     },
 });

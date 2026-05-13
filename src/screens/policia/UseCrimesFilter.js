@@ -1,14 +1,26 @@
+/**
+ * @file UseCrimesFilter.js
+ * @description Hook personalizado para la gestión de filtros en la pantalla de visualización de delitos policiales.
+ * Permite filtrar por tipo, distrito, beat y rango de fechas.
+ */
+
 import { useState, useMemo } from 'react';
 import {
   SAMPLE_DATA, ORDER_OPTIONS, TIPO_OPTIONS,
-  DISTRITO_OPTIONS, BEAT_OPTIONS, SECTOR_OPTIONS,
+  DISTRITO_OPTIONS, BEAT_OPTIONS,
 } from './crimes.constants';
 
+/**
+ * Parsea una cadena de fecha con formato DD-MM-YYYY a un objeto Date
+ */
 const parseDate = (str) => {
   const [d, m, y] = str.split('-');
   return new Date(`${y}-${m}-${d}`);
 };
 
+/**
+ * Hook UseCrimesFilter
+ */
 export function UseCrimesFilter() {
   const [order, setOrder]           = useState(ORDER_OPTIONS[0]);
   const [tipoFilter, setTipoFilter] = useState(TIPO_OPTIONS[0]);
@@ -17,6 +29,7 @@ export function UseCrimesFilter() {
   const [dateFrom, setDateFrom]     = useState(null);
   const [dateTo, setDateTo]         = useState(null);
 
+  // Lógica de procesamiento de datos en memoria (mock data)
   const filteredData = useMemo(() => {
     return SAMPLE_DATA
       .filter((row) => {
@@ -38,6 +51,9 @@ export function UseCrimesFilter() {
       });
   }, [order, tipoFilter, distritoFilter, beatFilter, dateFrom, dateTo]);
 
+  /**
+   * Limpia todos los selectores de filtro
+   */
   const resetFilters = () => {
     setTipoFilter(TIPO_OPTIONS[0]);
     setDistritoFilter(DISTRITO_OPTIONS[0]);

@@ -1,8 +1,22 @@
+/**
+ * @file Card.js
+ * @description Componente de tarjeta base con soporte para diseño "Glassmorphism",
+ * iconos, títulos y acciones a la derecha.
+ */
+
 import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 
+/**
+ * Componente Card
+ * @param {String} title - Título de la tarjeta
+ * @param {String} description - Descripción corta debajo del título
+ * @param {ReactNode} children - Contenido principal de la tarjeta
+ * @param {String} icon - Nombre del icono de FontAwesome
+ * @param {ReactNode} right - Componente a mostrar en la parte superior derecha
+ */
 export default function Card({
     title,
     description,
@@ -60,8 +74,8 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.cardBackground,
         borderWidth: 1,
         borderColor: theme.colors.cardBorder,
-        borderRadius: 16,
-        padding: 16,
+        borderRadius: theme.radii.lg,
+        padding: theme.spacing.lg,
         ...Platform.select({
             web: {
                 backdropFilter: 'blur(12px)',
@@ -82,7 +96,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 8,
+        marginBottom: theme.spacing.sm,
     },
     leftHeader: {
         flexDirection: 'row',

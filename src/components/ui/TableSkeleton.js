@@ -1,7 +1,19 @@
+/**
+ * @file TableSkeleton.js
+ * @description Componente de carga para tablas. Muestra una estructura de filas y columnas
+ * animada mientras se obtienen los datos.
+ */
+
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Skeleton from './Skeleton';
+import { theme } from '../../theme';
 
+/**
+ * Componente TableSkeleton
+ * @param {Number} rows - Número de filas a mostrar
+ * @param {Number} cols - Número de columnas a mostrar
+ */
 export const TableSkeleton = ({ rows = 5, cols = 4 }) => {
   return (
     <View style={styles.container}>
@@ -29,24 +41,24 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     backgroundColor: 'rgba(255,255,255,0.02)',
-    borderRadius: 16,
+    borderRadius: theme.radii.lg,
     overflow: 'hidden',
-    marginTop: 20,
+    marginTop: theme.spacing.xl,
   },
   header: {
     flexDirection: 'row',
-    paddingVertical: 16,
+    paddingVertical: theme.spacing.lg,
     backgroundColor: 'rgba(255,255,255,0.05)',
     alignItems: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: theme.spacing.md,
   },
   row: {
     flexDirection: 'row',
-    paddingVertical: 16,
+    paddingVertical: theme.spacing.lg,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.05)',
     alignItems: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: theme.spacing.md,
   },
 });
 

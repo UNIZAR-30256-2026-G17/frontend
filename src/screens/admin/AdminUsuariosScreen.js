@@ -1,3 +1,8 @@
+/**
+ * @file AdminUsuariosScreen.js
+ * @description Pantalla de administración de usuarios. Permite listar, filtrar y bloquear/activar usuarios.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Text, ScrollView, StyleSheet, RefreshControl, View, TextInput, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +15,7 @@ import EmptyState from '../../components/ui/EmptyState';
 import TableSkeleton from '../../components/ui/TableSkeleton';
 import AppSnackbar from '../../components/ui/AppSnackBar';
 import FadeInView from '../../components/animations/FadeInView';
+import LoadingOverlay from '../../components/ui/LoadingOverlay';
 import { API_URL } from '../../config/env';
 
 import Button from '../../components/ui/Button';
@@ -19,6 +25,9 @@ import FilterPopover from '../../components/ui/FilterPopover';
 import { UseUsuariosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseUsuariosFilter';
 import SummaryCards from '../../components/ui/SummaryCards';
 
+/**
+ * Componente AdminUsuariosScreen
+ */
 export function AdminUsuariosScreen() {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
@@ -27,9 +36,11 @@ export function AdminUsuariosScreen() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
 
+  // Hook personalizado para el filtrado de usuarios
   const {
     filteredData,
     roleOptions,
@@ -41,16 +52,26 @@ export function AdminUsuariosScreen() {
     resetFilters,
   } = UseUsuariosFilter(users);
 
+  // Carga inicial de usuarios
   useEffect(() => {
     if (user?.token) fetchUsers();
   }, [user]);
 
+  /**
+   * Muestra el snackbar
+   */
   const showSnackbar = (message, variant = 'normal') =>
     setSnackbar({ visible: true, message, variant });
 
+  /**
+   * Oculta el snackbar
+   */
   const hideSnackbar = () =>
     setSnackbar(prev => ({ ...prev, visible: false }));
 
+  /**
+   * Obtiene la lista de usuarios de la API
+   */
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -71,9 +92,43 @@ export function AdminUsuariosScreen() {
     }
   };
 
+  /**
+   * Manejador de refresco (pull-to-refresh)
+   */
   const onRefresh = () => {
     setRefreshing(true);
     fetchUsers();
+  };
+  
+  /**
+   * Cambia el estado (activo/bloqueado) de un usuario
+   * @param {String} id - ID del usuario
+   * @param {String} currentStatus - Estado actual
+   */
+  const toggleUserStatus = async (id, currentStatus) => {
+    try {
+      setActionLoading(true);
+      const newStatus = currentStatus === 'active' ? 'blocked' : 'active';
+      const response = await fetch(`${API_URL}/users/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Error al cambiar el estado');
+      
+      // Actualizar estado local
+      setUsers(prev => prev.map(u => u._id === id ? { ...u, status: newStatus } : u));
+      showSnackbar(newStatus === 'blocked' ? 'Usuario bloqueado' : 'Usuario activado');
+    } catch (error) {
+      showSnackbar(error.message, 'error');
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const hasData = !loading && users.length > 0;
@@ -102,8 +157,8 @@ export function AdminUsuariosScreen() {
               <SummaryCards
                 data={[
                   { label: 'Total Usuarios', value: users.length, icon: 'users', color: theme.colors.primary },
-                  { label: 'Activos', value: users.filter(u => u.status === 'active').length, icon: 'check-circle', color: '#2ECC71' },
-                  { label: 'Bloqueados', value: users.filter(u => u.status !== 'active').length, icon: 'ban', color: '#E74C3C' },
+                  { label: 'Activos', value: users.filter(u => u.status === 'active').length, icon: 'check-circle', color: theme.colors.success },
+                  { label: 'Bloqueados', value: users.filter(u => u.status !== 'active').length, icon: 'ban', color: theme.colors.danger },
                   { label: 'Policías', value: users.filter(u => u.role === 'police').length, icon: 'shield', color: '#3498DB' },
                 ]}
               />
@@ -183,7 +238,7 @@ export function AdminUsuariosScreen() {
                 <Text style={styles.resultsText}>
                   {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
                 </Text>
-                <UsersTable users={filteredData} />
+                <UsersTable users={filteredData} onToggleStatus={toggleUserStatus} />
               </>
             )}
 
@@ -219,6 +274,8 @@ export function AdminUsuariosScreen() {
         </View>
 
       </FilterPopover>
+      
+      <LoadingOverlay visible={actionLoading} message="Actualizando estado..." />
 
       <AppSnackbar
         visible={snackbar.visible}
@@ -232,15 +289,15 @@ export function AdminUsuariosScreen() {
 
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: theme.colors.background },
-  container: { padding: 24, paddingBottom: 40, width: '100%', maxWidth: 1000, alignSelf: 'center' },
-  pageTitle: { ...theme.typography.pageTitle, color: theme.colors.text, textAlign: 'center', marginBottom: 24, marginTop: 20 },
-  topBar: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20, flexWrap: 'wrap' },
+  container: { padding: theme.spacing.xl, paddingBottom: theme.spacing.xxxl, width: '100%', maxWidth: 1000, alignSelf: 'center' },
+  pageTitle: { ...theme.typography.pageTitle, color: theme.colors.text, textAlign: 'center', marginBottom: theme.spacing.xl, marginTop: theme.spacing.xl },
+  topBar: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: theme.spacing.xl, flexWrap: 'wrap' },
   topBarMobile: { justifyContent: 'flex-start' },
   filterButtonWrapper: { position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 },
   orderContainer: { width: 320 },
   fullWidth: { width: '100%' },
-  orderLabel: { ...theme.typography.body, color: theme.colors.text, marginBottom: 4 },
-  searchRow: { marginBottom: 16 },
+  orderLabel: { ...theme.typography.body, color: theme.colors.text, marginBottom: theme.spacing.xs },
+  searchRow: { marginBottom: theme.spacing.lg },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -248,7 +305,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.card,
     borderWidth: 1,
     borderColor: theme.colors.tableBorder,
-    borderRadius: 10,
+    borderRadius: theme.radii.md,
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
@@ -257,8 +314,8 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     flex: 1,
   },
-  resultsText: { ...theme.typography.body, color: theme.colors.text, marginBottom: 8 },
-  filterGroupTitle: { ...theme.typography.cardTitle, color: theme.colors.cardText, marginBottom: 8, marginTop: 18 },
+  resultsText: { ...theme.typography.body, color: theme.colors.text, marginBottom: theme.spacing.sm },
+  filterGroupTitle: { ...theme.typography.cardTitle, color: theme.colors.cardText, marginBottom: theme.spacing.sm, marginTop: theme.spacing.lg },
   toggleGroup: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   centerLoader: { marginTop: 60 },
   badge: {
@@ -266,7 +323,7 @@ const styles = StyleSheet.create({
     top: -3,
     right: -3,
     backgroundColor: theme.colors.tableBorder,
-    borderRadius: 9999,
+    borderRadius: theme.radii.full,
     minWidth: 18,
     height: 18,
     paddingHorizontal: 4,

@@ -1,19 +1,31 @@
+/**
+ * @file StatsPoliceScreen.js
+ * @description Pantalla de resumen estadístico avanzado para el personal policial.
+ * Muestra indicadores clave de rendimiento (KPIs) y gráficos de tendencias.
+ */
+
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Container } from '../../components/layout/Container';
 import { theme } from '../../theme';
 import Card from '../../components/ui/Card';
 import Dropdown from '../../components/ui/Dropdown';
 
+/**
+ * Componente StatsPoliceScreen
+ */
 export const StatsPoliceScreen = () => {
+    // Opciones para el filtro de periodo de tiempo
     const options = [
         { label: 'Últimos 7 días', value: '7d' },
         { label: 'Último mes', value: '1m' },
         { label: 'Último trimestre', value: '3m' },
         { label: 'Este año', value: 'ytd' },
     ];
+    
     const [selectedOption, setSelectedOption] = useState(options[1]);
 
+    // Datos estáticos de ejemplo para los KPIs
     const stats = [
         { label: 'Crímenes Totales', value: '1,284', change: '+5.2%', trend: 'up' },
         { label: 'Tiempo de Respuesta', value: '8.4 min', change: '-1.2 min', trend: 'down' },
@@ -23,6 +35,8 @@ export const StatsPoliceScreen = () => {
     return (
         <Container>
             <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+                
+                {/* Cabecera con título y selector de fecha */}
                 <View style={styles.headerRow}>
                     <Text style={styles.title}>Estadísticas Policiales</Text>
                     <View style={styles.dropdownContainer}>
@@ -34,6 +48,7 @@ export const StatsPoliceScreen = () => {
                     </View>
                 </View>
 
+                {/* Grid de tarjetas KPI */}
                 <View style={styles.summaryGrid}>
                     {stats.map((stat, index) => (
                         <Card key={index} style={styles.summaryCard}>
@@ -49,6 +64,7 @@ export const StatsPoliceScreen = () => {
                     ))}
                 </View>
 
+                {/* Gráfico de barras de ejemplo */}
                 <Card title="Distribución de Crímenes por Distrito" style={styles.mainCard}>
                     <View style={styles.chartPlaceholder}>
                         <View style={[styles.bar, { height: '80%', backgroundColor: theme.colors.primary }]} />
@@ -68,6 +84,7 @@ export const StatsPoliceScreen = () => {
                     </View>
                 </Card>
 
+                {/* Secciones inferiores de eficiencia e información táctica */}
                 <View style={styles.bottomGrid}>
                     <Card title="Eficiencia de Patrulla" style={styles.smallCard}>
                         <View style={styles.efficiencyCircle}>
@@ -78,6 +95,7 @@ export const StatsPoliceScreen = () => {
                         <Text style={styles.infoText}>D3 y D5 muestran un incremento del 15% en actividad nocturna.</Text>
                     </Card>
                 </View>
+
             </ScrollView>
         </Container>
     );
@@ -89,7 +107,7 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.background,
     },
     content: {
-        padding: 20,
+        padding: theme.spacing.lg,
         maxWidth: 1200,
         alignSelf: 'center',
         width: '100%',
@@ -98,9 +116,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 25,
+        marginBottom: theme.spacing.xl,
         flexWrap: 'wrap',
-        gap: 15,
+        gap: theme.spacing.md,
     },
     title: {
         ...theme.typography.pageTitle,
@@ -112,8 +130,8 @@ const styles = StyleSheet.create({
     },
     summaryGrid: {
         flexDirection: 'row',
-        gap: 20,
-        marginBottom: 25,
+        gap: theme.spacing.lg,
+        marginBottom: theme.spacing.xl,
         flexWrap: 'wrap',
     },
     summaryCard: {
@@ -123,48 +141,52 @@ const styles = StyleSheet.create({
     statLabel: {
         fontSize: 14,
         color: theme.colors.cardTextSecondary,
-        marginBottom: 8,
+        marginBottom: theme.spacing.xs,
+        fontFamily: theme.typography.body.fontFamily,
     },
     statValue: {
         fontSize: 28,
         fontWeight: 'bold',
         color: theme.colors.text,
-        marginBottom: 8,
+        marginBottom: theme.spacing.xs,
+        fontFamily: theme.typography.title.fontFamily,
     },
     statChange: {
         fontSize: 12,
         fontWeight: '600',
+        fontFamily: theme.typography.bodyBold.fontFamily,
     },
     mainCard: {
-        marginBottom: 25,
+        marginBottom: theme.spacing.xl,
     },
     chartPlaceholder: {
         height: 200,
         flexDirection: 'row',
         alignItems: 'flex-end',
         justifyContent: 'space-around',
-        paddingTop: 20,
+        paddingTop: theme.spacing.lg,
         borderBottomWidth: 1,
         borderBottomColor: theme.colors.cardBorder,
     },
     bar: {
         width: 40,
-        borderTopLeftRadius: 4,
-        borderTopRightRadius: 4,
+        borderTopLeftRadius: theme.radii.xs,
+        borderTopRightRadius: theme.radii.xs,
         opacity: 0.8,
     },
     chartLabels: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        marginTop: 10,
+        marginTop: theme.spacing.sm,
     },
     chartLabel: {
         fontSize: 12,
         color: theme.colors.cardTextSecondary,
+        fontFamily: theme.typography.body.fontFamily,
     },
     bottomGrid: {
         flexDirection: 'row',
-        gap: 20,
+        gap: theme.spacing.lg,
         flexWrap: 'wrap',
     },
     smallCard: {
@@ -180,12 +202,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'center',
-        marginVertical: 10,
+        marginVertical: theme.spacing.sm,
     },
     efficiencyValue: {
         fontSize: 20,
         fontWeight: 'bold',
         color: theme.colors.text,
+        fontFamily: theme.typography.title.fontFamily,
     },
     infoText: {
         ...theme.typography.body,

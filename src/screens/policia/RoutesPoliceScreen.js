@@ -1,5 +1,11 @@
+/**
+ * @file RoutesPoliceScreen.js
+ * @description Pantalla para la visualización de rutas de patrullaje generadas.
+ * Muestra las trayectorias sobre el mapa y un resumen de las patrullas asignadas.
+ */
+
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 
 import { Container } from '../../components/layout/Container';
@@ -8,10 +14,14 @@ import MapBeats from '../../components/map/Map.beats.web';
 
 import { theme } from '../../theme';
 
+/**
+ * Componente RoutesPoliceScreen
+ */
 export const RoutesPoliceScreen = () => {
     const route = useRoute();
 
-    const { routes = [], isMultiple, count } = route.params || {};
+    // Recuperamos las rutas generadas desde los parámetros de navegación
+    const { routes = [] } = route.params || {};
 
     return (
         <Container>
@@ -29,6 +39,7 @@ export const RoutesPoliceScreen = () => {
                         </Card>
                     </View>
 
+                    {/* Contenedor del mapa con las rutas trazadas */}
                     <View style={styles.mapContainer}>
                         <MapBeats
                             showMarkers={true}
@@ -50,19 +61,15 @@ const styles = StyleSheet.create({
     title: {
         ...theme.typography.pageTitle,
         color: theme.colors.text,
-        marginTop: 16,
+        marginTop: theme.spacing.lg,
         alignSelf: 'center',
-    },
-    text: {
-        ...theme.typography.body,
-        color: theme.colors.text,
     },
     content: {
         flex: 1,
-        margin: 16,
+        margin: theme.spacing.lg,
     },
     mapControls: {
-        marginBottom: 8,
+        marginBottom: theme.spacing.sm,
     },
     mapContainer: {
         flex: 1,
@@ -72,6 +79,7 @@ const styles = StyleSheet.create({
         color: theme.colors.cardTextSecondary,
     },
     cardTextTitle: {
-        fontWeight: 'bold',
+        ...theme.typography.bodyBold,
+        color: theme.colors.cardText,
     },
 });

@@ -1,3 +1,9 @@
+/**
+ * @file districts.js
+ * @description Listado de coordenadas centrales de los distritos del Condado de Montgomery.
+ * Se utiliza para cálculos de proximidad y visualización en el mapa.
+ */
+
 export const districtsCoordinates = [
     { name: 'ROCKVILLE', coords: [39.083997, -77.152758] },
     { name: 'SILVER SPRING', coords: [38.990665, -77.026088] },

@@ -1,19 +1,39 @@
+/**
+ * @file Dropdown.js
+ * @description Componente de selector desplegable personalizado con diseño "Glassmorphism".
+ * Soporta posicionamiento dinámico y diseño responsivo.
+ */
+
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, ScrollView, Platform, findNodeHandle } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, ScrollView, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 
+/**
+ * Componente Dropdown
+ * @param {Array} options - Lista de objetos { label, value }
+ * @param {Object} selected - Opción seleccionada actualmente
+ * @param {Function} onSelect - Función que recibe la opción seleccionada
+ * @param {String} placeholder - Texto a mostrar si no hay selección
+ */
 export default function Dropdown({ options = [], selected, onSelect, placeholder = 'Seleccionar...' }) {
     const [open, setOpen] = useState(false);
     const [buttonLayout, setButtonLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
 
     const buttonRef = useRef(null);
 
+    /**
+     * Maneja la selección de una opción
+     * @param {Object} option - Opción pulsada
+     */
     const handleSelect = (option) => {
         onSelect(option);
         setOpen(false);
     };
 
+    /**
+     * Mide la posición del botón para desplegar el modal justo debajo
+     */
     const openDropdown = () => {
         if (buttonRef.current) {
             buttonRef.current.measure((fx, fy, width, height, px, py) => {
@@ -44,7 +64,7 @@ export default function Dropdown({ options = [], selected, onSelect, placeholder
 
             {/* Modal */}
             <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-                {/* Overlay */}
+                {/* Overlay para cerrar al pulsar fuera */}
                 <Pressable style={styles.overlay} onPress={() => setOpen(false)}>
                     <View />
                 </Pressable>
@@ -80,7 +100,7 @@ export default function Dropdown({ options = [], selected, onSelect, placeholder
 
 const styles = StyleSheet.create({
     wrapper: {
-        // marginVertical: 10,
+        // Contenedor principal
     },
     button: {
         flexDirection: 'row',
@@ -89,8 +109,8 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.dropdownBackground,
         borderWidth: 1,
         borderColor: theme.colors.dropdownBorder,
-        borderRadius: 12,
-        paddingHorizontal: 15,
+        borderRadius: theme.radii.md,
+        paddingHorizontal: theme.spacing.lg,
         paddingVertical: 12,
         ...Platform.select({
             web: {
@@ -101,6 +121,7 @@ const styles = StyleSheet.create({
         }),
     },
     buttonText: {
+        ...theme.typography.body,
         color: theme.colors.dropdownText,
         fontSize: 14,
         marginRight: 10,
@@ -114,7 +135,7 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.dropdownOptionBackground,
         borderWidth: 1,
         borderColor: theme.colors.dropdownOptionBorder,
-        borderRadius: 12,
+        borderRadius: theme.radii.md,
         maxHeight: 200,
         ...Platform.select({
             web: {
@@ -133,7 +154,7 @@ const styles = StyleSheet.create({
         }),
     },
     option: {
-        paddingHorizontal: 15,
+        paddingHorizontal: theme.spacing.lg,
         paddingVertical: 12,
         borderBottomWidth: 1,
         borderBottomColor: theme.colors.dropdownOptionBorder,
@@ -142,6 +163,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0,
     },
     optionText: {
+        ...theme.typography.body,
         color: theme.colors.dropdownOptionText,
     },
 });

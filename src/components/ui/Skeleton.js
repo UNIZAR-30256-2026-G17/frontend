@@ -1,8 +1,18 @@
+/**
+ * @file Skeleton.js
+ * @description Componente de carga tipo "skeleton" con animación de pulso.
+ * Se utiliza para crear estados de carga visuales que imitan la estructura del contenido.
+ */
+
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Platform } from 'react-native';
 
 /**
- * A pulse-animated skeleton loader for modern loading states.
+ * Componente Skeleton
+ * @param {Number|String} width - Ancho del skeleton
+ * @param {Number|String} height - Alto del skeleton
+ * @param {Number} borderRadius - Radio de los bordes
+ * @param {Object} style - Estilos adicionales
  */
 export const Skeleton = ({ 
   width, 
@@ -12,6 +22,7 @@ export const Skeleton = ({
 }) => {
   const opacity = useRef(new Animated.Value(0.3)).current;
 
+  // Configuración de la animación de pulso
   useEffect(() => {
     Animated.loop(
       Animated.sequence([

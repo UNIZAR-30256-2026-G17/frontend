@@ -1,6 +1,11 @@
+/**
+ * @file StatsScreen.js
+ * @description Pantalla de estadísticas públicas para los ciudadanos.
+ * Proporciona información sobre la distribución de delitos y descripciones educativas de las categorías.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
 import { Container } from '../../components/layout/Container';
 import { useScroll } from '../../context/ScrollContext';
 import Card from '../../components/ui/Card';
@@ -10,18 +15,21 @@ import AppSnackbar from '../../components/ui/AppSnackBar';
 import { theme } from '../../theme';
 import { API_URL } from '../../config/env';
 
+// Mapeo de nombres técnicos a nombres legibles para el ciudadano
 const nameMap = {
   'Crime Against Person':   'Violencia y delitos contra la persona',
   'Crime Against Property': 'Robos y hurtos',
   'Crime Against Society':  'Orden público y vandalismo',
 };
 
+// Descripciones explicativas de lo que incluye cada categoría
 const descriptionMap = {
   'Crime Against Person':   'Homicidio, agresión agravada, agresión simple, robo con violencia, secuestro, violación y abusos sexuales, trata de personas.',
   'Crime Against Property': 'Robo con allanamiento, robo de vehículos, carterismo, hurto en tiendas, robo en edificios.',
   'Crime Against Society':  'Destrucción de propiedad, conducta desordenada, incendio provocado, allanamiento.',
 };
 
+// Opciones de filtrado temporal
 const options = [
   { label: 'Último día',     value: 1 },
   { label: 'Último mes',     value: 30 },
@@ -29,6 +37,9 @@ const options = [
   { label: 'Últimos 3 años', value: 1095 },
 ];
 
+/**
+ * Componente StatsScreen
+ */
 export const StatsScreen = () => {
   const { handleScroll } = useScroll();
   const [selectedOption, setSelectedOption] = useState(options[1]);
@@ -36,16 +47,23 @@ export const StatsScreen = () => {
   const [loading, setLoading] = useState(true);
   const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
 
+  /**
+   * Determina el color del porcentaje basándose en la severidad (valor relativo)
+   */
   const getColorByPercentage = (value) => {
     if (value >= 60) return theme.colors.danger;
     if (value >= 40) return theme.colors.warning;
     return theme.colors.success;
   };
 
+  // Recargar estadísticas cada vez que cambie el filtro de tiempo
   useEffect(() => {
     fetchStats();
   }, [selectedOption]);
 
+  /**
+   * Obtiene las estadísticas desde la API para el rango seleccionado
+   */
   const fetchStats = async () => {
     try {
       setLoading(true);
@@ -89,7 +107,7 @@ export const StatsScreen = () => {
             ) : (
               <View style={styles.layout}>
                 {stats.map((item, i) => (
-                  <View key={i} style={{ flex: 1, minWidth: 280 }}>
+                  <View key={i} style={styles.statCol}>
                     <Card title={nameMap[item.crimename1] ?? item.crimename1}>
                       <Text style={[styles.percentage, { color: getColorByPercentage(item.percentage) }]}>
                         {Math.round(item.percentage)}%
@@ -118,18 +136,25 @@ export const StatsScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  title: { ...theme.typography.pageTitle, color: theme.colors.text, marginTop: 16, alignSelf: 'center' },
-  content: { flex: 1, margin: 16 },
-  layout: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  title: { 
+    ...theme.typography.pageTitle, 
+    color: theme.colors.text, 
+    marginTop: theme.spacing.lg, 
+    alignSelf: 'center' 
+  },
+  content: { 
+    flex: 1, 
+    margin: theme.spacing.lg 
+  },
+  layout: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    gap: theme.spacing.sm 
+  },
+  statCol: { 
+    flex: 1, 
+    minWidth: 280 
+  },
   percentage: { ...theme.typography.statsPercentage },
   secondaryText: { ...theme.typography.body, color: theme.colors.cardTextSecondary },
-  centerLoader: {
-    padding: 40,
-    alignItems: 'center',
-    gap: 12,
-  },
-  loadingText: {
-    color: theme.colors.textSecondary,
-    fontSize: 14,
-  }
 });

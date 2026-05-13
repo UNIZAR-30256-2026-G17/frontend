@@ -1,3 +1,9 @@
+/**
+ * @file CrimesScreen.js
+ * @description Pantalla para visualizar el listado de delitos registrados. 
+ * Permite filtrar por tipo, distrito, beat y fecha, además de ordenar los resultados.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
 import { theme } from '../../theme';
@@ -16,7 +22,7 @@ import SummaryCards from '../../components/ui/SummaryCards';
 import FilterPopover from '../../components/ui/FilterPopover';
 import { useScroll } from '../../context/ScrollContext';
 
-// Filtros predeterminados
+// Opciones de ordenación predeterminadas
 export const ORDER_OPTIONS = [
   { label: 'Fecha: de más reciente a más antigua', value: 'date_desc' },
   { label: 'Fecha: de más antigua a más reciente', value: 'date_asc' },
@@ -24,7 +30,7 @@ export const ORDER_OPTIONS = [
   { label: 'Tipo de delito (A-Z)', value: 'type_asc' },
 ];
 
-// Tipos de delitos
+// Tipos de delitos disponibles para filtrar
 export const TIPO_OPTIONS = [
   { label: 'Todos', value: '' },
   { label: 'Delito contra la sociedad', value: 'Delito contra la sociedad' },
@@ -32,7 +38,7 @@ export const TIPO_OPTIONS = [
   { label: 'Delito contra la propiedad', value: 'Delito contra la propiedad' },
 ];
 
-// Distritos disponibles
+// Distritos disponibles para filtrar
 export const DISTRITO_OPTIONS = [
   { label: 'Todos', value: '' },
   { label: 'Takoma Park', value: 'Takoma Park' },
@@ -44,6 +50,7 @@ export const DISTRITO_OPTIONS = [
   { label: 'Wheaton', value: 'Wheaton' },
 ];
 
+// Beats disponibles para filtrar
 export const BEAT_OPTIONS = [
   { label: 'Todos', value: '' },
   { label: '1A1', value: '1A1' },
@@ -107,6 +114,9 @@ export const BEAT_OPTIONS = [
   { label: '-PG', value: '-PG' },
 ];
 
+/**
+ * Componente CrimesScreen
+ */
 export function CrimesScreen() {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
@@ -114,6 +124,7 @@ export function CrimesScreen() {
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // Hook personalizado que gestiona toda la lógica de filtrado de delitos
   const {
     filteredData,
     order,
@@ -129,12 +140,13 @@ export function CrimesScreen() {
     resetFilters,
   } = UseCrimesFilter();
 
+  // Simulación de carga inicial
   useEffect(() => {
-    // Simulamos carga inicial
     const timer = setTimeout(() => setLoading(false), 800);
     return () => clearTimeout(timer);
   }, []);
 
+  // Cálculo del número de filtros aplicados
   const numFiltrosActivos = [
     tipoFilter?.value,
     distritoFilter?.value,
@@ -158,14 +170,14 @@ export function CrimesScreen() {
             <SummaryCards
               data={[
                 { label: 'Total Delitos', value: filteredData.length, icon: 'shield', color: theme.colors.primary },
-                { label: 'Distritos', value: new Set(filteredData.map(d => d.distrito)).size, icon: 'map-marker', color: '#F1C40F' },
+                { label: 'Distritos', value: new Set(filteredData.map(d => d.distrito)).size, icon: 'map-marker', color: theme.colors.warning },
                 { label: 'Sociedad', value: filteredData.filter(d => d.tipo === 'Delito contra la sociedad').length, icon: 'users', color: '#3498DB' },
                 { label: 'Personas', value: filteredData.filter(d => d.tipo === 'Delito contra personas').length, icon: 'user-secret', color: '#E67E22' },
               ]}
             />
           )}
 
-          {/* ── Barra superior ── */}
+          {/* ── Barra superior (Filtros y Ordenación) ── */}
           <View style={[styles.topBar, isMobile && styles.topBarMobile]}>
             <View style={styles.filterButtonWrapper}>
               <Button
@@ -191,7 +203,7 @@ export function CrimesScreen() {
             </View>
           </View>
 
-          {/* ── Tabla de resultados ── */}
+          {/* ── Tabla de resultados o estado vacío ── */}
           {loading ? (
             <TableSkeleton rows={10} cols={4} />
           ) : filteredData.length > 0 ? (
@@ -213,7 +225,7 @@ export function CrimesScreen() {
         </ScrollView>
       </FadeInView>
 
-      {/* ── Modal de filtros ── */}
+      {/* ── Modal de filtros (Popover) ── */}
       <FilterPopover
         visible={showFilters}
         onClose={() => setShowFilters(false)}
@@ -268,8 +280,8 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   container: {
-    padding: 24,
-    paddingBottom: 40,
+    padding: theme.spacing.xl,
+    paddingBottom: theme.spacing.xxxl,
     width: '100%',
     maxWidth: 1200,
     alignSelf: 'center',
@@ -278,14 +290,14 @@ const styles = StyleSheet.create({
     ...theme.typography.pageTitle,
     color: theme.colors.text,
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: theme.spacing.xl,
   },
   topBar: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
     gap: 25,
-    marginBottom: 20,
+    marginBottom: theme.spacing.lg,
     flexWrap: 'wrap',
   },
   topBarMobile: {
@@ -306,13 +318,13 @@ const styles = StyleSheet.create({
   orderLabel: {
     ...theme.typography.body,
     color: theme.colors.text,
-    marginBottom: 4,
+    marginBottom: theme.spacing.xs,
   },
   filterGroupTitle: {
     ...theme.typography.cardTitle,
     color: theme.colors.cardText,
-    marginBottom: 8,
-    marginTop: 18,
+    marginBottom: theme.spacing.sm,
+    marginTop: theme.spacing.lg,
   },
   toggleGroup: {
     flexDirection: 'row',
@@ -332,21 +344,20 @@ const styles = StyleSheet.create({
   resultsText: {
     ...theme.typography.body,
     color: theme.colors.text,
-    marginBottom: 8,
+    marginBottom: theme.spacing.sm,
   },
   badge: {
     position: 'absolute',
     top: -3,
     right: -3,
     backgroundColor: theme.colors.tableBorder,
-    borderRadius: 9999,
+    borderRadius: theme.radii.full,
     minWidth: 18,
     height: 18,
     paddingHorizontal: 4,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
-    // Borde para separarlo visualmente del botón
     borderWidth: 2,
     borderColor: theme.colors.background,
   },

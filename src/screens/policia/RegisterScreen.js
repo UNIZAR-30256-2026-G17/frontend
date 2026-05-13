@@ -1,5 +1,11 @@
+/**
+ * @file RegisterScreen.js
+ * @description Pantalla de registro para nuevos agentes de policía.
+ * Realiza el registro y el inicio de sesión automático tras el éxito.
+ */
+
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import { theme } from '../../theme';
@@ -8,9 +14,14 @@ import { Container } from '../../components/layout/Container';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import LoadingOverlay from '../../components/ui/LoadingOverlay';
+import AppSnackbar from '../../components/ui/AppSnackBar';
 
 import { API_URL } from '../../config/env';
 
+/**
+ * Componente RegisterScreen
+ */
 export const RegisterScreen = () => {
   const navigation = useNavigation();
   const { login } = useAuth();
@@ -18,15 +29,37 @@ export const RegisterScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [badgeNumber, setBadgeNumber] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
 
+  /**
+   * Muestra un mensaje en el snackbar
+   */
+  const showSnackbar = (message, variant = 'normal') =>
+    setSnackbar({ visible: true, message, variant });
+
+  /**
+   * Oculta el snackbar
+   */
+  const hideSnackbar = () =>
+    setSnackbar(prev => ({ ...prev, visible: false }));
+
+  /**
+   * Maneja el proceso de registro y login automático
+   */
   const handleRegister = async () => {
     try {
-      // 1. REGISTRO
+      if (!email.trim() || !password.trim() || !badgeNumber.trim()) {
+        showSnackbar('Todos los campos son obligatorios', 'error');
+        return;
+      }
+
+      setLoading(true);
+
+      // 1. REGISTRO EN LA API
       const registerResponse = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
           password,
@@ -41,42 +74,37 @@ export const RegisterScreen = () => {
         throw new Error(registerData.message || 'Error en registro');
       }
 
-      console.log('Usuario creado correctamente');
-
-      // 2. LOGIN AUTOMÁTICO
+      // 2. LOGIN AUTOMÁTICO TRAS EL REGISTRO
       const loginResponse = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
           password,
-          role: 'police',
         }),
       });
 
       const loginData = await loginResponse.json();
 
       if (!loginResponse.ok) {
-        throw new Error(loginData.message || 'Error al iniciar sesión');
+        throw new Error(loginData.message || 'Error al iniciar sesión tras el registro');
       }
 
-      console.log('Usuario logueado correctamente:', loginData);
+      // Guardar sesión en el contexto
+      await login({ 
+        role: 'police', 
+        email: loginData.user?.email || email,
+        token: loginData.token 
+      });
 
-      // Guardar en context
-      await login({ role: 'police', email: loginData.user?.email || email }, loginData.token);
-
-      // Redirigir a pantalla policial
+      // Navegación a la pantalla policial
       navigation.navigate('Mapa Policial');
 
     } catch (error) {
-      console.error(error);
-      if (Platform.OS === 'web') {
-        alert(error.message);
-      } else {
-        Alert.alert('Error', error.message);
-      }
+      console.error('Registration error:', error);
+      showSnackbar(error.message, 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -106,6 +134,7 @@ export const RegisterScreen = () => {
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
+              icon="envelope"
             />
 
             <Input
@@ -114,6 +143,7 @@ export const RegisterScreen = () => {
               value={password}
               onChangeText={setPassword}
               secureTextEntry
+              icon="lock"
             />
 
             <Input
@@ -122,6 +152,7 @@ export const RegisterScreen = () => {
               value={badgeNumber}
               onChangeText={setBadgeNumber}
               keyboardType="numeric"
+              icon="id-badge"
             />
 
             <Button
@@ -138,6 +169,14 @@ export const RegisterScreen = () => {
           </Card>
         </View>
       </ScrollView>
+
+      <LoadingOverlay visible={loading} message="Creando cuenta..." />
+      <AppSnackbar
+        visible={snackbar.visible}
+        message={snackbar.message}
+        variant={snackbar.variant}
+        onDismiss={hideSnackbar}
+      />
     </Container>
   );
 }
@@ -148,12 +187,12 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     alignItems: 'center',
     paddingVertical: 40,
-    paddingHorizontal: 20,
+    paddingHorizontal: theme.spacing.lg,
   },
   pageTitle: {
     ...theme.typography.pageTitle,
     color: theme.colors.text,
-    marginBottom: 32,
+    marginBottom: theme.spacing.xxl,
   },
   cardWrapper: {
     width: '100%',
@@ -161,17 +200,17 @@ const styles = StyleSheet.create({
   },
   institutionHeader: {
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: theme.spacing.sm,
   },
   institutionName: {
     ...theme.typography.cardTitle,
     color: theme.colors.cardText,
-    marginBottom: 12,
+    marginBottom: theme.spacing.md,
     textAlign: 'center',
   },
   logo: {
     width: 100,
     height: 100,
-    marginBottom: 8,
+    marginBottom: theme.spacing.sm,
   },
 });

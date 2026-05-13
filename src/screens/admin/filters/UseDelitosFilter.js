@@ -1,10 +1,23 @@
+/**
+ * @file UseDelitosFilter.js
+ * @description Hook personalizado para gestionar el filtrado dinámico del catálogo de delitos.
+ * Genera opciones únicas de filtrado basadas en los datos recibidos (tipos, distritos, beats).
+ */
+
 import { useState, useMemo } from 'react';
 
+/**
+ * Parsea una cadena a objeto Date de forma segura
+ */
 const parseDate = (str) => {
   if (!str) return null;
   return new Date(str);
 };
 
+/**
+ * Hook UseDelitosFilter
+ * @param {Array} delitos - Lista de delitos cargados del servidor
+ */
 export function UseDelitosFilter(delitos = []) {
 
   const [order, setOrder]                     = useState(ORDER_OPTIONS[0]);
@@ -14,7 +27,8 @@ export function UseDelitosFilter(delitos = []) {
   const [statusFilter, setStatusFilter]       = useState(null);
   const [dateFrom, setDateFrom]               = useState(null);
 
-  // ── Opciones dinámicas ──────────────────────────────────────────
+  // ── Generación dinámica de opciones basadas en los datos actuales ──
+  
   const tipoOptions = useMemo(() => {
     const unique = [...new Set(delitos.map(d => d.crimename1).filter(Boolean))].sort();
     return [{ label: 'Todos', value: '' }, ...unique.map(v => ({ label: v, value: v }))];
@@ -30,7 +44,7 @@ export function UseDelitosFilter(delitos = []) {
     return [{ label: 'Todos', value: '' }, ...unique.map(v => ({ label: v, value: v }))];
   }, [delitos]);
 
-  // ── Filtrado ────────────────────────────────────────────────────
+  // ── Lógica de filtrado y ordenación ──
   const filteredData = useMemo(() => {
     return delitos
       .filter((row) => {
@@ -52,6 +66,9 @@ export function UseDelitosFilter(delitos = []) {
       });
   }, [order, tipoFilter, distritoFilter, beatFilter, statusFilter, dateFrom, delitos]);
 
+  /**
+   * Limpia todos los filtros activos
+   */
   const resetFilters = () => {
     setTipoFilter(null);
     setDistritoFilter(null);
@@ -60,6 +77,9 @@ export function UseDelitosFilter(delitos = []) {
     setDateFrom(null);
   };
 
+  /**
+   * Cuenta cuántos criterios de filtrado están activos
+   */
   const numFiltrosActivos = [
     tipoFilter?.value,
     distritoFilter?.value,

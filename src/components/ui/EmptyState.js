@@ -1,8 +1,22 @@
+/**
+ * @file EmptyState.js
+ * @description Componente para mostrar cuando no hay datos o resultados en una lista o tabla.
+ * Incluye un icono, título, subtítulo opcional y un botón de acción.
+ */
+
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 
+/**
+ * Componente EmptyState
+ * @param {String} icon - Nombre del icono de FontAwesome
+ * @param {String} title - Título principal
+ * @param {String} subtitle - Mensaje secundario descriptivo
+ * @param {String} buttonText - Texto del botón de acción
+ * @param {Function} onButtonPress - Función al pulsar el botón
+ */
 export default function EmptyState({
   icon = 'search-minus',
   title = 'No se encontraron resultados',
@@ -34,14 +48,14 @@ export default function EmptyState({
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 60,
-    paddingHorizontal: 20,
+    paddingHorizontal: theme.spacing.xl,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.cardBackground,
-    borderRadius: 16,
+    borderRadius: theme.radii.lg,
     borderWidth: 1,
     borderColor: theme.colors.cardBorder,
-    marginTop: 20,
+    marginTop: theme.spacing.xl,
     ...Platform.select({
       web: {
         backdropFilter: 'blur(12px)',
@@ -59,13 +73,13 @@ const styles = StyleSheet.create({
     }),
   },
   icon: {
-    marginBottom: 16,
+    marginBottom: theme.spacing.lg,
     opacity: 0.8,
   },
   title: {
     ...theme.typography.cardTitle, 
     color: theme.colors.cardText,
-    marginBottom: 8,
+    marginBottom: theme.spacing.sm,
     textAlign: 'center',
   },
   subtitle: {
@@ -73,14 +87,14 @@ const styles = StyleSheet.create({
     color: theme.colors.cardTextSecondary,
     textAlign: 'center',
     maxWidth: '80%',
-    marginBottom: 24,
+    marginBottom: theme.spacing.xl,
     lineHeight: 20,
   },
   button: {
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: theme.spacing.xl,
     backgroundColor: theme.colors.primaryButtonBackground,
-    borderRadius: 8,
+    borderRadius: theme.radii.sm,
   },
   buttonText: {
     ...theme.typography.body,

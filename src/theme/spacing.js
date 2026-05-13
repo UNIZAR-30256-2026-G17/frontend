@@ -1,4 +1,8 @@
-// src/theme/spacing.js
+/**
+ * @file spacing.js
+ * @description Escala de espaciado uniforme para toda la aplicación.
+ * Define los múltiplos base utilizados para paddings, margins y gaps.
+ */
 
 export const spacing = {
   xs: 4,

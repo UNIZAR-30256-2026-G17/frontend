@@ -1,3 +1,9 @@
+/**
+ * @file AlertasTable.js
+ * @description Componente de tabla responsiva para la visualización de alertas en el panel de administración.
+ * Soporta paginación, estados expandibles en móvil y acciones de gestión (Restaurar/Eliminar).
+ */
+
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -6,6 +12,7 @@ import Button from '../../../components/ui/Button';
 import TablePagination from '../../../components/ui/TablePagination';
 import FadeInView from '../../../components/animations/FadeInView';
 
+// Definición de columnas para la vista de escritorio
 const COLS_DESKTOP = [
   { key: '_id', header: '#', flex: 0.6 },
   { key: 'description', header: 'Descripción', flex: 2.5 },
@@ -18,24 +25,35 @@ const COLS_DESKTOP = [
 
 const ITEMS_PER_PAGE = 10;
 
+/**
+ * Componente AlertasTable
+ */
 export function AlertasTable({ alertas = [], onToggle }) {
   const { width } = useWindowDimensions();
   const isMobile = width < 900;
   const [expandedRow, setExpandedRow] = useState(null);
   const [page, setPage] = useState(0);
 
+  // Lógica de paginación
   const paginatedData = alertas.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
   const numberOfPages = Math.ceil(alertas.length / ITEMS_PER_PAGE);
 
   const rowStyle = (i) => [styles.row, i % 2 === 0 ? styles.rowEven : styles.rowOdd];
 
+  /**
+   * Formatea una cadena de fecha a formato local
+   */
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleDateString();
   };
 
+  /**
+   * Renderiza el contenido de la tabla basándose en el ancho de la pantalla
+   */
   const renderContent = () => {
+    // ── Vista de Escritorio ──
     if (!isMobile) {
       return (
         <>
@@ -47,7 +65,7 @@ export function AlertasTable({ alertas = [], onToggle }) {
                   styles.headerCell,
                   { flex: col.flex },
                   (col.key === '_id' || col.key === 'description' || col.key === 'address') && styles.desktopLeftAlign,
-                  col.key === '_id' && { paddingLeft: 16 }
+                  col.key === '_id' && { paddingLeft: theme.spacing.md }
                 ]}
               >
                 {col.header}
@@ -63,7 +81,7 @@ export function AlertasTable({ alertas = [], onToggle }) {
             return (
               <FadeInView key={row._id} delay={i * 50} translateY={10}>
                 <View style={rowStyle(i)}>
-                  <Text style={[styles.cell, styles.monoCell, { flex: COLS_DESKTOP[0].flex }, styles.desktopLeftAlign, { paddingLeft: 16 }]} numberOfLines={1}>
+                  <Text style={[styles.cell, styles.monoCell, { flex: COLS_DESKTOP[0].flex }, styles.desktopLeftAlign, { paddingLeft: theme.spacing.md }]} numberOfLines={1}>
                     {row._id.slice(-5)}
                   </Text>
                   <Text style={[styles.cell, { flex: COLS_DESKTOP[1].flex }, styles.desktopLeftAlign]}>
@@ -97,6 +115,7 @@ export function AlertasTable({ alertas = [], onToggle }) {
       );
     }
 
+    // ── Vista Móvil (Compacta y Expandible) ──
     return (
       <>
         <View style={styles.headerRow}>
@@ -169,21 +188,21 @@ export function AlertasTable({ alertas = [], onToggle }) {
 
 const styles = StyleSheet.create({
   table: {
-    borderRadius: 10,
+    borderRadius: theme.radii.lg,
     overflow: 'hidden',
-    backgroundColor: '#fff',
-    borderColor: theme.colors.tableBorder || '#eee',
+    backgroundColor: theme.colors.cardBackground,
+    borderColor: theme.colors.tableBorder,
     borderWidth: 1,
   },
   headerRow: {
     flexDirection: 'row',
-    backgroundColor: theme.colors.tableHeaderBackground || '#F7C343',
-    paddingVertical: 12,
+    backgroundColor: theme.colors.tableHeaderBackground,
+    paddingVertical: theme.spacing.md,
     alignItems: 'center'
   },
   headerCell: {
     ...theme.typography.body,
-    color: theme.colors.tableHeaderText || '#000',
+    color: theme.colors.tableHeaderText,
     fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 12,
@@ -194,16 +213,16 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: theme.spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.05)',
   },
-  rowEven: { backgroundColor: theme.colors.tableRowEven || '#fff' },
-  rowOdd: { backgroundColor: theme.colors.tableRowOdd || '#f9f9f9' },
+  rowEven: { backgroundColor: theme.colors.tableRowEven },
+  rowOdd: { backgroundColor: theme.colors.tableRowOdd },
   cell: {
     textAlign: 'center',
     ...theme.typography.body,
-    color: theme.colors.tableText || '#333',
+    color: theme.colors.tableText,
     fontSize: 12,
     paddingHorizontal: 4,
   },
@@ -215,12 +234,12 @@ const styles = StyleSheet.create({
     flex: 1.2,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingRight: 8,
+    paddingRight: theme.spacing.sm,
   },
   desktopLeftAlign: {
     textAlign: 'left'
   },
-  mId: { flex: 0.6, textAlign: 'left', paddingLeft: 12, fontSize: 11 },
+  mId: { flex: 0.6, textAlign: 'left', paddingLeft: theme.spacing.md, fontSize: 11 },
   mDesc: { flex: 2.2, textAlign: 'left', fontSize: 11 },
   mEstado: { flex: 1.2, fontSize: 11 },
   mActionsContainer: {
@@ -228,25 +247,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    paddingRight: 12,
+    paddingRight: theme.spacing.md,
     gap: 6,
   },
   expandButton: {
     padding: 4,
   },
   expandedRow: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: theme.spacing.xl,
+    paddingVertical: theme.spacing.md,
     borderTopWidth: 1,
-    borderTopColor: theme.colors.tableBorder || '#eee',
+    borderTopColor: theme.colors.tableBorder,
     gap: 4
   },
   expText: {
     ...theme.typography.body,
-    color: theme.colors.tableText || '#333',
+    color: theme.colors.tableText,
     fontSize: 12,
   },
   expLabel: {
-    fontWeight: 'bold',
+    ...theme.typography.bodyBold,
+    fontSize: 12,
   },
 });
