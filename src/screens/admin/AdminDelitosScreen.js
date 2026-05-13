@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Text, ScrollView, StyleSheet, View } from 'react-native';
 import { theme } from '../../theme';
 
@@ -7,10 +7,10 @@ import { useAuth } from '../../context/AuthContext';
 import { useScroll } from '../../context/ScrollContext';
 import { DelitosTable } from './tables/DelitosTable';
 import LoadingOverlay from '../../components/ui/LoadingOverlay';
-import TableSkeleton from '../../components/ui/TableSkeleton';
+import { TableSkeleton } from '../../components/ui/TableSkeleton';
 import AppSnackbar from '../../components/ui/AppSnackBar';
-import FadeInView from '../../components/animations/FadeInView';
-import SummaryCards from '../../components/ui/SummaryCards';
+import { FadeInView } from '../../components/animations/FadeInView';
+import { SummaryCards } from '../../components/ui/SummaryCards';
 import { API_URL } from '../../config/env';
 
 import Button from '../../components/ui/Button';
@@ -39,20 +39,9 @@ export function AdminDelitosScreen() {
     dateFrom, setDateFrom,
     tipoOptions, distritoOptions, beatOptions,
     numFiltrosActivos,
-    resetFilters,
   } = UseDelitosFilter(delitos);
 
-  useEffect(() => {
-    if (user?.token) fetchDelitos();
-  }, [user]);
-
-  const showSnackbar = (message, variant = 'normal') =>
-    setSnackbar({ visible: true, message, variant });
-
-  const hideSnackbar = () =>
-    setSnackbar(prev => ({ ...prev, visible: false }));
-
-  const fetchDelitos = async () => {
+  const fetchDelitos = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`${API_URL}/crimes?limit=50`, {
@@ -64,12 +53,22 @@ export function AdminDelitosScreen() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Error al obtener los delitos');
       setDelitos(data.crimes || []);
-    } catch (error) {
+    } catch {
       showSnackbar('No se pudieron cargar los delitos', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.token]);
+
+  useEffect(() => {
+    if (user?.token) fetchDelitos();
+  }, [user, fetchDelitos]);
+
+  const showSnackbar = (message, variant = 'normal') =>
+    setSnackbar({ visible: true, message, variant });
+
+  const hideSnackbar = () =>
+    setSnackbar(prev => ({ ...prev, visible: false }));
 
   const toggleDelito = async (id, currentStatus) => {
     try {
@@ -117,48 +116,48 @@ export function AdminDelitosScreen() {
               />
             )}
 
-          {/* ── Barra superior ── */}
-          {!loading && (
-            <View style={styles.topBar}>
-              <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
-                <Button
-                  title="Filtrar"
-                  icon="filter"
-                  variant="primary"
-                  onPress={() => setShowFilters(true)}
-                />
-                {numFiltrosActivos > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
-                  </View>
-                )}
+            {/* ── Barra superior ── */}
+            {!loading && (
+              <View style={styles.topBar}>
+                <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
+                  <Button
+                    title="Filtrar"
+                    icon="filter"
+                    variant="primary"
+                    onPress={() => setShowFilters(true)}
+                  />
+                  {numFiltrosActivos > 0 && (
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
+                    </View>
+                  )}
+                </View>
+                <View style={styles.orderContainer}>
+                  <Text style={styles.orderLabel}>Ordenar por</Text>
+                  <Dropdown
+                    options={ORDER_OPTIONS}
+                    selected={order}
+                    onSelect={setOrder}
+                    placeholder="Ordenar por..."
+                  />
+                </View>
               </View>
-              <View style={styles.orderContainer}>
-                <Text style={styles.orderLabel}>Ordenar por</Text>
-                <Dropdown
-                  options={ORDER_OPTIONS}
-                  selected={order}
-                  onSelect={setOrder}
-                  placeholder="Ordenar por..."
-                />
-              </View>
-            </View>
-          )}
+            )}
 
-          {loading ? (
-            <TableSkeleton rows={10} cols={4} />
-          ) : (
-            <>
-              <Text style={styles.resultsText}>
-                {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
-              </Text>
-              <DelitosTable delitos={filteredData} onToggle={toggleDelito} />
-            </>
-          )}
+            {loading ? (
+              <TableSkeleton rows={10} cols={4} />
+            ) : (
+              <>
+                <Text style={styles.resultsText}>
+                  {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
+                </Text>
+                <DelitosTable delitos={filteredData} onToggle={toggleDelito} />
+              </>
+            )}
 
-        </ScrollView>
-      </View>
-    </FadeInView>
+          </ScrollView>
+        </View>
+      </FadeInView>
 
       {/* ── Modal de filtros ── */}
       <FilterPopover visible={showFilters} onClose={() => setShowFilters(false)}>

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { theme } from '../../../theme';
 import Button from '../../../components/ui/Button';
 import TablePagination from '../../../components/ui/TablePagination';
-import FadeInView from '../../../components/animations/FadeInView';
+import { FadeInView } from '../../../components/animations/FadeInView';
 
 const COLS_DESKTOP = [
   { key: 'email', header: 'Correo' },

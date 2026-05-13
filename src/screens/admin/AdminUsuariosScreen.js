@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Text, ScrollView, StyleSheet, RefreshControl, View, TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme';
@@ -7,17 +7,16 @@ import { useScroll } from '../../context/ScrollContext';
 import { Container } from '../../components/layout/Container';
 import { UsersTable } from './tables/UsersTable';
 import EmptyState from '../../components/ui/EmptyState';
-import TableSkeleton from '../../components/ui/TableSkeleton';
+import { TableSkeleton } from '../../components/ui/TableSkeleton';
 import AppSnackbar from '../../components/ui/AppSnackBar';
-import FadeInView from '../../components/animations/FadeInView';
+import { FadeInView } from '../../components/animations/FadeInView';
 import { API_URL } from '../../config/env';
-
 import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import ToggleButton from '../../components/ui/ToggleButton';
 import FilterPopover from '../../components/ui/FilterPopover';
 import { UseUsuariosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseUsuariosFilter';
-import SummaryCards from '../../components/ui/SummaryCards';
+import { SummaryCards } from '../../components/ui/SummaryCards';
 
 export function AdminUsuariosScreen() {
   const { user } = useAuth();
@@ -39,17 +38,7 @@ export function AdminUsuariosScreen() {
     resetFilters,
   } = UseUsuariosFilter(users);
 
-  useEffect(() => {
-    if (user?.token) fetchUsers();
-  }, [user]);
-
-  const showSnackbar = (message, variant = 'normal') =>
-    setSnackbar({ visible: true, message, variant });
-
-  const hideSnackbar = () =>
-    setSnackbar(prev => ({ ...prev, visible: false }));
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`${API_URL}/users`, {
@@ -67,7 +56,17 @@ export function AdminUsuariosScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [user?.token]);
+
+  useEffect(() => {
+    if (user?.token) fetchUsers();
+  }, [user?.token, fetchUsers]);
+
+  const showSnackbar = (message, variant = 'normal') =>
+    setSnackbar({ visible: true, message, variant });
+
+  const hideSnackbar = () =>
+    setSnackbar(prev => ({ ...prev, visible: false }));
 
   const onRefresh = () => {
     setRefreshing(true);

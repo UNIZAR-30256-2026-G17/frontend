@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Container } from '../../components/layout/Container';
 import { theme } from '../../theme';
 import Card from '../../components/ui/Card';

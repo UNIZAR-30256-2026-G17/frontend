@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Platform, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, Animated, useWindowDimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 import Card from './Card';
@@ -20,7 +20,7 @@ const AnimatedValue = ({ value, suffix = '', color }) => {
         });
 
         return () => anim.removeListener(listenerId);
-    }, [value]);
+    }, [value, anim]);
 
     return (
         <Text style={[styles.value, { color: color || theme.colors.text }]}>
@@ -29,12 +29,12 @@ const AnimatedValue = ({ value, suffix = '', color }) => {
     );
 };
 
-export const SummaryCard = ({ icon, label, value, suffix, color, delay = 0 }) => {
+export default function SummaryCard({ icon, label, value, suffix, color, delay = 0 }) {
     return (
         <Card style={styles.card}>
             <View style={styles.cardContent}>
                 <View style={[
-                    styles.iconContainer, 
+                    styles.iconContainer,
                     { backgroundColor: `${color}15` },
                     theme.shadows.glow(color, 0.2)
                 ]}>
@@ -56,10 +56,10 @@ export const SummaryCards = ({ data = [] }) => {
     return (
         <View style={[styles.container, isMobile && styles.containerMobile]}>
             {data.map((item, index) => (
-                <View 
-                    key={index} 
+                <View
+                    key={index}
                     style={[
-                        styles.column, 
+                        styles.column,
                         isMobile && styles.columnMobile
                     ]}
                 >
@@ -123,5 +123,3 @@ const styles = StyleSheet.create({
         marginTop: 2,
     },
 });
-
-export default SummaryCards;

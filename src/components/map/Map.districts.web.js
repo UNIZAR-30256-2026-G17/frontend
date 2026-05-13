@@ -71,7 +71,7 @@ export default function MapDistricts({
         };
 
         fetchRoute();
-    }, [routePoints]);
+    }, [routePoints, districtICs]);
 
     const normalize = (str) =>
         str?.toUpperCase().replace(/\s+/g, ' ').trim();

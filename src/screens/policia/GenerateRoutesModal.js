@@ -33,7 +33,7 @@ export default function GenerateRoutesModal({ visible, onClose, onConfirm }) {
             // Esperamos a que la función de confirmación (que es async en el padre) termine
             await onConfirm({ numPatrullas: parseInt(numPatrullas) });
             setNumPatrullas('1');
-        } catch (e) {
+        } catch {
             // El error se maneja en el padre, pero aquí detenemos el loading
         } finally {
             setLoading(false);

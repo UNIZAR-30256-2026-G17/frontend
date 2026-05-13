@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Platform, StatusBar } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { Header } from './Header';
@@ -32,6 +32,6 @@ const styles = StyleSheet.create({
     flex: 1,
     // El padding top debe coincidir con la altura aproximada del Header
     // para que el contenido no empiece debajo de él, pero pueda desplazarse por debajo.
-    paddingTop: 64, 
+    paddingTop: 64,
   },
 });

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
 import { Container } from '../../components/layout/Container';
 import { useScroll } from '../../context/ScrollContext';
 import Card from '../../components/ui/Card';
@@ -11,21 +10,21 @@ import { theme } from '../../theme';
 import { API_URL } from '../../config/env';
 
 const nameMap = {
-  'Crime Against Person':   'Violencia y delitos contra la persona',
+  'Crime Against Person': 'Violencia y delitos contra la persona',
   'Crime Against Property': 'Robos y hurtos',
-  'Crime Against Society':  'Orden público y vandalismo',
+  'Crime Against Society': 'Orden público y vandalismo',
 };
 
 const descriptionMap = {
-  'Crime Against Person':   'Homicidio, agresión agravada, agresión simple, robo con violencia, secuestro, violación y abusos sexuales, trata de personas.',
+  'Crime Against Person': 'Homicidio, agresión agravada, agresión simple, robo con violencia, secuestro, violación y abusos sexuales, trata de personas.',
   'Crime Against Property': 'Robo con allanamiento, robo de vehículos, carterismo, hurto en tiendas, robo en edificios.',
-  'Crime Against Society':  'Destrucción de propiedad, conducta desordenada, incendio provocado, allanamiento.',
+  'Crime Against Society': 'Destrucción de propiedad, conducta desordenada, incendio provocado, allanamiento.',
 };
 
 const options = [
-  { label: 'Último día',     value: 1 },
-  { label: 'Último mes',     value: 30 },
-  { label: 'Último año',     value: 365 },
+  { label: 'Último día', value: 1 },
+  { label: 'Último mes', value: 30 },
+  { label: 'Último año', value: 365 },
   { label: 'Últimos 3 años', value: 1095 },
 ];
 
@@ -42,11 +41,7 @@ export const StatsScreen = () => {
     return theme.colors.success;
   };
 
-  useEffect(() => {
-    fetchStats();
-  }, [selectedOption]);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       setLoading(true);
       const to = new Date().toISOString().split('T')[0];
@@ -63,11 +58,15 @@ export const StatsScreen = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedOption?.value]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [selectedOption, fetchStats]);
 
   return (
     <Container>
-      <ScrollView 
+      <ScrollView
         style={styles.container}
         onScroll={handleScroll}
         scrollEventThrottle={16}
@@ -105,7 +104,7 @@ export const StatsScreen = () => {
           </Card>
         </View>
       </ScrollView>
-      
+
       <AppSnackbar
         visible={snackbar.visible}
         message={snackbar.message}

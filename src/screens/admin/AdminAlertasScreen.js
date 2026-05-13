@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Text, ScrollView, StyleSheet, RefreshControl, View } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { useScroll } from '../../context/ScrollContext';
@@ -8,18 +8,17 @@ import { Container } from '../../components/layout/Container';
 import { AlertasTable } from './tables/AlertasTable';
 import EmptyState from '../../components/ui/EmptyState';
 import LoadingOverlay from '../../components/ui/LoadingOverlay';
-import TableSkeleton from '../../components/ui/TableSkeleton';
+import { TableSkeleton } from '../../components/ui/TableSkeleton';
 import AppSnackbar from '../../components/ui/AppSnackBar';
-import FadeInView from '../../components/animations/FadeInView';
+import { FadeInView } from '../../components/animations/FadeInView';
 import { API_URL } from '../../config/env';
-
 import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import ToggleButton from '../../components/ui/ToggleButton';
 import DateInput from '../../components/ui/DateInput';
 import FilterPopover from '../../components/ui/FilterPopover';
 import { UseAlertasFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseAlertasFilter';
-import SummaryCards from '../../components/ui/SummaryCards';
+import { SummaryCards } from '../../components/ui/SummaryCards';
 
 export function AdminAlertasScreen() {
   const { handleScroll } = useScroll();
@@ -42,17 +41,7 @@ export function AdminAlertasScreen() {
     resetFilters,
   } = UseAlertasFilter(alertas);
 
-  useEffect(() => {
-    if (user?.token) fetchAlertas();
-  }, [user]);
-
-  const showSnackbar = (message, variant = 'normal') =>
-    setSnackbar({ visible: true, message, variant });
-
-  const hideSnackbar = () =>
-    setSnackbar(prev => ({ ...prev, visible: false }));
-
-  const fetchAlertas = async () => {
+  const fetchAlertas = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`${API_URL}/alerts`, {
@@ -64,13 +53,23 @@ export function AdminAlertasScreen() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Error al obtener las alertas');
       setAlertas(data.alerts || []);
-    } catch (error) {
+    } catch {
       showSnackbar('No se pudieron cargar las alertas', 'error');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [user?.token]);
+
+  useEffect(() => {
+    if (user?.token) fetchAlertas();
+  }, [user?.token, fetchAlertas]);
+
+  const showSnackbar = (message, variant = 'normal') =>
+    setSnackbar({ visible: true, message, variant });
+
+  const hideSnackbar = () =>
+    setSnackbar(prev => ({ ...prev, visible: false }));
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -120,17 +119,17 @@ export function AdminAlertasScreen() {
           >
             <Text style={styles.pageTitle}>Panel de Alertas</Text>
 
-          {/* ── Summary Cards ── */}
-          {hasData && (
-            <SummaryCards
-              data={[
-                { label: 'Total Alertas', value: alertas.length, icon: 'list-alt', color: theme.colors.primary },
-                { label: 'Pendientes', value: alertas.filter(a => a.status !== 'deleted').length, icon: 'clock-o', color: '#F5C842' },
-                { label: 'Confirmadas', value: alertas.filter(a => a.confirmations?.length > 0).length, icon: 'check-circle', color: '#2ECC71' },
-                { label: 'Eliminadas', value: alertas.filter(a => a.status === 'deleted').length, icon: 'trash', color: '#E74C3C' },
-              ]}
-            />
-          )}
+            {/* ── Summary Cards ── */}
+            {hasData && (
+              <SummaryCards
+                data={[
+                  { label: 'Total Alertas', value: alertas.length, icon: 'list-alt', color: theme.colors.primary },
+                  { label: 'Pendientes', value: alertas.filter(a => a.status !== 'deleted').length, icon: 'clock-o', color: '#F5C842' },
+                  { label: 'Confirmadas', value: alertas.filter(a => a.confirmations?.length > 0).length, icon: 'check-circle', color: '#2ECC71' },
+                  { label: 'Eliminadas', value: alertas.filter(a => a.status === 'deleted').length, icon: 'trash', color: '#E74C3C' },
+                ]}
+              />
+            )}
 
             {/* ── Barra superior ── */}
             {hasData && (

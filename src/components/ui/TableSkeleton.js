@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Skeleton from './Skeleton';
+import { Skeleton } from './Skeleton';
 
-export const TableSkeleton = ({ rows = 5, cols = 4 }) => {
+export default function TableSkeleton({ rows = 5, cols = 4 }) {
   return (
     <View style={styles.container}>
       {/* Header Skeleton */}
@@ -11,7 +11,7 @@ export const TableSkeleton = ({ rows = 5, cols = 4 }) => {
           <Skeleton key={`h-${i}`} width="20%" height={20} style={{ flex: 1, marginHorizontal: 8 }} />
         ))}
       </View>
-      
+
       {/* Rows Skeleton */}
       {[...Array(rows)].map((_, i) => (
         <View key={`r-${i}`} style={styles.row}>
@@ -49,5 +49,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
 });
-
-export default TableSkeleton;

@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
-import { useWindowDimensions } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, useWindowDimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuidv4 } from 'uuid';
-import { ActivityIndicator } from 'react-native-paper';
 import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
@@ -48,17 +46,7 @@ export const MapScreen = () => {
     const [actionLoading, setActionLoading] = useState({ visible: false, message: '' });
     const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
 
-    useEffect(() => {
-        initAnonymousLogin();
-    }, []);
-
-    const showSnackbar = (message, variant = 'normal') =>
-      setSnackbar({ visible: true, message, variant });
-
-    const hideSnackbar = () =>
-      setSnackbar(prev => ({ ...prev, visible: false }));
-
-    const initAnonymousLogin = async () => {
+    const initAnonymousLogin = useCallback(async () => {
         try {
             setScreenLoading(true);
             const storedToken = await AsyncStorage.getItem('token');
@@ -86,25 +74,19 @@ export const MapScreen = () => {
         } finally {
             setScreenLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        if (token) {
-            fetchAllData();
-        }
-    }, [token]);
+        initAnonymousLogin();
+    }, [initAnonymousLogin]);
 
-    const fetchAllData = async () => {
-        setScreenLoading(true);
-        await Promise.all([
-            fetchDistrictsICsLastDay(),
-            fetchDistrictsICsLastMonth(),
-            fetchAlerts()
-        ]);
-        setScreenLoading(false);
-    };
+    const showSnackbar = (message, variant = 'normal') =>
+        setSnackbar({ visible: true, message, variant });
 
-    const fetchDistrictsICsLastDay = async () => {
+    const hideSnackbar = () =>
+        setSnackbar(prev => ({ ...prev, visible: false }));
+
+    const fetchDistrictsICsLastDay = useCallback(async () => {
         try {
             const response = await fetch(`${API_URL}/ic_district?time=day`, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -114,9 +96,9 @@ export const MapScreen = () => {
         } catch (error) {
             console.error('Error ICs:', error);
         }
-    };
+    }, [token]);
 
-    const fetchDistrictsICsLastMonth = async () => {
+    const fetchDistrictsICsLastMonth = useCallback(async () => {
         try {
             const response = await fetch(`${API_URL}/ic_district?time=month`, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -126,9 +108,9 @@ export const MapScreen = () => {
         } catch (error) {
             console.error('Error ICs mensuales:', error);
         }
-    };
+    }, [token]);
 
-    const fetchAlerts = async () => {
+    const fetchAlerts = useCallback(async () => {
         try {
             const today = new Date().toISOString().split('T')[0];
             const response = await fetch(`${API_URL}/alerts?from=${today}&to=${today}`, {
@@ -146,7 +128,23 @@ export const MapScreen = () => {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, [token]);
+
+    const fetchAllData = useCallback(async () => {
+        setScreenLoading(true);
+        await Promise.all([
+            fetchDistrictsICsLastDay(),
+            fetchDistrictsICsLastMonth(),
+            fetchAlerts()
+        ]);
+        setScreenLoading(false);
+    }, [fetchDistrictsICsLastDay, fetchDistrictsICsLastMonth, fetchAlerts]);
+
+    useEffect(() => {
+        if (token) {
+            fetchAllData();
+        }
+    }, [token, fetchAllData]);
 
     const confirmAlert = async (id) => {
         try {
@@ -158,7 +156,7 @@ export const MapScreen = () => {
             if (!response.ok) throw new Error('Error confirmando alerta');
             setAlerts(prev => prev.map(alert => alert._id === id ? { ...alert, confirmations: alert.confirmations + 1, confirmedByMe: true, discardedByMe: false } : alert));
             showSnackbar('Alerta confirmada');
-        } catch (err) {
+        } catch {
             showSnackbar('Error al confirmar', 'error');
         } finally {
             setActionLoading({ visible: false, message: '' });
@@ -175,7 +173,7 @@ export const MapScreen = () => {
             if (!response.ok) throw new Error('Error descartando alerta');
             setAlerts(prev => prev.map(alert => alert._id === id ? { ...alert, discards: alert.discards + 1, confirmedByMe: false, discardedByMe: true } : alert));
             showSnackbar('Alerta descartada');
-        } catch (err) {
+        } catch {
             showSnackbar('Error al descartar', 'error');
         } finally {
             setActionLoading({ visible: false, message: '' });

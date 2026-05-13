@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
 import { Container } from '../../components/layout/Container';
 import { useAuth } from '../../context/AuthContext';
@@ -9,6 +9,17 @@ import { CrimesTodayChart } from './CrimesTodayChart';
 import { VictimsTodayChart } from './VictimsTodayChart';
 import { CrimeTypesStats } from './CrimeTypesStats';
 
+const COLOR_MAP = {
+  'Crime Against Person': '#B22222',
+  'Crime Against Property': '#DAA520',
+  'Crime Against Society': '#4682B4',
+};
+
+const NAME_MAP = {
+  'Crime Against Person': 'Delitos contra personas',
+  'Crime Against Property': 'Delitos contra la propiedad',
+  'Crime Against Society': 'Delitos contra la sociedad',
+};
 
 export const EstadisticasScreen = () => {
   const { width } = useWindowDimensions();
@@ -20,25 +31,8 @@ export const EstadisticasScreen = () => {
   const [lastUpdate, setLastUpdate] = useState('');
   const [pieData, setPieData] = useState([]);
   const [statsData, setStatsData] = useState([]);
-  const colorMap = {
-    'Crime Against Person':   '#B22222',
-    'Crime Against Property': '#DAA520',
-    'Crime Against Society':  '#4682B4',
-  };
-  const nameMap = {
-    'Crime Against Person':   'Delitos contra personas',
-    'Crime Against Property': 'Delitos contra la propiedad',
-    'Crime Against Society':  'Delitos contra la sociedad',
-  };
-  useEffect(() => {
-    if (user?.token) {
-      fetchCrimesByDistrict();
-      fetchCrimesByHour();
-      fetchCrimeNames1();
-    }
-  }, [user]);
 
-  const fetchCrimeNames1 = async () => {
+  const fetchCrimeNames1 = useCallback(async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
       const from = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0];
@@ -50,23 +44,24 @@ export const EstadisticasScreen = () => {
 
       // Para el pie chart (VictimsTodayChart)
       setPieData(json.results.map(item => ({
-        name: nameMap[item.crimename1] ?? item.crimename1,
+        name: NAME_MAP[item.crimename1] ?? item.crimename1,
         value: item.num_victims,
-        color: colorMap[item.crimename1] ?? '#888',
+        color: COLOR_MAP[item.crimename1] ?? '#888',
       })));
 
       // Para las stats (CrimeTypesStats)
       setStatsData(json.results.map(item => ({
-        label: nameMap[item.crimename1] ?? item.crimename1,
+        label: NAME_MAP[item.crimename1] ?? item.crimename1,
         value: `${Math.round(item.percentage)}%`,
-        color: colorMap[item.crimename1] ?? '#888',
+        color: COLOR_MAP[item.crimename1] ?? '#888',
       })));
 
     } catch (error) {
       console.error('Error fetching crime names:', error);
     }
-  };
-  const fetchCrimesByDistrict = async () => {
+  }, [user?.token]);
+
+  const fetchCrimesByDistrict = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/crimes/yesterday/byDistrict`, {
         headers: { 'Authorization': `Bearer ${user?.token}` }
@@ -74,7 +69,7 @@ export const EstadisticasScreen = () => {
       const json = await response.json();
       console.log('Response:', JSON.stringify(json));
 
-      const colors = ['#8B0000','#B22222','#CD5C5C','#D2691E','#DAA520','#BDB76B','#8FBC8F'];
+      const colors = ['#8B0000', '#B22222', '#CD5C5C', '#D2691E', '#DAA520', '#BDB76B', '#8FBC8F'];
       setBarData(json.results.map((item, i) => ({
         name: item.district,
         value: item.num_crimes,
@@ -84,9 +79,9 @@ export const EstadisticasScreen = () => {
     } catch (error) {
       console.error('Error fetching crimes by district:', error);
     }
-  };
+  }, [user?.token]);
 
-  const fetchCrimesByHour = async () => {
+  const fetchCrimesByHour = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/crimes/yesterday/byHour`, {
         headers: { 'Authorization': `Bearer ${user?.token}` }
@@ -99,7 +94,15 @@ export const EstadisticasScreen = () => {
     } catch (error) {
       console.error('Error fetching crimes by hour:', error);
     }
-  };
+  }, [user?.token]);
+
+  useEffect(() => {
+    if (user?.token) {
+      fetchCrimesByDistrict();
+      fetchCrimesByHour();
+      fetchCrimeNames1();
+    }
+  }, [user, fetchCrimesByDistrict, fetchCrimesByHour, fetchCrimeNames1]);
 
   return (
     <Container>

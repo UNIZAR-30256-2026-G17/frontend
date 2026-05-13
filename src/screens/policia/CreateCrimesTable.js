@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
-import { useWindowDimensions } from 'react-native';
 import TablePagination from '../../components/ui/TablePagination';
-import FadeInView from '../../components/animations/FadeInView';
+import { FadeInView } from '../../components/animations/FadeInView';
 
 const COLS = [
-  { header: 'Id',             key: 'id' },
+  { header: 'Id', key: 'id' },
   { header: 'Tipo de delito', key: 'tipo' },
-  { header: 'Subtipo',        key: 'subtipo' },
-  { header: 'Fecha',          key: 'fecha' },
-  { header: 'Hora',           key: 'hora' },
-  { header: 'Distrito',       key: 'distrito' },
-  { header: 'Beat',           key: 'beat' },
-  { header: 'Sector',         key: 'sector' },
+  { header: 'Subtipo', key: 'subtipo' },
+  { header: 'Fecha', key: 'fecha' },
+  { header: 'Hora', key: 'hora' },
+  { header: 'Distrito', key: 'distrito' },
+  { header: 'Beat', key: 'beat' },
+  { header: 'Sector', key: 'sector' },
 ];
 
 const EXPANDED_KEYS = ['fecha', 'hora', 'distrito', 'beat', 'sector'];
@@ -116,67 +115,67 @@ export function CreateCrimesTable({ data }) {
   );
 }
 
-const styles = StyleSheet.create({ 
-    table: { 
-      borderRadius: 10, 
-      overflow: 'hidden', 
-      borderColor: theme.colors.tableBorder, 
-      borderWidth: 1
-    },
-    headerRow: { 
-      flexDirection: 'row', 
-      backgroundColor: theme.colors.tableHeaderBackground, 
-      paddingVertical: 12, 
-      alignItems: 'center' 
-    },
-    headerCell: { 
-      flex: 1, 
-      ...theme.typography.body, 
-      color: theme.colors.tableHeaderText, 
-      fontWeight: 'bold', 
-      textAlign: 'center' 
-    },
-    row: { 
-      flexDirection: 'row', 
-      borderBottomWidth: 1, 
-      borderBottomColor: 'rgba(255,255,255,0.05)', 
-      paddingVertical: 12, 
-      alignItems: 'center' 
-    },
-    rowEven: { backgroundColor: theme.colors.tableRowEven },
-    rowOdd:  { backgroundColor: theme.colors.tableRowOdd },
-    cell: { 
-      flex: 1, 
-      textAlign: 'center', 
-      ...theme.typography.body, 
-      color: theme.colors.tableText 
-    },
-    monoCell: {
-      ...theme.typography.mono,
-      fontSize: 11,
-    },
-    
-    mId: { 
-      flex: 1.2, 
-      fontSize: 12 
-    },
-    mTipo: { flex: 2 },
-    mSubtipo: { flex: 1.5 },
-    mBtn: { width: 32, alignItems: 'center' },
-    
-    expandedRow: { 
-      paddingHorizontal: 16, 
-      paddingVertical: 10, 
-      borderTopWidth: 1, 
-      borderTopColor: theme.colors.tableBorder, 
-      gap: 4 
-    },
-    expText: { 
-      ...theme.typography.body, 
-      color: theme.colors.tableText 
-    },
-    expLabel: { 
-      fontWeight: 'bold', 
-      color: theme.colors.tableText 
-    },
+const styles = StyleSheet.create({
+  table: {
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderColor: theme.colors.tableBorder,
+    borderWidth: 1
+  },
+  headerRow: {
+    flexDirection: 'row',
+    backgroundColor: theme.colors.tableHeaderBackground,
+    paddingVertical: 12,
+    alignItems: 'center'
+  },
+  headerCell: {
+    flex: 1,
+    ...theme.typography.body,
+    color: theme.colors.tableHeaderText,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+  row: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
+    paddingVertical: 12,
+    alignItems: 'center'
+  },
+  rowEven: { backgroundColor: theme.colors.tableRowEven },
+  rowOdd: { backgroundColor: theme.colors.tableRowOdd },
+  cell: {
+    flex: 1,
+    textAlign: 'center',
+    ...theme.typography.body,
+    color: theme.colors.tableText
+  },
+  monoCell: {
+    ...theme.typography.mono,
+    fontSize: 11,
+  },
+
+  mId: {
+    flex: 1.2,
+    fontSize: 12
+  },
+  mTipo: { flex: 2 },
+  mSubtipo: { flex: 1.5 },
+  mBtn: { width: 32, alignItems: 'center' },
+
+  expandedRow: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.tableBorder,
+    gap: 4
+  },
+  expText: {
+    ...theme.typography.body,
+    color: theme.colors.tableText
+  },
+  expLabel: {
+    fontWeight: 'bold',
+    color: theme.colors.tableText
+  },
 });

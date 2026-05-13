@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useWindowDimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { ActivityIndicator } from 'react-native-paper';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 
@@ -34,9 +32,6 @@ export const MapPoliceScreen = () => {
     const { user, loading: authLoading } = useAuth();
     const navigation = useNavigation();
 
-    const { width } = useWindowDimensions();
-    const isMobile = width < 768;
-
     const [ICSelected, setICSelected] = useState(true);
     const [beatICs, setBeatICs] = useState([]);
     const [loadingMap, setLoadingMap] = useState(false);
@@ -45,19 +40,7 @@ export const MapPoliceScreen = () => {
 
     const [modalGenerateRoutesVisible, setModalGenerateRoutesVisible] = useState(false);
 
-    useEffect(() => {
-        if (user && user.token) {
-            fetchBeatsICsLastDay();
-        }
-    }, [user]);
-
-    const showSnackbar = (message, variant = 'normal') =>
-      setSnackbar({ visible: true, message, variant });
-
-    const hideSnackbar = () =>
-      setSnackbar(prev => ({ ...prev, visible: false }));
-
-    const fetchBeatsICsLastDay = async () => {
+    const fetchBeatsICsLastDay = useCallback(async () => {
         try {
             setLoadingMap(true);
             const response = await fetch(
@@ -83,7 +66,19 @@ export const MapPoliceScreen = () => {
         } finally {
             setLoadingMap(false);
         }
-    };
+    }, [user?.token]);
+
+    useEffect(() => {
+        if (user?.token) {
+            fetchBeatsICsLastDay();
+        }
+    }, [user, fetchBeatsICsLastDay]);
+
+    const showSnackbar = (message, variant = 'normal') =>
+        setSnackbar({ visible: true, message, variant });
+
+    const hideSnackbar = () =>
+        setSnackbar(prev => ({ ...prev, visible: false }));
 
     const handleGenerateRoutes = async (data) => {
         const n = parseInt(data.numPatrullas);

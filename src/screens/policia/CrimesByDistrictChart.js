@@ -2,21 +2,19 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as d3 from 'd3';
 import Card from '../../components/ui/Card';
-import Dropdown from '../../components/ui/Dropdown';
 
 const systemFont = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
 // Configuración de físicas
 const TRANSITION_MS = 380;
 const EASE = d3.easeCubicInOut;
-const PUSH_PX = 14; 
-const GROW_PX = 14; 
+const PUSH_PX = 14;
+const GROW_PX = 14;
 
 export const CrimesByDistrictChart = ({ data }) => {
-    const [selectedMonth, setSelectedMonth] = useState({ label: 'Último mes', value: '1m' });
     const [hoveredId, setHoveredId] = useState(null);
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-    
+    const [setMousePos] = useState({ x: 0, y: 0 });
+
     // Usamos el estado para medir el ancho responsivo del contenedor
     const [dimensions, setDimensions] = useState({ width: 0, height: 320 });
     const svgRef = useRef(null);
@@ -105,17 +103,17 @@ export const CrimesByDistrictChart = ({ data }) => {
         <Card
             title="Número de delitos por distrito"
         >
-            <View 
+            <View
                 style={styles.chartContainer}
                 // Capturamos el ancho real del contenedor para hacer el SVG responsivo
                 onLayout={(e) => setDimensions({ width: e.nativeEvent.layout.width, height: 320 })}
             >
-                
+
 
                 {dimensions.width > 0 && (
-                    <svg 
-                        ref={svgRef} 
-                        width="100%" 
+                    <svg
+                        ref={svgRef}
+                        width="100%"
                         height="100%"
                         onPointerMove={(e) => {
                             const bounds = e.currentTarget.getBoundingClientRect();
@@ -129,9 +127,9 @@ export const CrimesByDistrictChart = ({ data }) => {
                             const midY = y + h / 2;
 
                             return (
-                                <g 
-                                    key={d.id} 
-                                    className="bar-group" 
+                                <g
+                                    key={d.id}
+                                    className="bar-group"
                                     // Estado inicial del transform
                                     transform={`translate(${margin.left}, ${margin.top})`}
                                 >
@@ -181,9 +179,9 @@ export const CrimesByDistrictChart = ({ data }) => {
 
                                     {/* Área de Hover invisible (más gruesa que la barra) para evitar "parpadeos" */}
                                     <rect
-                                        x={-100} 
+                                        x={-100}
                                         y={y - 10}
-                                        width={w + 150} 
+                                        width={w + 150}
                                         height={h + 20}
                                         fill="transparent"
                                         onMouseEnter={() => setHoveredId(d.id)}

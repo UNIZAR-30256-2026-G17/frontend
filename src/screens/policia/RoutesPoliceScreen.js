@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 
 import { Container } from '../../components/layout/Container';
@@ -11,7 +11,7 @@ import { theme } from '../../theme';
 export const RoutesPoliceScreen = () => {
     const route = useRoute();
 
-    const { routes = [], isMultiple, count } = route.params || {};
+    const { routes = [] } = route.params || {};
 
     return (
         <Container>

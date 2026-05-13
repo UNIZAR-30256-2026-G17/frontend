@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { theme } from '../../theme';
 
 export default function DateInput({
@@ -11,9 +11,6 @@ export default function DateInput({
     onChange,
     placeholder = 'Selecciona una fecha',
 }) {
-    const [isFocused, setIsFocused] = useState(false);
-    const [showWebPicker, setShowWebPicker] = useState(false);
-
     const openAndroidPicker = () => {
         DateTimePickerAndroid.open({
             value: value || new Date(),

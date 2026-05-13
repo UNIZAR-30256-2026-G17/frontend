@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/AuthContext';
 import { theme } from '../theme';
@@ -88,11 +88,11 @@ export const LoginScreen = () => {
                 Policía de Montgomery
               </Text>
 
-                <Image
-                    source={require('../../assets/montgomery-icon.png')}
-                    style={styles.logo}
-                    resizeMode="contain"
-                />
+              <Image
+                source={require('../../assets/montgomery-icon.png')}
+                style={styles.logo}
+                resizeMode="contain"
+              />
             </View>
 
             <Input
@@ -121,9 +121,9 @@ export const LoginScreen = () => {
             />
 
             <Button
-            title="Registrarse"
-            variant="secondary"
-            onPress={() => navigation.navigate('Registro')}
+              title="Registrarse"
+              variant="secondary"
+              onPress={() => navigation.navigate('Registro')}
             />
           </Card>
         </View>

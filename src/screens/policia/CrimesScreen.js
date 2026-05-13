@@ -10,9 +10,9 @@ import DateInput from '../../components/ui/DateInput';
 import { CreateCrimesTable } from './CreateCrimesTable';
 import { UseCrimesFilter } from './UseCrimesFilter';
 import EmptyState from '../../components/ui/EmptyState';
-import TableSkeleton from '../../components/ui/TableSkeleton';
-import FadeInView from '../../components/animations/FadeInView';
-import SummaryCards from '../../components/ui/SummaryCards';
+import { TableSkeleton } from '../../components/ui/TableSkeleton';
+import { FadeInView } from '../../components/animations/FadeInView';
+import { SummaryCards } from '../../components/ui/SummaryCards';
 import FilterPopover from '../../components/ui/FilterPopover';
 import { useScroll } from '../../context/ScrollContext';
 
