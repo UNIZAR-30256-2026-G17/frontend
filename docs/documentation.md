@@ -3,9 +3,11 @@
 [breve resumen]
 
 ## 1. URLs de acceso
+La aplicación está desplegada en un entorno cloud, permitiendo el acceso directo a sus distintos componentes sin necesidad de instalación local.
+
 ### Backend
 - https://backend-9u99.onrender.com/
-- (Swagger) https://backend-9u99.onrender.com/api-docs/
+- Documentación Swagger: https://backend-9u99.onrender.com/api-docs/
 
 ### Frontend
 - https://frontend-montgomery-safetymap.onrender.com/
@@ -49,11 +51,13 @@ Para la implementación del backend se han utilizado los siguientes módulos y l
 - **Swagger (`swagger-jsdoc` y `swagger-ui-express`)**: Módulos utilizados para generar la documentación interactiva de la API, permitiendo visualizar y probar los endpoints.
 - **Jest y Supertest**: Herramientas para la automatización de pruebas unitarias y de integración, garantizando el correcto funcionamiento del servidor y de la API.
 
-### 5.3. Enlace al Swagger
-https://backend-9u99.onrender.com/api-docs/
+### 5.3. Enlace a la documentación de la API (Swagger)
+La API del backend dispone de documentación interactiva generada con Swagger, que permite consultar y probar los distintos endpoints disponibles de forma sencilla.
+- https://backend-9u99.onrender.com/api-docs/
 
 ### 5.4. Enlace a la solución
-https://backend-9u99.onrender.com/
+El backend de la aplicación está desplegado en la plataforma Render, proporcionando acceso a la API REST utilizada por el frontend y los distintos servicios del sistema.
+- https://backend-9u99.onrender.com/
 
 ## 6. Frontend
 ### 6.1. Tecnologías
@@ -78,12 +82,14 @@ Para la implementación del frontend se han utilizado los siguientes módulos y 
 - **Jest y React Testing Library**: Frameworks utilizados para realizar pruebas unitarias y de interfaz sobre los componentes del frontend.
 
 ### 6.3. Enlace a la solución
-https://frontend-montgomery-safetymap.onrender.com/
+El frontend de la aplicación está desplegado en un entorno cloud, permitiendo el acceso directo a la interfaz de usuario desde cualquier navegador o dispositivo compatible.
+- https://frontend-montgomery-safetymap.onrender.com/
 
 ### 6.4. Enlace al prototipado
-https://drive.google.com/file/d/1tXh0oZXj6NeFcIc40Y97BnjIgEnPsKTT/view?usp=sharing
+El diseño previo de la interfaz de la aplicación se ha realizado mediante herramientas de prototipado, permitiendo definir la estructura, navegación y experiencia de usuario antes del desarrollo.
+- Prototipo en Figma: https://www.figma.com/design/jturFrWoDGK3gMEqeNcalz/prototipo-web?node-id=0-1&p=f&t=6VYpvgB15qtBI7QO-0
+- Vista en Google Drive: https://drive.google.com/file/d/1tXh0oZXj6NeFcIc40Y97BnjIgEnPsKTT/view?usp=sharing
 
-https://www.figma.com/design/jturFrWoDGK3gMEqeNcalz/prototipo-web?node-id=0-1&p=f&t=6VYpvgB15qtBI7QO-0
 
 ## 7. Modelo de IA
 La aplicación incorpora un sistema de predicción basado en Inteligencia Artificial para calcular el **Índice de Criminalidad (IC)** de cada beat y distrito policial del Condado de Montgomery.
