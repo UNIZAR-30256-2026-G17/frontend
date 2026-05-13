@@ -21,8 +21,13 @@ La aplicación está desplegada en un entorno cloud, permitiendo el acceso direc
 
 ## 3. Arquitectura
 
+La aplicación sigue una arquitectura de **3 niveles (3-tier architecture)**, lo que garantiza una separación clara de responsabilidades y facilita el mantenimiento y escalabilidad del sistema:
+
+1.  **Nivel de Presentación (Frontend)**: Interfaz de usuario desarrollada con React Native y Expo, encargada de la visualización de mapas, estadísticas e interacción con el usuario.
+2.  **Nivel de Lógica de Negocio (Backend)**: API REST construida con Node.js y Express que procesa las peticiones, gestiona la seguridad (JWT) y ejecuta la lógica del servidor.
+3.  **Nivel de Datos (Base de Datos)**: Almacenamiento persistente basado en MongoDB Atlas, donde se gestionan las colecciones de delitos, usuarios, alertas y resultados del modelo de IA.
+
 ![Arquitectura del sistema](./arquitectura.png)
-![Modelo de datos](./modelo-datos.png)
 
 ## 4. Fuentes de datos
 
@@ -169,6 +174,22 @@ Comando para la ejecución del analizador estático de código:
 npm run lint
 ```
 El resultado de su ejecución muestra que el proyecto no presenta errores ni advertencias, con 0 warnings y 0 errors.
+
+
+### 9.3. Integración y Despliegue Continuo (CI/CD)
+
+La aplicación utiliza un flujo avanzado de **Integración y Despliegue Continuo (CI/CD)** para garantizar la estabilidad del sistema y automatizar el ciclo de vida del software.
+
+#### GitHub Actions (CI)
+Tanto el repositorio de backend como el de frontend cuentan con flujos de trabajo automatizados mediante **GitHub Actions** (`ci.yml`). Cada vez que se realiza un *push* o se abre un *pull request* a la rama principal (`main`), se disparan las siguientes tareas:
+- **Backend CI**: Instalación de dependencias y ejecución de la suite completa de pruebas unitarias e integración con Jest.
+- **Frontend CI**: Instalación de dependencias, ejecución de pruebas de componentes y compilación (*build*) de la versión web para asegurar que no hay errores de transpilación.
+
+#### Despliegue en Render (CD)
+El despliegue de la aplicación está automatizado mediante la plataforma **Render**. Para asegurar la máxima fiabilidad, se ha configurado de la siguiente manera:
+- **Despliegue condicional**: Render está conectado a los repositorios de GitHub, pero el despliegue automático (*Auto-deploy*) está sincronizado con el estado del CI. 
+- **Validación previa**: Solo si todas las pruebas automatizadas de GitHub Actions finalizan con éxito (estado *Green*), Render procede a descargar el nuevo código y actualizar los servicios en la nube. Esto evita que errores de código o regresiones lleguen al entorno de producción.
+
 
 ## 10. Valoración global
 
