@@ -53,11 +53,12 @@ export const EstadisticasScreen = () => {
   const [selectedOptionDistrict, setSelectedOptionDistrict] = useState(options[1]); // Por defecto: último mes
   const [selectedOptionHour, setSelectedOptionHour] = useState(options[1]);
   const [selectedOptionVictims, setSelectedOptionVictims] = useState(options[1]);
+  const [selectedOptionCrimeTypes, setSelectedOptionCrimeTypes] = useState(options[1]);
 
   /**
-   * Obtiene estadísticas por nombre de categoría de delito (Crimename1)
+   * Obtiene estadísticas de víctimas agrupadas por tipo general (para el gráfico de tarta)
    */
-  const fetchCrimeNames1 = useCallback(async () => {
+  const fetchVictimStats = useCallback(async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
       const from = new Date(Date.now() - selectedOptionVictims.value * 86400000).toISOString().split('T')[0];
@@ -67,24 +68,38 @@ export const EstadisticasScreen = () => {
       );
       const json = await response.json();
 
-      // Procesar datos para el gráfico de sectores (Víctimas)
       setPieData(json.results.map(item => ({
         name: NAME_MAP[item.crimename1] ?? item.crimename1,
         value: item.num_victims,
         color: COLOR_MAP[item.crimename1] ?? '#888',
       })));
+    } catch (error) {
+      console.error('Error fetching victim stats:', error);
+    }
+  }, [user?.token, selectedOptionVictims]);
 
-      // Procesar datos para la lista de estadísticas (Porcentajes)
+  /**
+   * Obtiene porcentajes de clasificación de delitos (para las tarjetas de estadísticas)
+   */
+  const fetchCrimeTypeStats = useCallback(async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const from = new Date(Date.now() - selectedOptionCrimeTypes.value * 86400000).toISOString().split('T')[0];
+      const response = await fetch(
+        `${API_URL}/crimes/byCrimename1?from=${from}&to=${today}`,
+        { headers: { 'Authorization': `Bearer ${user?.token}` } }
+      );
+      const json = await response.json();
+
       setStatsData(json.results.map(item => ({
         label: NAME_MAP[item.crimename1] ?? item.crimename1,
         value: `${Math.round(item.percentage)}%`,
         color: COLOR_MAP[item.crimename1] ?? '#888',
       })));
-
     } catch (error) {
-      console.error('Error fetching crime names:', error);
+      console.error('Error fetching crime type stats:', error);
     }
-  }, [user?.token, selectedOptionVictims]);
+  }, [user?.token, selectedOptionCrimeTypes]);
 
   /**
    * Obtiene el número de delitos en un rango de fechas desglosado por distrito
@@ -137,9 +152,10 @@ export const EstadisticasScreen = () => {
     if (user?.token) {
       fetchCrimesByDistrict();
       fetchCrimesByHour();
-      fetchCrimeNames1();
+      fetchVictimStats();
+      fetchCrimeTypeStats();
     }
-  }, [user, fetchCrimesByDistrict, fetchCrimesByHour, fetchCrimeNames1]);
+  }, [user, fetchCrimesByDistrict, fetchCrimesByHour, fetchVictimStats, fetchCrimeTypeStats]);
 
   return (
     <Container>
@@ -193,7 +209,16 @@ export const EstadisticasScreen = () => {
               }
             />
             <View style={{ height: theme.spacing.md }} />
-            <CrimeTypesStats data={statsData} />
+            <CrimeTypesStats
+              data={statsData}
+              right={
+                <Dropdown
+                  options={options}
+                  selected={selectedOptionCrimeTypes}
+                  onSelect={(opt) => setSelectedOptionCrimeTypes(opt)}
+                />
+              }
+            />
           </View>
 
         </View>

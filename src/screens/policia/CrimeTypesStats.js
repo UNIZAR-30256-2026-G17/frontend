@@ -12,13 +12,14 @@ import Card from '../../components/ui/Card';
 /**
  * Componente CrimeTypesStats
  * @param {Array} data - Lista de objetos { label: string, value: string, color: string }
+ * @param {React.ReactNode} right - Elemento opcional para mostrar en la parte derecha de la cabecera del Card
  */
-export const CrimeTypesStats = ({ data }) => {
+export const CrimeTypesStats = ({ data, right }) => {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
 
   return (
-    <Card title="Porcentaje de clasificación de los tipos de delito">
+    <Card title="Porcentaje de clasificación de los tipos de delito" right={right}>
       <View style={styles.statsGrid}>
         {data.map((stat, index) => (
           <View
