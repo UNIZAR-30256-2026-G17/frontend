@@ -12,7 +12,7 @@ import useCrimesFilter from './useCrimesFilter';
 import EmptyState from '../../components/ui/EmptyState';
 import TableSkeleton from '../../components/ui/TableSkeleton';
 import FadeInView from '../../components/animations/FadeInView';
-import SummaryCards from '../../components/ui/SummaryCards';
+import SummaryCardsComponent from '../../components/ui/SummaryCards';
 import FilterPopover from '../../components/ui/FilterPopover';
 import { useScroll } from '../../context/ScrollContext';
 
@@ -140,17 +140,6 @@ export function CrimesScreen() {
     dateFrom,
   ].filter(Boolean).length;
 
-  // DEBUG LOGS
-  console.log("--- CHEQUEO DE COMPONENTES ---");
-  console.log("Container:", !!Container);
-  console.log("Button:", !!Button);
-  console.log("Dropdown:", !!Dropdown);
-  console.log("CreateCrimesTable:", !!CreateCrimesTable);
-  console.log("useCrimesFilter:", !!useCrimesFilter);
-  console.log("SummaryCards:", !!SummaryCards);
-  console.log("FilterPopover:", !!FilterPopover);
-  console.log("FadeInView:", !!FadeInView);
-  console.log("------------------------------");
 
   return (
     <Container>
@@ -165,7 +154,7 @@ export function CrimesScreen() {
 
           {/* ── Summary Cards ── */}
           {(!loading && filteredData.length > 0) && (
-            <SummaryCards
+            <SummaryCardsComponent
               data={[
                 { label: 'Total Delitos', value: filteredData.length, icon: 'shield', color: theme.colors.primary },
                 { label: 'Distritos', value: new Set(filteredData.map(d => d.distrito)).size, icon: 'map-marker', color: '#F1C40F' },
