@@ -2,8 +2,7 @@
  * @file AdminUsuariosScreen.js
  * @description Pantalla de administración de usuarios. Permite listar, filtrar y bloquear/activar usuarios.
  */
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Text, ScrollView, StyleSheet, RefreshControl, View, TextInput, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme';
@@ -17,13 +16,12 @@ import AppSnackbar from '../../components/ui/AppSnackBar';
 import FadeInView from '../../components/animations/FadeInView';
 import LoadingOverlay from '../../components/ui/LoadingOverlay';
 import { API_URL } from '../../config/env';
-
 import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import ToggleButton from '../../components/ui/ToggleButton';
 import FilterPopover from '../../components/ui/FilterPopover';
 import { UseUsuariosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseUsuariosFilter';
-import SummaryCards from '../../components/ui/SummaryCards';
+import SummaryCardsComponent from '../../components/ui/SummaryCards';
 
 /**
  * Componente AdminUsuariosScreen
@@ -52,27 +50,10 @@ export function AdminUsuariosScreen() {
     resetFilters,
   } = UseUsuariosFilter(users);
 
-  // Carga inicial de usuarios
-  useEffect(() => {
-    if (user?.token) fetchUsers();
-  }, [user]);
-
-  /**
-   * Muestra el snackbar
-   */
-  const showSnackbar = (message, variant = 'normal') =>
-    setSnackbar({ visible: true, message, variant });
-
-  /**
-   * Oculta el snackbar
-   */
-  const hideSnackbar = () =>
-    setSnackbar(prev => ({ ...prev, visible: false }));
-
   /**
    * Obtiene la lista de usuarios de la API
    */
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`${API_URL}/users`, {
@@ -90,7 +71,24 @@ export function AdminUsuariosScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [user?.token]);
+
+  // Carga inicial de usuarios
+  useEffect(() => {
+    if (user?.token) fetchUsers();
+  }, [user?.token, fetchUsers]);
+
+  /**
+   * Muestra el snackbar
+   */
+  const showSnackbar = (message, variant = 'normal') =>
+    setSnackbar({ visible: true, message, variant });
+
+  /**
+   * Oculta el snackbar
+   */
+  const hideSnackbar = () =>
+    setSnackbar(prev => ({ ...prev, visible: false }));
 
   /**
    * Manejador de refresco (pull-to-refresh)
@@ -99,7 +97,7 @@ export function AdminUsuariosScreen() {
     setRefreshing(true);
     fetchUsers();
   };
-  
+
   /**
    * Cambia el estado (activo/bloqueado) de un usuario
    * @param {String} id - ID del usuario
@@ -117,10 +115,10 @@ export function AdminUsuariosScreen() {
         },
         body: JSON.stringify({ status: newStatus }),
       });
-      
+
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Error al cambiar el estado');
-      
+
       // Actualizar estado local
       setUsers(prev => prev.map(u => u._id === id ? { ...u, status: newStatus } : u));
       showSnackbar(newStatus === 'blocked' ? 'Usuario bloqueado' : 'Usuario activado');
@@ -154,7 +152,7 @@ export function AdminUsuariosScreen() {
 
             {/* ── Summary Cards ── */}
             {hasData && (
-              <SummaryCards
+              <SummaryCardsComponent
                 data={[
                   { label: 'Total Usuarios', value: users.length, icon: 'users', color: theme.colors.primary },
                   { label: 'Activos', value: users.filter(u => u.status === 'active').length, icon: 'check-circle', color: theme.colors.success },
@@ -274,7 +272,7 @@ export function AdminUsuariosScreen() {
         </View>
 
       </FilterPopover>
-      
+
       <LoadingOverlay visible={actionLoading} message="Actualizando estado..." />
 
       <AppSnackbar

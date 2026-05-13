@@ -37,15 +37,15 @@ export const withProtection = (Component, allowedRoles) => {
         setRedirecting(true);
         setTimeout(() => navigation.replace('Inicio'), 0);
       }
-    }, [user, loading]);
+    }, [user, loading, navigation]);
 
     // Muestra spinner mientras carga O mientras se procesa la redirección
     if (loading || redirecting) {
       return (
-        <View style={{ 
-          flex: 1, 
-          justifyContent: 'center', 
-          backgroundColor: theme.colors.background 
+        <View style={{
+          flex: 1,
+          justifyContent: 'center',
+          backgroundColor: theme.colors.background
         }}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>

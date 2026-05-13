@@ -17,23 +17,21 @@ import { theme } from '../theme';
 
 // ─── DESIGN TOKENS (Locales para mantener el diseño específico de la landing) ───
 const C = {
-  yellow:   '#F5C842',
-  dark:     '#111111',
-  dark2:    '#1e1e1e',
-  surface:  '#F7F6F1',
-  white:    '#FFFFFF',
+  yellow: '#F5C842',
+  dark: '#111111',
+  dark2: '#1e1e1e',
+  surface: '#F7F6F1',
+  white: '#FFFFFF',
   textDark: '#111111',
-  textMid:  '#444444',
+  textMid: '#444444',
   textMute: '#888888',
-  border:   '#E4E2D8',
+  border: '#E4E2D8',
 };
 
 const SPACE = { xs: 4, sm: 8, md: 16, lg: 24, xl: 40, xxl: 64 };
 
-// Helper: devuelve valor según breakpoint
 const rs = (isMobile, mobile, desktop) => isMobile ? mobile : desktop;
 
-// ─── DATA ────────────────────────────────────────────────────────
 const FEATURES = [
   {
     icon: 'map-marker', title: 'Mapa interactivo',
@@ -61,26 +59,27 @@ const ROLES = [
   {
     icon: 'user', role: 'Ciudadano', bg: C.yellow, textColor: C.dark,
     perks: ['Ver estadísticas de criminalidad', 'Consultar el mapa de seguridad',
-            'Crear alertas de posibles delitos', 'Confirmar alertas de vecinos', 'Generar rutas seguras'],
+      'Crear alertas de posibles delitos', 'Confirmar alertas de vecinos', 'Generar rutas seguras'],
   },
   {
     icon: 'star', role: 'Policía', bg: C.dark, textColor: '#fff',
     perks: ['Gestionar y atender alertas', 'Ver listado completo de delitos',
-            'Filtrar por tipo, fecha, distrito', 'Ver índices por beat', 'Rutas de patrullaje optimizadas'],
+      'Filtrar por tipo, fecha, distrito', 'Ver índices por beat', 'Rutas de patrullaje optimizadas'],
   },
   {
     icon: 'shield', role: 'Administrador', bg: '#2a2a2a', textColor: '#fff',
     perks: ['Gestionar usuarios policiales', 'Bloquear / desbloquear agentes',
-            'Administrar catálogo de delitos', 'Restaurar o eliminar alertas', 'Control total del sistema'],
+      'Administrar catálogo de delitos', 'Restaurar o eliminar alertas', 'Control total del sistema'],
   },
 ];
 
 const STATS = [
-  { value: 7,    suffix: '',  label: 'Distritos' },
-  { value: 50,   suffix: '+', label: 'Beats monitorizados' },
-  { value: 3,    suffix: '',  label: 'Roles de usuario' },
-  { value: 98,   suffix: '%', label: 'Uptime del sistema' },
+  { value: 7, suffix: '', label: 'Distritos' },
+  { value: 50, suffix: '+', label: 'Beats monitorizados' },
+  { value: 3, suffix: '', label: 'Roles de usuario' },
+  { value: 98, suffix: '%', label: 'Uptime del sistema' },
 ];
+
 
 /**
  * Contador animado para las estadísticas
@@ -93,7 +92,7 @@ const AnimatedStat = ({ value, suffix, label }) => {
     Animated.timing(anim, { toValue: value, duration: 1200, useNativeDriver: false }).start();
     anim.addListener(({ value: v }) => setDisplay(Math.floor(v)));
     return () => anim.removeAllListeners();
-  }, []);
+  }, [anim, value]);
 
   return (
     <View style={s.statItem}>
@@ -103,19 +102,20 @@ const AnimatedStat = ({ value, suffix, label }) => {
   );
 };
 
+
 /**
  * Tarjeta con animación de entrada (FadeIn + SlideUp)
  */
 const FadeCard = ({ children, delay = 0, style }) => {
-  const opacity    = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(24)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(opacity,    { toValue: 1, duration: 550, delay, useNativeDriver: true }),
+      Animated.timing(opacity, { toValue: 1, duration: 550, delay, useNativeDriver: true }),
       Animated.spring(translateY, { toValue: 0, delay, useNativeDriver: true, tension: 60, friction: 10 }),
     ]).start();
-  }, []);
+  }, [delay, opacity, translateY]);
 
   return (
     <Animated.View style={[{ opacity, transform: [{ translateY }] }, style]}>
@@ -123,6 +123,7 @@ const FadeCard = ({ children, delay = 0, style }) => {
     </Animated.View>
   );
 };
+
 
 /**
  * Cabecera de sección común
@@ -136,6 +137,7 @@ const SectionHeader = ({ tag, title, light = false }) => (
   </View>
 );
 
+
 /**
  * Ilustración animada de un mapa de calor simplificado
  */
@@ -145,17 +147,17 @@ const MapIllustration = () => {
     Animated.loop(
       Animated.sequence([
         Animated.timing(pulse, { toValue: 1.15, duration: 1200, useNativeDriver: true }),
-        Animated.timing(pulse, { toValue: 1,    duration: 1200, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 1, duration: 1200, useNativeDriver: true }),
       ])
     ).start();
-  }, []);
+  }, [pulse]);
 
   const zones = [
-    { top: '12%', left: '18%', w: 90,  h: 90,  r: 45, color: 'rgba(220,60,50,0.22)'  },
-    { top: '38%', left: '48%', w: 110, h: 110, r: 55, color: 'rgba(240,155,30,0.2)'  },
-    { top: '55%', left: '12%', w: 70,  h: 70,  r: 35, color: 'rgba(50,175,90,0.22)'  },
-    { top: '18%', left: '60%', w: 85,  h: 85,  r: 42, color: 'rgba(240,155,30,0.18)' },
-    { top: '66%', left: '58%', w: 65,  h: 65,  r: 32, color: 'rgba(50,175,90,0.2)'   },
+    { top: '12%', left: '18%', w: 90, h: 90, r: 45, color: 'rgba(220,60,50,0.22)' },
+    { top: '38%', left: '48%', w: 110, h: 110, r: 55, color: 'rgba(240,155,30,0.2)' },
+    { top: '55%', left: '12%', w: 70, h: 70, r: 35, color: 'rgba(50,175,90,0.22)' },
+    { top: '18%', left: '60%', w: 85, h: 85, r: 42, color: 'rgba(240,155,30,0.18)' },
+    { top: '66%', left: '58%', w: 65, h: 65, r: 32, color: 'rgba(50,175,90,0.2)' },
   ];
 
   const beats = [
@@ -213,6 +215,7 @@ const MapIllustration = () => {
   );
 };
 
+
 /**
  * Componente HomeScreen principal
  */
@@ -223,162 +226,149 @@ export const HomeScreen = () => {
   const { handleScroll } = useScroll();
 
   const heroOp = useRef(new Animated.Value(0)).current;
-  const heroY  = useRef(new Animated.Value(40)).current;
+  const heroY = useRef(new Animated.Value(40)).current;
 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(heroOp, { toValue: 1, duration: 800, useNativeDriver: true }),
-      Animated.spring(heroY,  { toValue: 0, tension: 50, friction: 10, useNativeDriver: true }),
+      Animated.spring(heroY, { toValue: 0, tension: 50, friction: 10, useNativeDriver: true }),
     ]).start();
-  }, []);
+  }, [heroOp, heroY]);
 
   return (
     <Container>
-      <ScrollView 
-        style={s.scroll} 
+      <ScrollView
+        style={s.scroll}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
 
-      {/* ── HERO ── */}
-      <View style={[s.hero, m && s.heroM]}>
-        {/* Accent circles */}
-        <View style={[s.accent, { width: 400, height: 400, top: -100, right: -80, opacity: 0.06 }]} />
-        <View style={[s.accent, { width: 200, height: 200, bottom: -40, left: -40,  opacity: 0.04 }]} />
+        <View style={[s.hero, m && s.heroM]}>
+          <View style={[s.accent, { width: 400, height: 400, top: -100, right: -80, opacity: 0.06 }]} />
+          <View style={[s.accent, { width: 200, height: 200, bottom: -40, left: -40, opacity: 0.04 }]} />
 
-        {/* Yellow vertical stripe (desktop) */}
-        {!m && <View style={s.heroStripe} />}
+          {!m && <View style={s.heroStripe} />}
 
-        <Animated.View style={[s.heroContent, m && s.heroContentM, { opacity: heroOp, transform: [{ translateY: heroY }] }]}>
-          {/* Badge */}
-          <View style={s.badge}>
-            <View style={s.badgeDot} />
-            <Text style={s.badgeText}>Condado de Montgomery · Maryland</Text>
-          </View>
+          <Animated.View style={[s.heroContent, m && s.heroContentM, { opacity: heroOp, transform: [{ translateY: heroY }] }]}>
+            <View style={s.badge}>
+              <View style={s.badgeDot} />
+              <Text style={s.badgeText}>Condado de Montgomery · Maryland</Text>
+            </View>
 
-          <Text style={[s.heroTitle, { fontSize: rs(m, 32, 52) }]}>
-            Tu ciudad,{'\n'}más segura
-          </Text>
+            <Text style={[s.heroTitle, { fontSize: rs(m, 32, 52) }]}>
+              Tu ciudad,{'\n'}más segura
+            </Text>
 
-          <Text style={[s.heroSub, { fontSize: rs(m, 15, 17) }]}>
-            Consulta la criminalidad en tiempo real, recibe alertas de tu barrio
-            y navega por rutas más seguras.
-          </Text>
+            <Text style={[s.heroSub, { fontSize: rs(m, 15, 17) }]}>
+              Consulta la criminalidad en tiempo real, recibe alertas de tu barrio
+              y navega por rutas más seguras.
+            </Text>
 
-          <View style={[s.ctaRow, m && s.ctaRowM]}>
-            <TouchableOpacity style={s.btnYellow} onPress={() => navigation.navigate('Mapa')} activeOpacity={0.85}>
-              <FontAwesome name="map" size={14} color={C.dark} />
-              <Text style={s.btnYellowText}>Ver el mapa</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.btnGhost} onPress={() => navigation.navigate('Iniciar Sesión')} activeOpacity={0.7}>
-              <Text style={s.btnGhostText}>Iniciar sesión</Text>
-              <FontAwesome name="arrow-right" size={12} color="rgba(255,255,255,0.6)" />
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
+            <View style={[s.ctaRow, m && s.ctaRowM]}>
+              <TouchableOpacity style={s.btnYellow} onPress={() => navigation.navigate('Mapa')} activeOpacity={0.85}>
+                <FontAwesome name="map" size={14} color={C.dark} />
+                <Text style={s.btnYellowText}>Ver el mapa</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={s.btnGhost} onPress={() => navigation.navigate('Iniciar Sesión')} activeOpacity={0.7}>
+                <Text style={s.btnGhostText}>Iniciar sesión</Text>
+                <FontAwesome name="arrow-right" size={12} color="rgba(255,255,255,0.6)" />
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
 
-        {/* Illustration */}
-        <Animated.View style={[s.heroIll, { width: rs(m, '100%', 340) }, { opacity: heroOp }]}>
-          <MapIllustration />
-        </Animated.View>
-      </View>
+          <Animated.View style={[s.heroIll, { width: rs(m, '100%', 340) }, { opacity: heroOp }]}>
+            <MapIllustration />
+          </Animated.View>
+        </View>
 
-      {/* ── STATS BAR ── */}
-      <View style={s.statsBar}>
-        {STATS.map((st, i) => (
-          <React.Fragment key={i}>
-            <AnimatedStat {...st} />
-            {i < STATS.length - 1 && <View style={s.statDivider} />}
-          </React.Fragment>
-        ))}
-      </View>
-
-      {/* ── FEATURES ── */}
-      <View style={[s.section, { backgroundColor: C.surface }]}>
-        <SectionHeader tag="Funcionalidades" title={`Todo lo que\nnecesitas para estar seguro`} />
-        <View style={[s.grid2, m && s.gridCol]}>
-          {FEATURES.map((f, i) => (
-            <FadeCard key={i} delay={i * 90} style={[s.featureCard, m && s.fullWidth]}>
-              <View style={[s.featureIcon, { backgroundColor: f.bg }]}>
-                <FontAwesome name={f.icon} size={18} color={f.iconColor} />
-              </View>
-              <Text style={s.featureTitle}>{f.title}</Text>
-              <Text style={s.featureDesc}>{f.desc}</Text>
-            </FadeCard>
+        <View style={s.statsBar}>
+          {STATS.map((st, i) => (
+            <React.Fragment key={i}>
+              <AnimatedStat {...st} />
+              {i < STATS.length - 1 && <View style={s.statDivider} />}
+            </React.Fragment>
           ))}
         </View>
-      </View>
 
-      {/* ── ROLES ── */}
-      <View style={[s.section, { backgroundColor: C.white }]}>
-        <SectionHeader tag="Roles" title={`Una plataforma,\ntres perfiles`} />
-        <View style={[s.grid3, m && s.gridCol]}>
-          {ROLES.map((r, i) => (
-            <FadeCard key={i} delay={i * 110} style={[s.roleCard, { backgroundColor: r.bg }, m && s.fullWidth]}>
-              <View style={[s.roleIcon, { backgroundColor: r.textColor === '#fff' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)' }]}>
-                <FontAwesome name={r.icon} size={18} color={r.textColor} />
-              </View>
-              <Text style={[s.roleTitle, { color: r.textColor }]}>{r.role}</Text>
-              {r.perks.map((p, j) => (
-                <View key={j} style={s.perkRow}>
-                  <View style={[s.perkDot, { backgroundColor: r.textColor === '#fff' ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.2)' }]} />
-                  <Text style={[s.perkText, { color: r.textColor === '#fff' ? 'rgba(255,255,255,0.8)' : C.textMid }]}>{p}</Text>
+        <View style={[s.section, { backgroundColor: C.surface }]}>
+          <SectionHeader tag="Funcionalidades" title={`Todo lo que\nnecesitas para estar seguro`} />
+          <View style={[s.grid2, m && s.gridCol]}>
+            {FEATURES.map((f, i) => (
+              <FadeCard key={i} delay={i * 90} style={[s.featureCard, m && s.fullWidth]}>
+                <View style={[s.featureIcon, { backgroundColor: f.bg }]}>
+                  <FontAwesome name={f.icon} size={18} color={f.iconColor} />
                 </View>
-              ))}
-            </FadeCard>
-          ))}
+                <Text style={s.featureTitle}>{f.title}</Text>
+                <Text style={s.featureDesc}>{f.desc}</Text>
+              </FadeCard>
+            ))}
+          </View>
         </View>
-      </View>
 
-      {/* ── AI BANNER ── */}
-      <View style={s.aiBanner}>
-        <View style={s.aiOrb}>
-          <FontAwesome name="bolt" size={20} color={C.dark} />
+        <View style={[s.section, { backgroundColor: C.white }]}>
+          <SectionHeader tag="Roles" title={`Una plataforma,\ntres perfiles`} />
+          <View style={[s.grid3, m && s.gridCol]}>
+            {ROLES.map((r, i) => (
+              <FadeCard key={i} delay={i * 110} style={[s.roleCard, { backgroundColor: r.bg }, m && s.fullWidth]}>
+                <View style={[s.roleIcon, { backgroundColor: r.textColor === '#fff' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)' }]}>
+                  <FontAwesome name={r.icon} size={18} color={r.textColor} />
+                </View>
+                <Text style={[s.roleTitle, { color: r.textColor }]}>{r.role}</Text>
+                {r.perks.map((p, j) => (
+                  <View key={j} style={s.perkRow}>
+                    <View style={[s.perkDot, { backgroundColor: r.textColor === '#fff' ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.2)' }]} />
+                    <Text style={[s.perkText, { color: r.textColor === '#fff' ? 'rgba(255,255,255,0.8)' : C.textMid }]}>{p}</Text>
+                  </View>
+                ))}
+              </FadeCard>
+            ))}
+          </View>
         </View>
-        <View style={{ flex: 1 }}>
-          <Text style={s.aiTitle}>Impulsado por Inteligencia Artificial</Text>
-          <Text style={s.aiDesc}>
-            El índice de criminalidad se calcula con modelos de IA entrenados con datos de
-            los últimos 3 años, actualizando automáticamente la peligrosidad de cada beat.
+
+        <View style={s.aiBanner}>
+          <View style={s.aiOrb}>
+            <FontAwesome name="bolt" size={20} color={C.dark} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={s.aiTitle}>Impulsado por Inteligencia Artificial</Text>
+            <Text style={s.aiDesc}>
+              El índice de criminalidad se calcula con modelos de IA entrenados con datos de
+              los últimos 3 años, actualizando automáticamente la peligrosidad de cada beat.
+            </Text>
+          </View>
+        </View>
+
+        <View style={[s.ctaSection, m && { paddingVertical: SPACE.xl, paddingHorizontal: SPACE.lg }]}>
+          <Text style={[s.ctaTitle, { fontSize: rs(m, 26, 38) }]}>Empieza ahora</Text>
+          <Text style={s.ctaDesc}>
+            Consulta el mapa sin registrarte, o inicia sesión si eres agente o administrador.
           </Text>
+          <View style={[s.ctaRow, m && s.ctaRowM]}>
+            <TouchableOpacity style={s.btnYellowDark} onPress={() => navigation.navigate('Mapa')} activeOpacity={0.85}>
+              <FontAwesome name="map" size={14} color={C.white} />
+              <Text style={s.btnYellowDarkText}>Explorar el mapa</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={s.btnOutline} onPress={() => navigation.navigate('Estadísticas')} activeOpacity={0.7}>
+              <FontAwesome name="bar-chart" size={14} color={C.dark} />
+              <Text style={s.btnOutlineText}>Ver estadísticas</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
 
-      {/* ── CTA FINAL ── */}
-      <View style={[s.ctaSection, m && { paddingVertical: SPACE.xl, paddingHorizontal: SPACE.lg }]}>
-        <Text style={[s.ctaTitle, { fontSize: rs(m, 26, 38) }]}>Empieza ahora</Text>
-        <Text style={s.ctaDesc}>
-          Consulta el mapa sin registrarte, o inicia sesión si eres agente o administrador.
-        </Text>
-        <View style={[s.ctaRow, m && s.ctaRowM]}>
-          <TouchableOpacity style={s.btnYellowDark} onPress={() => navigation.navigate('Mapa')} activeOpacity={0.85}>
-            <FontAwesome name="map" size={14} color={C.white} />
-            <Text style={s.btnYellowDarkText}>Explorar el mapa</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={s.btnOutline} onPress={() => navigation.navigate('Estadísticas')} activeOpacity={0.7}>
-            <FontAwesome name="bar-chart" size={14} color={C.dark} />
-            <Text style={s.btnOutlineText}>Ver estadísticas</Text>
-          </TouchableOpacity>
+        <View style={s.footer}>
+          <Text style={s.footerMain}>© 2025 Montgomery SafetyMap · Condado de Montgomery</Text>
+          <Text style={s.footerSub}>Powered by OpenStreetMap · OSRM · IA predictiva</Text>
         </View>
-      </View>
 
-      {/* ── FOOTER ── */}
-      <View style={s.footer}>
-        <Text style={s.footerMain}>© 2025 Montgomery SafetyMap · Condado de Montgomery</Text>
-        <Text style={s.footerSub}>Powered by OpenStreetMap · OSRM · IA predictiva</Text>
-      </View>
-
-    </ScrollView>
+      </ScrollView>
     </Container>
   );
 };
 
-// ─── STYLES ──────────────────────────────────────────────────────
 const s = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: C.surface },
 
-  // HERO
   hero: {
     backgroundColor: C.dark, flexDirection: 'row', alignItems: 'center',
     justifyContent: 'space-between', paddingHorizontal: SPACE.xl,
@@ -424,7 +414,6 @@ const s = StyleSheet.create({
 
   heroIll: { marginLeft: 24, alignSelf: 'flex-end' },
 
-  // STATS
   statsBar: {
     flexDirection: 'row', backgroundColor: C.yellow,
     paddingVertical: SPACE.lg, paddingHorizontal: SPACE.md,
@@ -434,7 +423,6 @@ const s = StyleSheet.create({
   statValue: { fontSize: 28, fontFamily: theme.typography.bodyBold.fontFamily, color: C.dark, marginBottom: 3 },
   statLabel: { fontSize: 11, color: 'rgba(0,0,0,0.5)', textAlign: 'center', fontFamily: theme.typography.body.fontFamily, letterSpacing: 0.2 },
 
-  // SECTION
   section: { paddingVertical: SPACE.xxl, paddingHorizontal: SPACE.lg },
   sectionHeader: { alignItems: 'center', marginBottom: SPACE.xl },
   tagPill: {
@@ -447,18 +435,16 @@ const s = StyleSheet.create({
   sectionTitle: { fontSize: 28, fontFamily: theme.typography.bodyBold.fontFamily, color: C.dark, textAlign: 'center', lineHeight: 38, letterSpacing: -0.3 },
   sectionTitleLight: { color: C.white },
 
-  // GRIDS
   grid2: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACE.md, justifyContent: 'center' },
   grid3: { flexDirection: 'row', gap: SPACE.md, justifyContent: 'center' },
   gridCol: { flexDirection: 'column' },
   fullWidth: { width: '100%', maxWidth: '100%' },
 
-  // FEATURE CARD
   featureCard: {
     backgroundColor: C.white, borderRadius: 16, padding: SPACE.lg,
     width: '46%', maxWidth: 310, borderWidth: 1, borderColor: C.border,
     ...Platform.select({
-      ios:     { shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: 4 } },
+      ios: { shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: 4 } },
       android: { elevation: 2 },
     }),
   },
@@ -466,7 +452,6 @@ const s = StyleSheet.create({
   featureTitle: { fontSize: 15, fontFamily: theme.typography.bodyBold.fontFamily, color: C.dark, marginBottom: 6 },
   featureDesc: { fontSize: 13, fontFamily: theme.typography.body.fontFamily, color: C.textMute, lineHeight: 21 },
 
-  // ROLE CARD
   roleCard: { flex: 1, borderRadius: 16, padding: SPACE.lg, minWidth: 190, maxWidth: 290 },
   roleIcon: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', marginBottom: 14 },
   roleTitle: { fontSize: 17, fontFamily: theme.typography.bodyBold.fontFamily, marginBottom: 14 },
@@ -474,7 +459,6 @@ const s = StyleSheet.create({
   perkDot: { width: 5, height: 5, borderRadius: 3, marginTop: 7, flexShrink: 0 },
   perkText: { fontSize: 13, lineHeight: 20, flex: 1 },
 
-  // AI BANNER
   aiBanner: {
     backgroundColor: C.dark, flexDirection: 'row', alignItems: 'center',
     gap: SPACE.lg, paddingHorizontal: SPACE.xl, paddingVertical: SPACE.xl,
@@ -487,7 +471,6 @@ const s = StyleSheet.create({
   aiTitle: { fontSize: 17, fontWeight: '800', color: C.white, marginBottom: 6 },
   aiDesc: { fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 21 },
 
-  // CTA FINAL
   ctaSection: {
     backgroundColor: C.white, alignItems: 'center',
     paddingVertical: SPACE.xxl, paddingHorizontal: SPACE.xl,
@@ -508,28 +491,26 @@ const s = StyleSheet.create({
   },
   btnOutlineText: { color: C.dark, fontWeight: '700', fontSize: 15 },
 
-  // FOOTER
   footer: {
     backgroundColor: C.surface, alignItems: 'center', paddingVertical: SPACE.lg,
     borderTopWidth: 1, borderTopColor: C.border,
   },
   footerMain: { fontSize: 12, color: C.textMute, fontWeight: '500' },
-  footerSub:  { fontSize: 11, color: '#bbb', marginTop: 4 },
+  footerSub: { fontSize: 11, color: '#bbb', marginTop: 4 },
 });
 
-// ─── MAP ILLUSTRATION STYLES ─────────────────────────────────────
 const il = StyleSheet.create({
-  container:  { backgroundColor: '#dce8d8', borderRadius: 16, overflow: 'hidden', height: 310 },
-  mapBg:      { flex: 1, position: 'relative' },
-  grid:       { position: 'absolute', backgroundColor: 'rgba(255,255,255,0.35)' },
-  zone:       { position: 'absolute' },
-  beatBadge:  { position: 'absolute', borderWidth: 1.5, borderRadius: 6, backgroundColor: '#fff', paddingHorizontal: 6, paddingVertical: 2 },
-  beatText:   { fontSize: 10, fontWeight: '700' },
-  pinOuter:   { position: 'absolute', width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
-  pinPulse:   { position: 'absolute', width: 30, height: 30, borderRadius: 15, borderWidth: 2, opacity: 0.4 },
-  pinInner:   { width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  legend:     { flexDirection: 'row', gap: 14, padding: 10, backgroundColor: 'rgba(255,255,255,0.88)', justifyContent: 'center' },
+  container: { backgroundColor: '#dce8d8', borderRadius: 16, overflow: 'hidden', height: 310 },
+  mapBg: { flex: 1, position: 'relative' },
+  grid: { position: 'absolute', backgroundColor: 'rgba(255,255,255,0.35)' },
+  zone: { position: 'absolute' },
+  beatBadge: { position: 'absolute', borderWidth: 1.5, borderRadius: 6, backgroundColor: '#fff', paddingHorizontal: 6, paddingVertical: 2 },
+  beatText: { fontSize: 10, fontWeight: '700' },
+  pinOuter: { position: 'absolute', width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
+  pinPulse: { position: 'absolute', width: 30, height: 30, borderRadius: 15, borderWidth: 2, opacity: 0.4 },
+  pinInner: { width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  legend: { flexDirection: 'row', gap: 14, padding: 10, backgroundColor: 'rgba(255,255,255,0.88)', justifyContent: 'center' },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  dot:        { width: 8, height: 8, borderRadius: 4 },
+  dot: { width: 8, height: 8, borderRadius: 4 },
   legendText: { fontSize: 11, color: C.textMid, fontWeight: '600' },
 });

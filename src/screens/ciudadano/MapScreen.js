@@ -3,10 +3,8 @@
  * @description Pantalla principal para ciudadanos. Muestra un mapa con distritos, 
  * índices de criminalidad (IC) y alertas activas. Permite crear alertas y generar rutas.
  */
-
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
-import { useWindowDimensions } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuidv4 } from 'uuid';
@@ -31,13 +29,13 @@ import { API_URL } from '../../config/env';
 
 // Rangos de Índice de Criminalidad (IC) y sus colores
 const ICs = [
-    { label: '> 28',    color: theme.colors.ic1 },
+    { label: '> 28', color: theme.colors.ic1 },
     { label: '24 - 28', color: theme.colors.ic2 },
     { label: '19 - 24', color: theme.colors.ic3 },
     { label: '15 - 19', color: theme.colors.ic4 },
     { label: '10 - 15', color: theme.colors.ic5 },
-    { label: '5 - 10',  color: theme.colors.ic6 },
-    { label: '< 5',     color: theme.colors.ic7 },
+    { label: '5 - 10', color: theme.colors.ic6 },
+    { label: '< 5', color: theme.colors.ic7 },
 ];
 
 /**
@@ -45,10 +43,10 @@ const ICs = [
  * @param {Array} alerts - Lista de alertas actuales
  */
 const buildAlertSummary = (alerts) => [
-    { icon: 'warning',      label: 'Total alertas',  value: alerts.length,                                    color: theme.colors.warning },
-    { icon: 'clock-o',      label: 'Sin responder',  value: alerts.filter(a => !a.confirmedByMe && !a.discardedByMe).length, color: '#ffffff' },
-    { icon: 'check-circle', label: 'Confirmadas',    value: alerts.filter(a => a.confirmedByMe).length,       color: theme.colors.success },
-    { icon: 'times-circle', label: 'Descartadas',    value: alerts.filter(a => a.discardedByMe).length,       color: theme.colors.danger },
+    { icon: 'warning', label: 'Total alertas', value: alerts.length, color: theme.colors.warning },
+    { icon: 'clock-o', label: 'Sin responder', value: alerts.filter(a => !a.confirmedByMe && !a.discardedByMe).length, color: '#ffffff' },
+    { icon: 'check-circle', label: 'Confirmadas', value: alerts.filter(a => a.confirmedByMe).length, color: theme.colors.success },
+    { icon: 'times-circle', label: 'Descartadas', value: alerts.filter(a => a.discardedByMe).length, color: theme.colors.danger },
 ];
 
 /**
@@ -57,46 +55,31 @@ const buildAlertSummary = (alerts) => [
 export const MapScreen = () => {
     const navigation = useNavigation();
     const { width, height } = useWindowDimensions();
-    const isMobile  = width < 768;
+    const isMobile = width < 768;
     const mapHeight = isMobile ? Math.round(height * 0.48) : undefined;
 
     // Estado para controlar la vista en móvil (mapa vs listado de alertas)
     const [mobileView, setMobileView] = useState('map');
 
-    const [token,              setToken]              = useState(null);
-    const [districtICs,        setDistrictICs]        = useState([]);
+    const [token, setToken] = useState(null);
+    const [districtICs, setDistrictICs] = useState([]);
     const [monthlyDistrictICs, setMonthlyDistrictICs] = useState([]);
-    const [ICSelected,         setICSelected]         = useState(true);
-    const [alerts,             setAlerts]             = useState([]);
-    const [alertsSelected,     setAlertsSelected]     = useState(true);
-    const [routePoints,        setRoutePoints]        = useState(null);
+    const [ICSelected, setICSelected] = useState(true);
+    const [alerts, setAlerts] = useState([]);
+    const [alertsSelected, setAlertsSelected] = useState(true);
+    const [routePoints, setRoutePoints] = useState(null);
 
     const [screenLoading, setScreenLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState({ visible: false, message: '' });
-    const [snackbar,      setSnackbar]      = useState({ visible: false, message: '', variant: 'normal' });
+    const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
 
-    const [modalCreateAlertVisible,   setModalCreateAlertVisible]   = useState(false);
+    const [modalCreateAlertVisible, setModalCreateAlertVisible] = useState(false);
     const [modalGenerateRouteVisible, setModalGenerateRouteVisible] = useState(false);
-
-    // Inicialización de login anónimo
-    useEffect(() => { initAnonymousLogin(); }, []);
-
-    /**
-     * Muestra un mensaje en el snackbar
-     */
-    const showSnackbar = (message, variant = 'normal') =>
-        setSnackbar({ visible: true, message, variant });
-
-    /**
-     * Oculta el snackbar
-     */
-    const hideSnackbar = () =>
-        setSnackbar(prev => ({ ...prev, visible: false }));
 
     /**
      * Realiza el login anónimo si no hay un token guardado
      */
-    const initAnonymousLogin = async () => {
+    const initAnonymousLogin = useCallback(async () => {
         try {
             setScreenLoading(true);
             const storedToken = await AsyncStorage.getItem('token');
@@ -121,56 +104,61 @@ export const MapScreen = () => {
         } finally {
             setScreenLoading(false);
         }
-    };
+    }, []);
 
-    // Carga todos los datos una vez que se tiene el token
-    useEffect(() => { if (token) fetchAllData(); }, [token]);
+    // Inicialización de login anónimo
+    useEffect(() => {
+        initAnonymousLogin();
+    }, [initAnonymousLogin]);
 
     /**
-     * Obtiene todos los datos necesarios (ICs y alertas)
+     * Muestra un mensaje en el snackbar
      */
-    const fetchAllData = async () => {
-        setScreenLoading(true);
-        await Promise.all([
-            fetchDistrictsICsLastDay(),
-            fetchDistrictsICsLastMonth(),
-            fetchAlerts(),
-        ]);
-        setScreenLoading(false);
-    };
+    const showSnackbar = (message, variant = 'normal') =>
+        setSnackbar({ visible: true, message, variant });
+
+    /**
+     * Oculta el snackbar
+     */
+    const hideSnackbar = () =>
+        setSnackbar(prev => ({ ...prev, visible: false }));
 
     /**
      * Obtiene los ICs del último día
      */
-    const fetchDistrictsICsLastDay = async () => {
+    const fetchDistrictsICsLastDay = useCallback(async () => {
         try {
             const response = await fetch(`${API_URL}/ic_district?time=day`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await response.json();
             if (response.ok) setDistrictICs(data.districtsICs);
-        } catch (error) { console.error('Error ICs:', error); }
-    };
+        } catch (error) {
+            console.error('Error ICs:', error);
+        }
+    }, [token]);
 
     /**
      * Obtiene los ICs del último mes (para rutas)
      */
-    const fetchDistrictsICsLastMonth = async () => {
+    const fetchDistrictsICsLastMonth = useCallback(async () => {
         try {
             const response = await fetch(`${API_URL}/ic_district?time=month`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await response.json();
             if (response.ok) setMonthlyDistrictICs(data.districtsICs);
-        } catch (error) { console.error('Error ICs mensuales:', error); }
-    };
+        } catch (error) {
+            console.error('Error ICs mensuales:', error);
+        }
+    }, [token]);
 
     /**
      * Obtiene las alertas del día de hoy
      */
-    const fetchAlerts = async () => {
+    const fetchAlerts = useCallback(async () => {
         try {
-            const today    = new Date().toISOString().split('T')[0];
+            const today = new Date().toISOString().split('T')[0];
             const response = await fetch(`${API_URL}/alerts?from=${today}&to=${today}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -179,14 +167,36 @@ export const MapScreen = () => {
                 const normalized = data.alerts.map(alert => ({
                     ...alert,
                     confirmations: alert.confirmations.length,
-                    discards:      alert.discards.length,
+                    discards: alert.discards.length,
                     confirmedByMe: false,
                     discardedByMe: false,
                 }));
                 setAlerts(normalized);
             }
-        } catch (error) { console.error(error); }
-    };
+        } catch (error) {
+            console.error(error);
+        }
+    }, [token]);
+
+    /**
+     * Obtiene todos los datos necesarios (ICs y alertas)
+     */
+    const fetchAllData = useCallback(async () => {
+        setScreenLoading(true);
+        await Promise.all([
+            fetchDistrictsICsLastDay(),
+            fetchDistrictsICsLastMonth(),
+            fetchAlerts()
+        ]);
+        setScreenLoading(false);
+    }, [fetchDistrictsICsLastDay, fetchDistrictsICsLastMonth, fetchAlerts]);
+
+    // Carga todos los datos una vez que se tiene el token
+    useEffect(() => {
+        if (token) {
+            fetchAllData();
+        }
+    }, [token, fetchAllData]);
 
     /**
      * Confirma una alerta
@@ -255,7 +265,7 @@ export const MapScreen = () => {
             const newAlert = {
                 ...data.alert,
                 confirmations: 0,
-                discards:      0,
+                discards: 0,
                 confirmedByMe: false,
                 discardedByMe: false,
             };
@@ -280,7 +290,7 @@ export const MapScreen = () => {
             if (!initialAddress || !finalAddress) throw new Error('Debes introducir origen y destino');
 
             const originCoords = await geocodeAddress(initialAddress);
-            const destCoords   = await geocodeAddress(finalAddress);
+            const destCoords = await geocodeAddress(finalAddress);
             if (!originCoords || !destCoords) throw new Error('No se pudieron encontrar coordenadas');
 
             setRoutePoints({ origin: originCoords, destination: destCoords });
@@ -382,7 +392,7 @@ export const MapScreen = () => {
                                 <Card title="Condado de Montgomery, Maryland, EE.UU.">
                                     <View style={styles.sameRow}>
                                         <Checkbox label="Criminalidad" defaultValue={ICSelected} onChange={setICSelected} />
-                                        <Checkbox label="Alertas"      defaultValue={alertsSelected} onChange={setAlertsSelected} />
+                                        <Checkbox label="Alertas" defaultValue={alertsSelected} onChange={setAlertsSelected} />
                                     </View>
                                     <View style={[styles.sameRow, styles.buttonsRow]}>
                                         <Button
@@ -459,11 +469,11 @@ export const MapScreen = () => {
                                     <View style={[styles.sameRow, { justifyContent: 'space-between', alignItems: 'center' }]}>
                                         <View style={styles.sameRow}>
                                             <Checkbox label="Criminalidad" defaultValue={ICSelected} onChange={setICSelected} />
-                                            <Checkbox label="Alertas"      defaultValue={alertsSelected} onChange={setAlertsSelected} />
+                                            <Checkbox label="Alertas" defaultValue={alertsSelected} onChange={setAlertsSelected} />
                                         </View>
                                         <View style={styles.sameRow}>
                                             <Button title="Crear alerta" icon="exclamation" variant="primary" onPress={() => setModalCreateAlertVisible(true)} />
-                                            <Button title="Generar ruta" icon="plus"        variant="primary" onPress={() => setModalGenerateRouteVisible(true)} />
+                                            <Button title="Generar ruta" icon="plus" variant="primary" onPress={() => setModalGenerateRouteVisible(true)} />
                                         </View>
                                     </View>
                                 </Card>
@@ -540,79 +550,79 @@ export const MapScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container:             { flex: 1 },
-    centerContainer:       { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background, gap: theme.spacing.md },
-    title:                 { ...theme.typography.pageTitle, color: theme.colors.text, marginTop: theme.spacing.lg, alignSelf: 'center' },
+    container: { flex: 1 },
+    centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background, gap: theme.spacing.md },
+    title: { ...theme.typography.pageTitle, color: theme.colors.text, marginTop: theme.spacing.lg, alignSelf: 'center' },
 
-    layoutContainer:       { flex: 1, flexDirection: 'row', margin: theme.spacing.lg, gap: theme.spacing.sm },
+    layoutContainer: { flex: 1, flexDirection: 'row', margin: theme.spacing.lg, gap: theme.spacing.sm },
     layoutContainerMobile: { flexDirection: 'column' },
 
-    leftPanel:             { flex: 3, borderRadius: theme.radii.lg },
-    rightPanel:            { flex: 1 },
-    fullWidth:             { flex: 1 },
+    leftPanel: { flex: 3, borderRadius: theme.radii.lg },
+    rightPanel: { flex: 1 },
+    fullWidth: { flex: 1 },
 
     leftPanelMobileContent: { gap: theme.spacing.sm, paddingBottom: theme.spacing.xl },
 
-    sameRow:               { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm },
-    buttonsRow:            { marginTop: theme.spacing.sm },
-    buttonFlex:            { flex: 1 },
+    sameRow: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm },
+    buttonsRow: { marginTop: theme.spacing.sm },
+    buttonFlex: { flex: 1 },
 
-    mapControls:           { },
-    mapContainer:          { flex: 1 },
+    mapControls: {},
+    mapContainer: { flex: 1 },
 
-    icBox:                 { width: 30, height: 20 },
-    cardText:              { ...theme.typography.cardDescription, color: theme.colors.cardTextSecondary },
+    icBox: { width: 30, height: 20 },
+    cardText: { ...theme.typography.cardDescription, color: theme.colors.cardTextSecondary },
 
-    alertsListContent:     { gap: 10, padding: 4 },
+    alertsListContent: { gap: 10, padding: 4 },
 
     viewAlertsButton: {
-        flexDirection:    'row',
-        alignItems:       'center',
-        justifyContent:   'center',
-        gap:              10,
-        paddingVertical:  14,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        paddingVertical: 14,
         paddingHorizontal: 20,
-        borderRadius:     theme.radii.md,
-        backgroundColor:  theme.colors.primary,
+        borderRadius: theme.radii.md,
+        backgroundColor: theme.colors.primary,
     },
     viewAlertsButtonText: {
-        flex:       1,
-        color:      theme.colors.buttonText ?? '#000',
-        fontSize:   15,
+        flex: 1,
+        color: theme.colors.buttonText ?? '#000',
+        fontSize: 15,
         fontWeight: '600',
     },
 
     mobileAlertsHeader: {
         paddingHorizontal: theme.spacing.lg,
-        paddingTop:        theme.spacing.lg,
-        paddingBottom:     theme.spacing.md,
-        gap:               theme.spacing.sm,
+        paddingTop: theme.spacing.lg,
+        paddingBottom: theme.spacing.md,
+        gap: theme.spacing.sm,
     },
     backButton: {
-        flexDirection:   'row',
-        alignItems:      'center',
-        gap:             theme.spacing.sm,
-        alignSelf:       'flex-start',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: theme.spacing.sm,
+        alignSelf: 'flex-start',
         paddingVertical: 6,
     },
     backButtonText: {
-        color:    theme.colors.text,
+        color: theme.colors.text,
         fontSize: 14,
     },
     mobileAlertsTitle: {
         ...theme.typography.pageTitle,
-        color:    theme.colors.text,
+        color: theme.colors.text,
         fontSize: 20,
     },
     emptyAlerts: {
-        flex:           1,
-        alignItems:     'center',
+        flex: 1,
+        alignItems: 'center',
         justifyContent: 'center',
-        gap:            theme.spacing.md,
-        paddingTop:     60,
+        gap: theme.spacing.md,
+        paddingTop: 60,
     },
     emptyAlertsText: {
-        color:    theme.colors.textSecondary,
+        color: theme.colors.textSecondary,
         fontSize: 15,
     },
 });

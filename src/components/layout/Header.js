@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, Image, Platform, Animated,
+  View, Text, StyleSheet, TouchableOpacity, Image, Platform, Animated, useWindowDimensions
 } from 'react-native';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
-import { useWindowDimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { theme } from '../../theme';
@@ -31,7 +30,7 @@ export const Header = () => {
       duration: 300,
       useNativeDriver: false,
     }).start();
-  }, [isScrolled]);
+  }, [isScrolled, bgColor]);
 
   const animatedBackground = bgColor.interpolate({
     inputRange: [0, 1],
@@ -76,7 +75,7 @@ export const Header = () => {
           title: 'GESTIÓN',
           items: [
             { label: 'Alertas', route: 'Gestión de Alertas', icon: 'bell' },
-            { label: 'Rutas', route: 'Rutas de Patrullaje', icon: 'road' },
+            // { label: 'Rutas', route: 'Rutas de Patrullaje', icon: 'road' },
           ]
         },
         {

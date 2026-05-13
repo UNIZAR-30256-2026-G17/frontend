@@ -2,11 +2,10 @@
  * @file DateInput.js
  * @description Componente de entrada de fecha con soporte multiplataforma (Android y Web).
  */
-
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { theme } from '../../theme';
 
 /**

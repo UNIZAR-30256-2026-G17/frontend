@@ -86,7 +86,7 @@ export default function MapDistricts({
         };
 
         fetchRoute();
-    }, [routePoints]);
+    }, [routePoints, districtICs]);
 
     /**
      * Normaliza nombres para búsqueda en configuración

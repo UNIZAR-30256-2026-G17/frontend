@@ -3,7 +3,6 @@
  * @description Pantalla para la visualización de rutas seguras para los ciudadanos.
  * Muestra la trayectoria más segura entre el origen y destino seleccionados.
  */
-
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRoute } from '@react-navigation/native';

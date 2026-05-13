@@ -4,7 +4,7 @@
  * Muestra gráficos detallados sobre criminalidad por distrito, hora, tipos de delitos y víctimas.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
 import { Container } from '../../components/layout/Container';
 import { useAuth } from '../../context/AuthContext';
@@ -19,6 +19,18 @@ import { CrimeTypesStats } from './CrimeTypesStats';
 /**
  * Componente EstadisticasScreen
  */
+const COLOR_MAP = {
+  'Crime Against Person': '#B22222',
+  'Crime Against Property': '#DAA520',
+  'Crime Against Society': '#4682B4',
+};
+
+const NAME_MAP = {
+  'Crime Against Person': 'Delitos contra personas',
+  'Crime Against Property': 'Delitos contra la propiedad',
+  'Crime Against Society': 'Delitos contra la sociedad',
+};
+
 export const EstadisticasScreen = () => {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
@@ -30,32 +42,10 @@ export const EstadisticasScreen = () => {
   const [pieData, setPieData] = useState([]);
   const [statsData, setStatsData] = useState([]);
 
-  // Mapas de colores y nombres para los tipos de delitos
-  const colorMap = {
-    'Crime Against Person':   '#B22222',
-    'Crime Against Property': '#DAA520',
-    'Crime Against Society':  '#4682B4',
-  };
-  
-  const nameMap = {
-    'Crime Against Person':   'Delitos contra personas',
-    'Crime Against Property': 'Delitos contra la propiedad',
-    'Crime Against Society':  'Delitos contra la sociedad',
-  };
-
-  // Cargar todos los datos estadísticos al montar el componente
-  useEffect(() => {
-    if (user?.token) {
-      fetchCrimesByDistrict();
-      fetchCrimesByHour();
-      fetchCrimeNames1();
-    }
-  }, [user]);
-
   /**
    * Obtiene estadísticas por nombre de categoría de delito (Crimename1)
    */
-  const fetchCrimeNames1 = async () => {
+  const fetchCrimeNames1 = useCallback(async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
       const from = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0];
@@ -67,34 +57,34 @@ export const EstadisticasScreen = () => {
 
       // Procesar datos para el gráfico de sectores (Víctimas)
       setPieData(json.results.map(item => ({
-        name: nameMap[item.crimename1] ?? item.crimename1,
+        name: NAME_MAP[item.crimename1] ?? item.crimename1,
         value: item.num_victims,
-        color: colorMap[item.crimename1] ?? '#888',
+        color: COLOR_MAP[item.crimename1] ?? '#888',
       })));
 
       // Procesar datos para la lista de estadísticas (Porcentajes)
       setStatsData(json.results.map(item => ({
-        label: nameMap[item.crimename1] ?? item.crimename1,
+        label: NAME_MAP[item.crimename1] ?? item.crimename1,
         value: `${Math.round(item.percentage)}%`,
-        color: colorMap[item.crimename1] ?? '#888',
+        color: COLOR_MAP[item.crimename1] ?? '#888',
       })));
 
     } catch (error) {
       console.error('Error fetching crime names:', error);
     }
-  };
+  }, [user?.token]);
 
   /**
    * Obtiene el número de delitos de ayer desglosado por distrito
    */
-  const fetchCrimesByDistrict = async () => {
+  const fetchCrimesByDistrict = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/crimes/yesterday/byDistrict`, {
         headers: { 'Authorization': `Bearer ${user?.token}` }
       });
       const json = await response.json();
 
-      const colors = ['#8B0000','#B22222','#CD5C5C','#D2691E','#DAA520','#BDB76B','#8FBC8F'];
+      const colors = ['#8B0000', '#B22222', '#CD5C5C', '#D2691E', '#DAA520', '#BDB76B', '#8FBC8F'];
       setBarData(json.results.map((item, i) => ({
         name: item.district,
         value: item.num_crimes,
@@ -104,12 +94,12 @@ export const EstadisticasScreen = () => {
     } catch (error) {
       console.error('Error fetching crimes by district:', error);
     }
-  };
+  }, [user?.token]);
 
   /**
    * Obtiene el número de delitos de ayer desglosado por franja horaria
    */
-  const fetchCrimesByHour = async () => {
+  const fetchCrimesByHour = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/crimes/yesterday/byHour`, {
         headers: { 'Authorization': `Bearer ${user?.token}` }
@@ -122,7 +112,16 @@ export const EstadisticasScreen = () => {
     } catch (error) {
       console.error('Error fetching crimes by hour:', error);
     }
-  };
+  }, [user?.token]);
+
+  // Cargar todos los datos estadísticos al montar el componente
+  useEffect(() => {
+    if (user?.token) {
+      fetchCrimesByDistrict();
+      fetchCrimesByHour();
+      fetchCrimeNames1();
+    }
+  }, [user, fetchCrimesByDistrict, fetchCrimesByHour, fetchCrimeNames1]);
 
   return (
     <Container>
@@ -160,24 +159,24 @@ export const EstadisticasScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  scrollContent: { 
-    padding: theme.spacing.md, 
-    paddingBottom: theme.spacing.xxxl 
+  scrollContent: {
+    padding: theme.spacing.md,
+    paddingBottom: theme.spacing.xxxl
   },
-  headerContainer: { 
-    marginBottom: theme.spacing.xl, 
-    alignItems: 'center' 
+  headerContainer: {
+    marginBottom: theme.spacing.xl,
+    alignItems: 'center'
   },
-  mainTitle: { 
+  mainTitle: {
     ...theme.typography.pageTitle,
-    color: theme.colors.text, 
-    textAlign: 'center' 
+    color: theme.colors.text,
+    textAlign: 'center'
   },
-  updateText: { 
-    fontSize: 12, 
-    color: theme.colors.textSecondary, 
+  updateText: {
+    fontSize: 12,
+    color: theme.colors.textSecondary,
     marginTop: 4,
-    fontFamily: theme.typography.body.fontFamily 
+    fontFamily: theme.typography.body.fontFamily
   },
   mainLayout: { width: '100%' },
   section: { width: '100%' },

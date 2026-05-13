@@ -3,10 +3,7 @@
  * @description Pantalla del mapa táctico para el personal policial.
  * Permite visualizar el Índice de Criminalidad (IC) por beat y generar rutas de patrullaje optimizadas.
  */
-
-import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useWindowDimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
@@ -43,9 +40,6 @@ export const MapPoliceScreen = () => {
     const { user, loading: authLoading } = useAuth();
     const navigation = useNavigation();
 
-    const { width } = useWindowDimensions();
-    const isMobile = width < 768;
-
     const [ICSelected, setICSelected] = useState(true);
     const [beatICs, setBeatICs] = useState([]);
     const [loadingMap, setLoadingMap] = useState(false);
@@ -54,29 +48,10 @@ export const MapPoliceScreen = () => {
 
     const [modalGenerateRoutesVisible, setModalGenerateRoutesVisible] = useState(false);
 
-    // Cargar los ICs de los beats al iniciar la pantalla
-    useEffect(() => {
-        if (user && user.token) {
-            fetchBeatsICsLastDay();
-        }
-    }, [user]);
-
-    /**
-     * Muestra un mensaje en el snackbar
-     */
-    const showSnackbar = (message, variant = 'normal') =>
-      setSnackbar({ visible: true, message, variant });
-
-    /**
-     * Oculta el snackbar
-     */
-    const hideSnackbar = () =>
-      setSnackbar(prev => ({ ...prev, visible: false }));
-
     /**
      * Obtiene los ICs de los beats para las últimas 24 horas desde la API
      */
-    const fetchBeatsICsLastDay = async () => {
+    const fetchBeatsICsLastDay = useCallback(async () => {
         try {
             setLoadingMap(true);
             const response = await fetch(
@@ -102,7 +77,26 @@ export const MapPoliceScreen = () => {
         } finally {
             setLoadingMap(false);
         }
-    };
+    }, [user?.token]);
+
+    // Cargar los ICs de los beats al iniciar la pantalla
+    useEffect(() => {
+        if (user?.token) {
+            fetchBeatsICsLastDay();
+        }
+    }, [user, fetchBeatsICsLastDay]);
+
+    /**
+     * Muestra un mensaje en el snackbar
+     */
+    const showSnackbar = (message, variant = 'normal') =>
+        setSnackbar({ visible: true, message, variant });
+
+    /**
+     * Oculta el snackbar
+     */
+    const hideSnackbar = () =>
+        setSnackbar(prev => ({ ...prev, visible: false }));
 
     /**
      * Maneja la generación de rutas de patrullaje tácticas

@@ -45,8 +45,8 @@ export default function GenerateRoutesModal({ visible, onClose, onConfirm }) {
             // Se ejecuta la lógica de generación pesada (con llamadas a OSRM)
             await onConfirm({ numPatrullas: parseInt(numPatrullas) });
             setNumPatrullas('1');
-        } catch (e) {
-            // El error se gestiona mediante el Snackbar del padre
+        } catch {
+            // El error se maneja en el padre, pero aquí detenemos el loading
         } finally {
             setLoading(false);
         }
@@ -56,7 +56,7 @@ export default function GenerateRoutesModal({ visible, onClose, onConfirm }) {
      * Cierra el modal limpiando estados, impidiendo cierre durante carga
      */
     const handleClose = () => {
-        if (loading) return; 
+        if (loading) return;
         setError('');
         onClose();
     };

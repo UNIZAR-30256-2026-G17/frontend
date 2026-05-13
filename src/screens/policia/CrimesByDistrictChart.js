@@ -15,8 +15,8 @@ const systemFont = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helve
 // Configuración de físicas y transiciones
 const TRANSITION_MS = 380;
 const EASE = d3.easeCubicInOut;
-const PUSH_PX = 14; 
-const GROW_PX = 14; 
+const PUSH_PX = 14;
+const GROW_PX = 14;
 
 /**
  * Componente CrimesByDistrictChart
@@ -25,7 +25,7 @@ const GROW_PX = 14;
 export const CrimesByDistrictChart = ({ data }) => {
     const [hoveredId, setHoveredId] = useState(null);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-    
+
     // Estado para medir el ancho responsivo del contenedor
     const [dimensions, setDimensions] = useState({ width: 0, height: 320 });
     const svgRef = useRef(null);
@@ -111,101 +111,103 @@ export const CrimesByDistrictChart = ({ data }) => {
 
     return (
         <Card title="Número de delitos por distrito">
-            <View 
+            <View
                 style={styles.chartContainer}
                 onLayout={(e) => setDimensions({ width: e.nativeEvent.layout.width, height: 320 })}
             >
-                {dimensions.width > 0 && (
-                    <svg 
-                        ref={svgRef} 
-                        width="100%" 
-                        height="100%"
-                        onPointerMove={(e) => {
-                            const bounds = e.currentTarget.getBoundingClientRect();
-                            setMousePos({ x: e.clientX - bounds.left, y: e.clientY - bounds.top });
-                        }}
-                    >
-                        {chartData.map((d, i) => {
-                            const y = yScale(d.id);
-                            const w = xScale(d.value);
-                            const h = yScale.bandwidth();
-                            const midY = y + h / 2;
+                {
+                    dimensions.width > 0 && (
+                        <svg
+                            ref={svgRef}
+                            width="100%"
+                            height="100%"
+                            onPointerMove={(e) => {
+                                const bounds = e.currentTarget.getBoundingClientRect();
+                                setMousePos({ x: e.clientX - bounds.left, y: e.clientY - bounds.top });
+                            }}
+                        >
+                            {chartData.map((d, i) => {
+                                const y = yScale(d.id);
+                                const w = xScale(d.value);
+                                const h = yScale.bandwidth();
+                                const midY = y + h / 2;
 
-                            return (
-                                <g 
-                                    key={d.id} 
-                                    className="bar-group" 
-                                    transform={`translate(${margin.left}, ${margin.top})`}
-                                >
-                                    {/* Etiqueta del distrito */}
-                                    <text
-                                        className="bar-label"
-                                        x={-30}
-                                        y={midY}
-                                        textAnchor="end"
-                                        dominantBaseline="central"
-                                        style={{ fontFamily: systemFont, pointerEvents: 'none' }}
-                                        fontSize={12}
-                                        fill="#888"
+                                return (
+                                    <g
+                                        key={d.id}
+                                        className="bar-group"
+                                        transform={`translate(${margin.left}, ${margin.top})`}
                                     >
-                                        {d.id}
-                                    </text>
+                                        {/* Etiqueta del distrito */}
+                                        <text
+                                            className="bar-label"
+                                            x={-30}
+                                            y={midY}
+                                            textAnchor="end"
+                                            dominantBaseline="central"
+                                            style={{ fontFamily: systemFont, pointerEvents: 'none' }}
+                                            fontSize={12}
+                                            fill="#888"
+                                        >
+                                            {d.id}
+                                        </text>
 
-                                    {/* Rectángulo de la barra */}
-                                    <rect
-                                        className="bar-rect"
-                                        x={0}
-                                        y={y}
-                                        width={w}
-                                        height={h}
-                                        data-orig-y={y}
-                                        data-orig-h={h}
-                                        fill={d.color}
-                                        rx={theme.radii.xs}
-                                        style={{ cursor: 'pointer' }}
-                                    />
+                                        {/* Rectángulo de la barra */}
+                                        <rect
+                                            className="bar-rect"
+                                            x={0}
+                                            y={y}
+                                            width={w}
+                                            height={h}
+                                            data-orig-y={y}
+                                            data-orig-h={h}
+                                            fill={d.color}
+                                            rx={theme.radii.xs}
+                                            style={{ cursor: 'pointer' }}
+                                        />
 
-                                    {/* Valor cuantitativo */}
-                                    <text
-                                        className="bar-value"
-                                        x={w + 15}
-                                        y={midY}
-                                        textAnchor="start"
-                                        dominantBaseline="central"
-                                        style={{ fontFamily: systemFont, pointerEvents: 'none' }}
-                                        fontSize={14}
-                                        fontWeight={500}
-                                        fill="#888"
-                                    >
-                                        {d.value}
-                                    </text>
+                                        {/* Valor cuantitativo */}
+                                        <text
+                                            className="bar-value"
+                                            x={w + 15}
+                                            y={midY}
+                                            textAnchor="start"
+                                            dominantBaseline="central"
+                                            style={{ fontFamily: systemFont, pointerEvents: 'none' }}
+                                            fontSize={14}
+                                            fontWeight={500}
+                                            fill="#888"
+                                        >
+                                            {d.value}
+                                        </text>
 
-                                    {/* Área de captura de eventos invisible */}
-                                    <rect
-                                        x={-100} 
-                                        y={y - 10}
-                                        width={w + 150} 
-                                        height={h + 20}
-                                        fill="transparent"
-                                        onMouseEnter={() => setHoveredId(d.id)}
-                                        onMouseLeave={() => setHoveredId(null)}
-                                        style={{ cursor: 'pointer' }}
-                                    />
-                                </g>
-                            );
-                        })}
-                    </svg>
-                )}
-            </View>
-        </Card>
+                                        {/* Área de captura de eventos invisible */}
+                                        <rect
+                                            x={-100}
+                                            y={y - 10}
+                                            width={w + 150}
+                                            height={h + 20}
+                                            fill="transparent"
+                                            onMouseEnter={() => setHoveredId(d.id)}
+                                            onMouseLeave={() => setHoveredId(null)}
+                                            style={{ cursor: 'pointer' }}
+                                        />
+                                    </g>
+                                );
+                            })}
+                        </svg>
+                    )
+                }
+            </View >
+        </Card >
     );
 };
 
 const styles = StyleSheet.create({
-    chartContainer: { 
-        height: 320, 
-        width: '100%', 
-        marginTop: theme.spacing.xs, 
-        position: 'relative' 
+    chartContainer: {
+        height: 320,
+        width: '100%',
+        marginTop: theme.spacing.xs,
+        position: 'relative'
     },
 });

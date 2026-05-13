@@ -3,8 +3,7 @@
  * @description Pantalla de administración para la gestión global del catálogo de delitos.
  * Permite filtrar, ordenar, visualizar y habilitar/deshabilitar delitos en el sistema.
  */
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Text, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { theme } from '../../theme';
 
@@ -16,7 +15,7 @@ import LoadingOverlay from '../../components/ui/LoadingOverlay';
 import TableSkeleton from '../../components/ui/TableSkeleton';
 import AppSnackbar from '../../components/ui/AppSnackBar';
 import FadeInView from '../../components/animations/FadeInView';
-import SummaryCards from '../../components/ui/SummaryCards';
+import SummaryCardsComponent from '../../components/ui/SummaryCards';
 import { API_URL } from '../../config/env';
 
 import Button from '../../components/ui/Button';
@@ -51,13 +50,34 @@ export function AdminDelitosScreen() {
     dateFrom, setDateFrom,
     tipoOptions, distritoOptions, beatOptions,
     numFiltrosActivos,
-    resetFilters,
   } = UseDelitosFilter(delitos);
+
+  /**
+   * Obtiene la lista de delitos desde la API
+   */
+  const fetchDelitos = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/crimes?limit=50`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Error al obtener los delitos');
+      setDelitos(data.crimes || []);
+    } catch {
+      showSnackbar('No se pudieron cargar los delitos', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.token]);
 
   // Cargar delitos al montar el componente
   useEffect(() => {
     if (user?.token) fetchDelitos();
-  }, [user]);
+  }, [user, fetchDelitos]);
 
   /**
    * Muestra un mensaje en el snackbar
@@ -70,28 +90,6 @@ export function AdminDelitosScreen() {
    */
   const hideSnackbar = () =>
     setSnackbar(prev => ({ ...prev, visible: false }));
-
-  /**
-   * Obtiene la lista de delitos desde la API
-   */
-  const fetchDelitos = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${API_URL}/crimes?limit=50`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`,
-        },
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Error al obtener los delitos');
-      setDelitos(data.crimes || []);
-    } catch (error) {
-      showSnackbar('No se pudieron cargar los delitos', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   /**
    * Cambia el estado de un delito (Habilitar/Deshabilitar)
@@ -134,7 +132,7 @@ export function AdminDelitosScreen() {
 
             {/* ── Tarjetas de Resumen KPI ── */}
             {(!loading && delitos.length > 0) && (
-              <SummaryCards
+              <SummaryCardsComponent
                 data={[
                   { label: 'Total Delitos', value: delitos.length, icon: 'shield', color: theme.colors.primary },
                   { label: 'Disponibles', value: delitos.filter(d => d.status === 'available').length, icon: 'check-circle', color: '#2ECC71' },
@@ -144,49 +142,48 @@ export function AdminDelitosScreen() {
               />
             )}
 
-          {/* ── Barra superior de Acciones ── */}
-          {!loading && (
-            <View style={[styles.topBar, isMobile && styles.topBarMobile]}>
-              <View style={styles.filterButtonWrapper}>
-                <Button
-                  title="Filtrar"
-                  icon="filter"
-                  variant="primary"
-                  onPress={() => setShowFilters(true)}
-                />
-                {numFiltrosActivos > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
-                  </View>
-                )}
+            {/* ── Barra superior de Acciones ── */}
+            {!loading && (
+              <View style={[styles.topBar, isMobile && styles.topBarMobile]}>
+                <View style={styles.filterButtonWrapper}>
+                  <Button
+                    title="Filtrar"
+                    icon="filter"
+                    variant="primary"
+                    onPress={() => setShowFilters(true)}
+                  />
+                  {numFiltrosActivos > 0 && (
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{numFiltrosActivos}</Text>
+                    </View>
+                  )}
+                </View>
+                <View style={[styles.orderContainer, isMobile && styles.fullWidth]}>
+                  <Text style={styles.orderLabel}>Ordenar por</Text>
+                  <Dropdown
+                    options={ORDER_OPTIONS}
+                    selected={order}
+                    onSelect={setOrder}
+                    placeholder="Ordenar por..."
+                  />
+                </View>
               </View>
-              <View style={[styles.orderContainer, isMobile && styles.fullWidth]}>
-                <Text style={styles.orderLabel}>Ordenar por</Text>
-                <Dropdown
-                  options={ORDER_OPTIONS}
-                  selected={order}
-                  onSelect={setOrder}
-                  placeholder="Ordenar por..."
-                />
-              </View>
-            </View>
-          )}
+            )}
 
-          {/* ── Esqueleto / Tabla ── */}
-          {loading ? (
-            <TableSkeleton rows={10} cols={4} />
-          ) : (
-            <>
-              <Text style={styles.resultsText}>
-                {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
-              </Text>
-              <DelitosTable delitos={filteredData} onToggle={toggleDelito} />
-            </>
-          )}
-
-        </ScrollView>
-      </View>
-    </FadeInView>
+            {/* ── Esqueleto / Tabla ── */}
+            {loading ? (
+              <TableSkeleton rows={10} cols={4} />
+            ) : (
+              <>
+                <Text style={styles.resultsText}>
+                  {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
+                </Text>
+                <DelitosTable delitos={filteredData} onToggle={toggleDelito} />
+              </>
+            )}
+          </ScrollView>
+        </View>
+      </FadeInView>
 
       {/* ── Modal de Filtros Avanzados ── */}
       <FilterPopover visible={showFilters} onClose={() => setShowFilters(false)}>
@@ -257,52 +254,52 @@ export function AdminDelitosScreen() {
 
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: theme.colors.background },
-  container: { 
-    padding: theme.spacing.xl, 
-    paddingBottom: theme.spacing.xxxl, 
-    width: '100%', 
-    maxWidth: 1200, 
-    alignSelf: 'center' 
+  container: {
+    padding: theme.spacing.xl,
+    paddingBottom: theme.spacing.xxxl,
+    width: '100%',
+    maxWidth: 1200,
+    alignSelf: 'center'
   },
-  pageTitle: { 
-    ...theme.typography.pageTitle, 
-    color: theme.colors.text, 
-    textAlign: 'center', 
-    marginBottom: theme.spacing.xl, 
-    marginTop: theme.spacing.lg 
+  pageTitle: {
+    ...theme.typography.pageTitle,
+    color: theme.colors.text,
+    textAlign: 'center',
+    marginBottom: theme.spacing.xl,
+    marginTop: theme.spacing.lg
   },
-  topBar: { 
-    flexDirection: 'row', 
-    alignItems: 'flex-end', 
-    justifyContent: 'flex-end', 
-    gap: theme.spacing.xl, 
-    marginBottom: theme.spacing.lg, 
-    flexWrap: 'wrap' 
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    gap: theme.spacing.xl,
+    marginBottom: theme.spacing.lg,
+    flexWrap: 'wrap'
   },
   topBarMobile: { justifyContent: 'flex-start' },
   filterButtonWrapper: { position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 },
   orderContainer: { width: 320 },
   fullWidth: { width: '100%' },
-  orderLabel: { 
-    ...theme.typography.body, 
-    color: theme.colors.text, 
-    marginBottom: theme.spacing.xs 
+  orderLabel: {
+    ...theme.typography.body,
+    color: theme.colors.text,
+    marginBottom: theme.spacing.xs
   },
-  resultsText: { 
-    ...theme.typography.body, 
-    color: theme.colors.text, 
-    marginBottom: theme.spacing.sm 
+  resultsText: {
+    ...theme.typography.body,
+    color: theme.colors.text,
+    marginBottom: theme.spacing.sm
   },
-  filterGroupTitle: { 
-    ...theme.typography.cardTitle, 
-    color: theme.colors.cardText, 
-    marginBottom: theme.spacing.sm, 
-    marginTop: theme.spacing.lg 
+  filterGroupTitle: {
+    ...theme.typography.cardTitle,
+    color: theme.colors.cardText,
+    marginBottom: theme.spacing.sm,
+    marginTop: theme.spacing.lg
   },
-  toggleGroup: { 
-    flexDirection: 'row', 
-    flexWrap: 'wrap', 
-    gap: theme.spacing.sm 
+  toggleGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm
   },
   threeColRow: { flexDirection: 'row', gap: 12 },
   col: { flex: 1 },

@@ -12,14 +12,14 @@ import TablePagination from '../../components/ui/TablePagination';
 import FadeInView from '../../components/animations/FadeInView';
 
 const COLS = [
-  { header: 'Id',             key: 'id' },
+  { header: 'Id', key: 'id' },
   { header: 'Tipo de delito', key: 'tipo' },
-  { header: 'Subtipo',        key: 'subtipo' },
-  { header: 'Fecha',          key: 'fecha' },
-  { header: 'Hora',           key: 'hora' },
-  { header: 'Distrito',       key: 'distrito' },
-  { header: 'Beat',           key: 'beat' },
-  { header: 'Sector',         key: 'sector' },
+  { header: 'Subtipo', key: 'subtipo' },
+  { header: 'Fecha', key: 'fecha' },
+  { header: 'Hora', key: 'hora' },
+  { header: 'Distrito', key: 'distrito' },
+  { header: 'Beat', key: 'beat' },
+  { header: 'Sector', key: 'sector' },
 ];
 
 const EXPANDED_KEYS = ['fecha', 'hora', 'distrito', 'beat', 'sector'];
@@ -29,7 +29,7 @@ const ITEMS_PER_PAGE = 10;
  * Componente CreateCrimesTable
  * @param {Array} data - Lista de delitos a mostrar
  */
-export function CreateCrimesTable({ data }) {
+export default function CreateCrimesTable({ data }) {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const [expandedRow, setExpandedRow] = useState(null);
@@ -130,71 +130,71 @@ export function CreateCrimesTable({ data }) {
   );
 }
 
-const styles = StyleSheet.create({ 
-    table: { 
-      borderRadius: theme.radii.lg, 
-      overflow: 'hidden', 
-      borderColor: theme.colors.tableBorder, 
-      borderWidth: 1,
-      backgroundColor: theme.colors.cardBackground
-    },
-    headerRow: { 
-      flexDirection: 'row', 
-      backgroundColor: theme.colors.tableHeaderBackground, 
-      paddingVertical: theme.spacing.md, 
-      alignItems: 'center' 
-    },
-    headerCell: { 
-      flex: 1, 
-      ...theme.typography.bodyBold, 
-      color: theme.colors.tableHeaderText, 
-      textAlign: 'center',
-      fontSize: 13
-    },
-    row: { 
-      flexDirection: 'row', 
-      borderBottomWidth: 1, 
-      borderBottomColor: 'rgba(255,255,255,0.05)', 
-      paddingVertical: theme.spacing.md, 
-      alignItems: 'center' 
-    },
-    rowEven: { backgroundColor: theme.colors.tableRowEven },
-    rowOdd:  { backgroundColor: theme.colors.tableRowOdd },
-    cell: { 
-      flex: 1, 
-      textAlign: 'center', 
-      ...theme.typography.body, 
-      color: theme.colors.tableText,
-      fontSize: 12
-    },
-    monoCell: {
-      ...theme.typography.mono,
-      fontSize: 11,
-    },
-    
-    mId: { 
-      flex: 1.2, 
-      fontSize: 11 
-    },
-    mTipo: { flex: 2, fontSize: 11 },
-    mSubtipo: { flex: 1.5, fontSize: 11 },
-    mBtn: { width: 32, alignItems: 'center' },
-    
-    expandedRow: { 
-      paddingHorizontal: theme.spacing.xl, 
-      paddingVertical: theme.spacing.md, 
-      borderTopWidth: 1, 
-      borderTopColor: theme.colors.tableBorder, 
-      gap: 4 
-    },
-    expText: { 
-      ...theme.typography.body, 
-      color: theme.colors.tableText,
-      fontSize: 12
-    },
-    expLabel: { 
-      ...theme.typography.bodyBold,
-      color: theme.colors.tableText,
-      fontSize: 12
-    },
+const styles = StyleSheet.create({
+  table: {
+    borderRadius: theme.radii.lg,
+    overflow: 'hidden',
+    borderColor: theme.colors.tableBorder,
+    borderWidth: 1,
+    backgroundColor: theme.colors.cardBackground
+  },
+  headerRow: {
+    flexDirection: 'row',
+    backgroundColor: theme.colors.tableHeaderBackground,
+    paddingVertical: theme.spacing.md,
+    alignItems: 'center'
+  },
+  headerCell: {
+    flex: 1,
+    ...theme.typography.bodyBold,
+    color: theme.colors.tableHeaderText,
+    textAlign: 'center',
+    fontSize: 13
+  },
+  row: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
+    paddingVertical: theme.spacing.md,
+    alignItems: 'center'
+  },
+  rowEven: { backgroundColor: theme.colors.tableRowEven },
+  rowOdd: { backgroundColor: theme.colors.tableRowOdd },
+  cell: {
+    flex: 1,
+    textAlign: 'center',
+    ...theme.typography.body,
+    color: theme.colors.tableText,
+    fontSize: 12
+  },
+  monoCell: {
+    ...theme.typography.mono,
+    fontSize: 11,
+  },
+
+  mId: {
+    flex: 1.2,
+    fontSize: 11
+  },
+  mTipo: { flex: 2, fontSize: 11 },
+  mSubtipo: { flex: 1.5, fontSize: 11 },
+  mBtn: { width: 32, alignItems: 'center' },
+
+  expandedRow: {
+    paddingHorizontal: theme.spacing.xl,
+    paddingVertical: theme.spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.tableBorder,
+    gap: 4
+  },
+  expText: {
+    ...theme.typography.body,
+    color: theme.colors.tableText,
+    fontSize: 12
+  },
+  expLabel: {
+    ...theme.typography.bodyBold,
+    color: theme.colors.tableText,
+    fontSize: 12
+  },
 });

@@ -6,8 +6,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
-import Card from '../../components/ui/Card'; 
-import { theme } from '../../theme';
+import Card from '../../components/ui/Card';
 
 /**
  * Componente CrimeTypesStats
@@ -21,10 +20,10 @@ export const CrimeTypesStats = ({ data }) => {
     <Card title="Porcentaje de clasificación de los tipos de delito">
       <View style={styles.statsGrid}>
         {data.map((stat, index) => (
-          <View 
-            key={index} 
+          <View
+            key={index}
             style={[
-              styles.statBox, 
+              styles.statBox,
               // Ajuste de ancho responsivo: 100% en móvil, ~30% en escritorio
               { flexBasis: isMobile ? '100%' : '30%' }
             ]}
@@ -41,30 +40,30 @@ export const CrimeTypesStats = ({ data }) => {
 };
 
 const styles = StyleSheet.create({
-  statsGrid: { 
-    flexDirection: 'row', 
-    flexWrap: 'wrap', 
-    gap: theme.spacing.sm, 
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
     marginTop: theme.spacing.sm,
     justifyContent: 'space-between'
   },
   statBox: {
     flexGrow: 1,
-    backgroundColor: theme.colors.cardBackground, 
-    borderWidth: 1, 
+    backgroundColor: theme.colors.cardBackground,
+    borderWidth: 1,
     borderColor: theme.colors.cardBorder,
     borderRadius: theme.radii.lg,
-    padding: theme.spacing.lg, 
+    padding: theme.spacing.lg,
     minHeight: 100,
     justifyContent: 'center',
   },
-  statLabel: { 
-    color: theme.colors.cardText, 
-    fontSize: 14, 
+  statLabel: {
+    color: theme.colors.cardText,
+    fontSize: 14,
     marginBottom: theme.spacing.xs,
     fontFamily: theme.typography.body.fontFamily,
   },
-  statValue: { 
+  statValue: {
     fontSize: 32,
     fontWeight: 'bold',
     fontFamily: theme.typography.title.fontFamily,

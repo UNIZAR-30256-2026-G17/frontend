@@ -28,7 +28,7 @@ const ITEMS_PER_PAGE = 10;
 /**
  * Componente AlertasTable
  */
-export function AlertasTable({ alertas = [], onToggle }) {
+export default function AlertasTable({ alertas = [], onToggle }) {
   const { width } = useWindowDimensions();
   const isMobile = width < 900;
   const [expandedRow, setExpandedRow] = useState(null);

@@ -13,12 +13,12 @@ import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import ToggleButton from '../../components/ui/ToggleButton';
 import DateInput from '../../components/ui/DateInput';
-import { CreateCrimesTable } from './CreateCrimesTable';
-import { UseCrimesFilter } from './UseCrimesFilter';
+import CreateCrimesTable from './CreateCrimesTable';
+import useCrimesFilter from './useCrimesFilter';
 import EmptyState from '../../components/ui/EmptyState';
 import TableSkeleton from '../../components/ui/TableSkeleton';
 import FadeInView from '../../components/animations/FadeInView';
-import SummaryCards from '../../components/ui/SummaryCards';
+import SummaryCardsComponent from '../../components/ui/SummaryCards';
 import FilterPopover from '../../components/ui/FilterPopover';
 import { useScroll } from '../../context/ScrollContext';
 
@@ -138,7 +138,7 @@ export function CrimesScreen() {
     dateFrom,
     setDateFrom,
     resetFilters,
-  } = UseCrimesFilter();
+  } = useCrimesFilter();
 
   // Simulación de carga inicial
   useEffect(() => {
@@ -154,6 +154,7 @@ export function CrimesScreen() {
     dateFrom,
   ].filter(Boolean).length;
 
+
   return (
     <Container>
       <FadeInView style={{ flex: 1 }}>
@@ -167,7 +168,7 @@ export function CrimesScreen() {
 
           {/* ── Summary Cards ── */}
           {(!loading && filteredData.length > 0) && (
-            <SummaryCards
+            <SummaryCardsComponent
               data={[
                 { label: 'Total Delitos', value: filteredData.length, icon: 'shield', color: theme.colors.primary },
                 { label: 'Distritos', value: new Set(filteredData.map(d => d.distrito)).size, icon: 'map-marker', color: theme.colors.warning },

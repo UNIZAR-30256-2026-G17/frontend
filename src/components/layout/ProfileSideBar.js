@@ -57,7 +57,7 @@ export const ProfileSidebar = ({ visible, onClose, user, onLogout }) => {
       }).start();
       pulseAnim.setValue(0);
     }
-  }, [visible]);
+  }, [visible, slideAnim, pulseAnim]);
 
   const ringScale = pulseAnim.interpolate({
     inputRange: [0, 1],
@@ -126,14 +126,14 @@ export const ProfileSidebar = ({ visible, onClose, user, onLogout }) => {
         {/* Avatar + nombre + rol */}
         <View style={styles.avatarSection}>
           <View style={styles.avatarOuter}>
-            <Animated.View 
+            <Animated.View
               style={[
                 styles.pulseRing,
                 {
                   transform: [{ scale: ringScale }],
                   opacity: ringOpacity,
                 }
-              ]} 
+              ]}
             />
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>{getUserInitial()}</Text>

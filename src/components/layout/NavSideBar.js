@@ -16,7 +16,7 @@ export const NavSidebar = ({ visible, onClose, sections = [], currentRoute, onNa
       duration: 300,
       useNativeDriver: true,
     }).start();
-  }, [visible]);
+  }, [visible, slideAnim]);
 
   const toggleSection = (title) => {
     setCollapsed(prev => ({
@@ -34,7 +34,7 @@ export const NavSidebar = ({ visible, onClose, sections = [], currentRoute, onNa
     >
       <View style={styles.overlay}>
         <Pressable style={styles.backdrop} onPress={onClose} />
-        
+
         <Animated.View style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}>
           {/* Header */}
           <View style={styles.sidebarHeader}>
@@ -52,16 +52,16 @@ export const NavSidebar = ({ visible, onClose, sections = [], currentRoute, onNa
           <View style={styles.navScroll}>
             {sections.map((section, sIdx) => (
               <View key={section.title} style={styles.section}>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.sectionHeader}
                   onPress={() => toggleSection(section.title)}
                   activeOpacity={0.7}
                 >
                   <Text style={styles.sectionTitle}>{section.title}</Text>
-                  <FontAwesome 
-                    name={collapsed[section.title] ? "chevron-down" : "chevron-up"} 
-                    size={10} 
-                    color="rgba(255,255,255,0.3)" 
+                  <FontAwesome
+                    name={collapsed[section.title] ? "chevron-down" : "chevron-up"}
+                    size={10}
+                    color="rgba(255,255,255,0.3)"
                   />
                 </TouchableOpacity>
 

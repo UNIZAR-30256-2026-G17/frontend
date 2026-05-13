@@ -3,7 +3,6 @@
  * @description Componente de mapa basado en Leaflet para la visualización de Sectores (Beats) y rutas de patrullaje.
  * Utilizado por el personal policial para identificar zonas de alto riesgo y trayectorias asignadas.
  */
-
 import React from 'react';
 import { View } from 'react-native';
 import { theme } from '../../theme';

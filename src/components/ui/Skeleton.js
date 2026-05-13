@@ -5,7 +5,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Platform } from 'react-native';
+import { Animated } from 'react-native';
 
 /**
  * Componente Skeleton
@@ -14,11 +14,11 @@ import { Animated, StyleSheet, Platform } from 'react-native';
  * @param {Number} borderRadius - Radio de los bordes
  * @param {Object} style - Estilos adicionales
  */
-export const Skeleton = ({ 
-  width, 
-  height, 
-  borderRadius = 4, 
-  style 
+const Skeleton = ({
+  width,
+  height,
+  borderRadius = 4,
+  style
 }) => {
   const opacity = useRef(new Animated.Value(0.3)).current;
 
@@ -38,7 +38,7 @@ export const Skeleton = ({
         }),
       ])
     ).start();
-  }, []);
+  }, [opacity]);
 
   return (
     <Animated.View

@@ -4,7 +4,7 @@
  * Muestra las trayectorias sobre el mapa y un resumen de las patrullas asignadas.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 
