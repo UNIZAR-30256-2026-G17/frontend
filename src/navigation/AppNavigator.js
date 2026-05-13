@@ -78,7 +78,7 @@ export default function AppNavigator() {
           <Stack.Screen name="Estadísticas" component={StatsScreen} />
           <Stack.Screen name="Rutas" component={RoutesScreen} />
 
-          <Stack.Screen name="Iniciar Sesión" component={LoginScreen} /> 
+          <Stack.Screen name="Iniciar Sesión" component={LoginScreen} />
           <Stack.Screen name="Registro" component={RegisterScreen} />
         </>
       ) : user.role === 'admin' ? (

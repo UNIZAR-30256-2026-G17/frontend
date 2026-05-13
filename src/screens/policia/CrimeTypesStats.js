@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
+import { theme } from '../../theme';
 import Card from '../../components/ui/Card';
 
 /**

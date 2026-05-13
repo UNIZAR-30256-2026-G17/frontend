@@ -69,7 +69,7 @@ export const Header = () => {
       ? [
         {
           title: 'MAPA',
-          items: [{ label: 'Explorar', route: 'Mapa Policial', icon: 'map-marker' }]
+          items: [{ label: 'Mapa', route: 'Mapa Policial', icon: 'map-marker' }]
         },
         {
           title: 'GESTIÓN',
@@ -88,7 +88,7 @@ export const Header = () => {
       ]
       : [
         {
-          title: 'EXPLORAR',
+          title: 'MAPA',
           items: [
             { label: 'Mapa', route: 'Mapa', icon: 'map-marker' },
             { label: 'Estadísticas', route: 'Estadísticas', icon: 'bar-chart' },

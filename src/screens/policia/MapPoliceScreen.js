@@ -3,6 +3,7 @@
  * @description Pantalla del mapa táctico para el personal policial.
  * Permite visualizar el Índice de Criminalidad (IC) por beat y generar rutas de patrullaje optimizadas.
  */
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../../theme';
