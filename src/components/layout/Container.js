@@ -1,3 +1,7 @@
+/**
+ * @file Container.js
+ * @description Componente de diseño principal que envuelve las pantallas, proporcionando un área segura (SafeArea) y la estructura base con cabecera.
+ */
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

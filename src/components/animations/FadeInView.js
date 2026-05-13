@@ -1,10 +1,10 @@
+/**
+ * @file FadeInView.js
+ * @description Componente reutilizable para manejar animaciones de entrada (desvanecimiento y deslizamiento) de elementos de la interfaz.
+ */
 import React, { useRef, useEffect } from 'react';
 import { Animated } from 'react-native';
 
-/**
- * A reusable component to handle entry animations (Fade + Slide)
- * Perfect for staggered list entries or card appearances.
- */
 const FadeInView = ({
   children,
   delay = 0,

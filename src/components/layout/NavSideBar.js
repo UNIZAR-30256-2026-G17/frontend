@@ -1,3 +1,7 @@
+/**
+ * @file NavSideBar.js
+ * @description Barra lateral de navegación que muestra las diferentes secciones y rutas disponibles según el rol del usuario.
+ */
 import React, { useRef, useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, Modal,

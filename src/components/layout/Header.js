@@ -1,3 +1,7 @@
+/**
+ * @file Header.js
+ * @description Componente de cabecera de la aplicación. Gestiona la navegación, el logotipo, los menús laterales y el estado de autenticación.
+ */
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, Image, Platform, Animated, useWindowDimensions
