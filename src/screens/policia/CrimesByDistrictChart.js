@@ -21,8 +21,9 @@ const GROW_PX = 14;
 /**
  * Componente CrimesByDistrictChart
  * @param {Array} data - Lista de objetos { name: string, value: number, color: string }
+ * @param {React.ReactNode} right - Elemento opcional para mostrar en la parte derecha de la cabecera del Card
  */
-export const CrimesByDistrictChart = ({ data }) => {
+export const CrimesByDistrictChart = ({ data, right }) => {
     const [hoveredId, setHoveredId] = useState(null);
     const [setMousePos] = useState({ x: 0, y: 0 });
 
@@ -110,7 +111,7 @@ export const CrimesByDistrictChart = ({ data }) => {
     }, [hoveredId, chartData, dimensions, margin.left, margin.top]);
 
     return (
-        <Card title="Número de delitos por distrito">
+        <Card title="Número de delitos por distrito" right={right}>
             <View
                 style={styles.chartContainer}
                 onLayout={(e) => setDimensions({ width: e.nativeEvent.layout.width, height: 320 })}

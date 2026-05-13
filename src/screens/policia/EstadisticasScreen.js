@@ -15,6 +15,15 @@ import { CrimesByDistrictChart } from './CrimesByDistrictChart';
 import { CrimesTodayChart } from './CrimesTodayChart';
 import { VictimsTodayChart } from './VictimsTodayChart';
 import { CrimeTypesStats } from './CrimeTypesStats';
+import Dropdown from '../../components/ui/Dropdown';
+
+// Opciones de filtrado temporal
+const options = [
+  { label: 'Último día', value: 1 },
+  { label: 'Último mes', value: 30 },
+  { label: 'Último año', value: 365 },
+  { label: 'Últimos 3 años', value: 1095 },
+];
 
 /**
  * Componente EstadisticasScreen
@@ -41,6 +50,7 @@ export const EstadisticasScreen = () => {
   const [lastUpdate, setLastUpdate] = useState('');
   const [pieData, setPieData] = useState([]);
   const [statsData, setStatsData] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(options[1]); // Por defecto: último mes
 
   /**
    * Obtiene estadísticas por nombre de categoría de delito (Crimename1)
@@ -75,13 +85,16 @@ export const EstadisticasScreen = () => {
   }, [user?.token]);
 
   /**
-   * Obtiene el número de delitos de ayer desglosado por distrito
+   * Obtiene el número de delitos en un rango de fechas desglosado por distrito
    */
   const fetchCrimesByDistrict = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/crimes/yesterday/byDistrict`, {
-        headers: { 'Authorization': `Bearer ${user?.token}` }
-      });
+      const today = new Date().toISOString().split('T')[0];
+      const from = new Date(Date.now() - selectedOption.value * 86400000).toISOString().split('T')[0];
+      const response = await fetch(
+        `${API_URL}/crimes/byDistrict?from=${from}&to=${today}`,
+        { headers: { 'Authorization': `Bearer ${user?.token}` } }
+      );
       const json = await response.json();
 
       const colors = ['#8B0000', '#B22222', '#CD5C5C', '#D2691E', '#DAA520', '#BDB76B', '#8FBC8F'];
@@ -90,11 +103,11 @@ export const EstadisticasScreen = () => {
         value: item.num_crimes,
         color: colors[i % colors.length],
       })));
-      setLastUpdate(json.date);
+      setLastUpdate(json.to);
     } catch (error) {
       console.error('Error fetching crimes by district:', error);
     }
-  }, [user?.token]);
+  }, [user?.token, selectedOption]);
 
   /**
    * Obtiene el número de delitos de ayer desglosado por franja horaria
@@ -136,7 +149,16 @@ export const EstadisticasScreen = () => {
 
           {/* Columna Izquierda / Superior */}
           <View style={[styles.section, !isMobile && { flex: 1.2 }]}>
-            <CrimesByDistrictChart data={barData} />
+            <CrimesByDistrictChart
+              data={barData}
+              right={
+                <Dropdown
+                  options={options}
+                  selected={selectedOption}
+                  onSelect={(opt) => setSelectedOption(opt)}
+                />
+              }
+            />
             <View style={{ height: theme.spacing.md }} />
             <VictimsTodayChart data={pieData} />
           </View>
