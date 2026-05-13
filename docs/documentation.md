@@ -21,7 +21,7 @@ La aplicación está desplegada en un entorno cloud, permitiendo el acceso direc
 
 ## 3. Arquitectura
 
-![Arquitectura del sistema](./architecture.png)
+![Arquitectura del sistema](./arquitectura.png)
 ![Modelo de datos](./modelo-datos.png)
 
 ## 4. Fuentes de datos
