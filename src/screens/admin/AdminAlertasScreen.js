@@ -5,12 +5,12 @@ import { useScroll } from '../../context/ScrollContext';
 import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
-import { AlertasTable } from './tables/AlertasTable';
+import AlertasTable from './tables/AlertasTable';
 import EmptyState from '../../components/ui/EmptyState';
 import LoadingOverlay from '../../components/ui/LoadingOverlay';
-import { TableSkeleton } from '../../components/ui/TableSkeleton';
+import TableSkeleton from '../../components/ui/TableSkeleton';
 import AppSnackbar from '../../components/ui/AppSnackBar';
-import { FadeInView } from '../../components/animations/FadeInView';
+import FadeInView from '../../components/animations/FadeInView';
 import { API_URL } from '../../config/env';
 import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
@@ -18,7 +18,7 @@ import ToggleButton from '../../components/ui/ToggleButton';
 import DateInput from '../../components/ui/DateInput';
 import FilterPopover from '../../components/ui/FilterPopover';
 import { UseAlertasFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseAlertasFilter';
-import { SummaryCards } from '../../components/ui/SummaryCards';
+import SummaryCardsComponent from '../../components/ui/SummaryCards';
 
 export function AdminAlertasScreen() {
   const { handleScroll } = useScroll();
@@ -121,7 +121,7 @@ export function AdminAlertasScreen() {
 
             {/* ── Summary Cards ── */}
             {hasData && (
-              <SummaryCards
+              <SummaryCardsComponent
                 data={[
                   { label: 'Total Alertas', value: alertas.length, icon: 'list-alt', color: theme.colors.primary },
                   { label: 'Pendientes', value: alertas.filter(a => a.status !== 'deleted').length, icon: 'clock-o', color: '#F5C842' },

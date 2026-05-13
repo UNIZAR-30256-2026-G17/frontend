@@ -5,13 +5,13 @@ import { Animated } from 'react-native';
  * A reusable component to handle entry animations (Fade + Slide)
  * Perfect for staggered list entries or card appearances.
  */
-export default function FadeInView({
+const FadeInView = ({
   children,
   delay = 0,
   duration = 600,
   translateY = 20,
   style
-}) {
+}) => {
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(translateY)).current;
 
@@ -47,3 +47,5 @@ export default function FadeInView({
     </Animated.View>
   );
 }
+
+export default FadeInView;

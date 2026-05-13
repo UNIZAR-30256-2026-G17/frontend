@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Skeleton } from './Skeleton';
+import SkeletonLoader from './Skeleton';
 
-export default function TableSkeleton({ rows = 5, cols = 4 }) {
+const TableSkeleton = ({ rows = 5, cols = 4 }) => {
   return (
     <View style={styles.container}>
       {/* Header Skeleton */}
       <View style={styles.header}>
         {[...Array(cols)].map((_, i) => (
-          <Skeleton key={`h-${i}`} width="20%" height={20} style={{ flex: 1, marginHorizontal: 8 }} />
+          <SkeletonLoader key={`h-${i}`} width="20%" height={20} style={{ flex: 1, marginHorizontal: 8 }} />
         ))}
       </View>
 
@@ -16,9 +16,9 @@ export default function TableSkeleton({ rows = 5, cols = 4 }) {
       {[...Array(rows)].map((_, i) => (
         <View key={`r-${i}`} style={styles.row}>
           {[...Array(cols)].map((_, j) => (
-            <Skeleton key={`c-${j}`} width="15%" height={16} style={{ flex: 1, marginHorizontal: 8 }} />
+            <SkeletonLoader key={`c-${j}`} width="15%" height={16} style={{ flex: 1, marginHorizontal: 8 }} />
           ))}
-          <Skeleton width={80} height={32} borderRadius={20} style={{ marginLeft: 16 }} />
+          <SkeletonLoader width={80} height={32} borderRadius={20} style={{ marginLeft: 16 }} />
         </View>
       ))}
     </View>
@@ -49,3 +49,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
 });
+
+export default TableSkeleton;

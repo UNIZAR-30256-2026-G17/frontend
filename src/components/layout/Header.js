@@ -75,7 +75,7 @@ export const Header = () => {
           title: 'GESTIÓN',
           items: [
             { label: 'Alertas', route: 'Gestión de Alertas', icon: 'bell' },
-            { label: 'Rutas', route: 'Rutas de Patrullaje', icon: 'road' },
+            // { label: 'Rutas', route: 'Rutas de Patrullaje', icon: 'road' },
           ]
         },
         {

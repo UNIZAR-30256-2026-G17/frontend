@@ -7,10 +7,10 @@ import { useAuth } from '../../context/AuthContext';
 import { useScroll } from '../../context/ScrollContext';
 import { DelitosTable } from './tables/DelitosTable';
 import LoadingOverlay from '../../components/ui/LoadingOverlay';
-import { TableSkeleton } from '../../components/ui/TableSkeleton';
+import TableSkeleton from '../../components/ui/TableSkeleton';
 import AppSnackbar from '../../components/ui/AppSnackBar';
-import { FadeInView } from '../../components/animations/FadeInView';
-import { SummaryCards } from '../../components/ui/SummaryCards';
+import FadeInView from '../../components/animations/FadeInView';
+import SummaryCardsComponent from '../../components/ui/SummaryCards';
 import { API_URL } from '../../config/env';
 
 import Button from '../../components/ui/Button';
@@ -106,7 +106,7 @@ export function AdminDelitosScreen() {
 
             {/* ── Summary Cards ── */}
             {(!loading && delitos.length > 0) && (
-              <SummaryCards
+              <SummaryCardsComponent
                 data={[
                   { label: 'Total Delitos', value: delitos.length, icon: 'shield', color: theme.colors.primary },
                   { label: 'Disponibles', value: delitos.filter(d => d.status === 'available').length, icon: 'check-circle', color: '#2ECC71' },

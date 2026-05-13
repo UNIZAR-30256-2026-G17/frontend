@@ -4,7 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../../theme';
 import Button from '../../../components/ui/Button';
 import TablePagination from '../../../components/ui/TablePagination';
-import { FadeInView } from '../../../components/animations/FadeInView';
+import FadeInView from '../../../components/animations/FadeInView';
 
 const COLS_DESKTOP = [
   { key: '_id', header: '#', flex: 0.6 },
@@ -18,7 +18,7 @@ const COLS_DESKTOP = [
 
 const ITEMS_PER_PAGE = 10;
 
-export function AlertasTable({ alertas = [], onToggle }) {
+export default function AlertasTable({ alertas = [], onToggle }) {
   const { width } = useWindowDimensions();
   const isMobile = width < 900;
   const [expandedRow, setExpandedRow] = useState(null);

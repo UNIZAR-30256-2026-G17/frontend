@@ -7,16 +7,16 @@ import { useScroll } from '../../context/ScrollContext';
 import { Container } from '../../components/layout/Container';
 import { UsersTable } from './tables/UsersTable';
 import EmptyState from '../../components/ui/EmptyState';
-import { TableSkeleton } from '../../components/ui/TableSkeleton';
+import TableSkeleton from '../../components/ui/TableSkeleton';
 import AppSnackbar from '../../components/ui/AppSnackBar';
-import { FadeInView } from '../../components/animations/FadeInView';
+import FadeInView from '../../components/animations/FadeInView';
 import { API_URL } from '../../config/env';
 import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import ToggleButton from '../../components/ui/ToggleButton';
 import FilterPopover from '../../components/ui/FilterPopover';
 import { UseUsuariosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseUsuariosFilter';
-import { SummaryCards } from '../../components/ui/SummaryCards';
+import SummaryCardsComponent from '../../components/ui/SummaryCards';
 
 export function AdminUsuariosScreen() {
   const { user } = useAuth();
@@ -96,7 +96,7 @@ export function AdminUsuariosScreen() {
 
             {/* ── Summary Cards ── */}
             {hasData && (
-              <SummaryCards
+              <SummaryCardsComponent
                 data={[
                   { label: 'Total Usuarios', value: users.length, icon: 'users', color: theme.colors.primary },
                   { label: 'Activos', value: users.filter(u => u.status === 'active').length, icon: 'check-circle', color: '#2ECC71' },

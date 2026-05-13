@@ -4,7 +4,7 @@ import { Animated } from 'react-native';
 /**
  * A pulse-animated skeleton loader for modern loading states.
  */
-export const Skeleton = ({
+const Skeleton = ({
   width,
   height,
   borderRadius = 4,

@@ -29,7 +29,7 @@ const AnimatedValue = ({ value, suffix = '', color }) => {
     );
 };
 
-export default function SummaryCard({ icon, label, value, suffix, color, delay = 0 }) {
+const SummaryCard = ({ icon, label, value, suffix, color, delay = 0 }) => {
     return (
         <Card style={styles.card}>
             <View style={styles.cardContent}>
@@ -123,3 +123,5 @@ const styles = StyleSheet.create({
         marginTop: 2,
     },
 });
+
+export default SummaryCards;
