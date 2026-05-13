@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'r
 import { FontAwesome } from '@expo/vector-icons';
 import { theme } from '../../theme';
 import TablePagination from '../../components/ui/TablePagination';
-import { FadeInView } from '../../components/animations/FadeInView';
+import FadeInView from '../../components/animations/FadeInView';
 
 const COLS = [
   { header: 'Id', key: 'id' },
@@ -19,7 +19,7 @@ const COLS = [
 const EXPANDED_KEYS = ['fecha', 'hora', 'distrito', 'beat', 'sector'];
 const ITEMS_PER_PAGE = 10;
 
-export function CreateCrimesTable({ data }) {
+export default function CreateCrimesTable({ data }) {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const [expandedRow, setExpandedRow] = useState(null);

@@ -9,7 +9,7 @@ const parseDate = (str) => {
   return new Date(`${y}-${m}-${d}`);
 };
 
-export function UseCrimesFilter() {
+export default function useCrimesFilter() {
   const [order, setOrder] = useState(ORDER_OPTIONS[0]);
   const [tipoFilter, setTipoFilter] = useState(TIPO_OPTIONS[0]);
   const [distritoFilter, setDistritoFilter] = useState(DISTRITO_OPTIONS[0]);
@@ -56,4 +56,4 @@ export function UseCrimesFilter() {
     dateTo, setDateTo,
     resetFilters,
   };
-}
+};

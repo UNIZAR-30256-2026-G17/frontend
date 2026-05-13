@@ -7,12 +7,12 @@ import Button from '../../components/ui/Button';
 import Dropdown from '../../components/ui/Dropdown';
 import ToggleButton from '../../components/ui/ToggleButton';
 import DateInput from '../../components/ui/DateInput';
-import { CreateCrimesTable } from './CreateCrimesTable';
-import { UseCrimesFilter } from './UseCrimesFilter';
+import CreateCrimesTable from './CreateCrimesTable';
+import useCrimesFilter from './useCrimesFilter';
 import EmptyState from '../../components/ui/EmptyState';
-import { TableSkeleton } from '../../components/ui/TableSkeleton';
-import { FadeInView } from '../../components/animations/FadeInView';
-import { SummaryCards } from '../../components/ui/SummaryCards';
+import TableSkeleton from '../../components/ui/TableSkeleton';
+import FadeInView from '../../components/animations/FadeInView';
+import SummaryCards from '../../components/ui/SummaryCards';
 import FilterPopover from '../../components/ui/FilterPopover';
 import { useScroll } from '../../context/ScrollContext';
 
@@ -125,7 +125,7 @@ export function CrimesScreen() {
     dateFrom,
     setDateFrom,
     resetFilters,
-  } = UseCrimesFilter();
+  } = useCrimesFilter();
 
   useEffect(() => {
     // Simulamos carga inicial
@@ -139,6 +139,18 @@ export function CrimesScreen() {
     beatFilter?.value,
     dateFrom,
   ].filter(Boolean).length;
+
+  // DEBUG LOGS
+  console.log("--- CHEQUEO DE COMPONENTES ---");
+  console.log("Container:", !!Container);
+  console.log("Button:", !!Button);
+  console.log("Dropdown:", !!Dropdown);
+  console.log("CreateCrimesTable:", !!CreateCrimesTable);
+  console.log("useCrimesFilter:", !!useCrimesFilter);
+  console.log("SummaryCards:", !!SummaryCards);
+  console.log("FilterPopover:", !!FilterPopover);
+  console.log("FadeInView:", !!FadeInView);
+  console.log("------------------------------");
 
   return (
     <Container>
