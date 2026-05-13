@@ -8,6 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest",
+    "test:e2e": "playwright test",
     "lint": "expo lint",
     "build": "expo export --platform web"
   },
@@ -62,6 +63,7 @@
     ]
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@testing-library/react-native": "^13.3.3",
     "eslint": "^9.39.4",
     "eslint-config-expo": "^55.0.0",

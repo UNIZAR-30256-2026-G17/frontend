@@ -2,18 +2,18 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { useFonts } from 'expo-font';
-import { 
-  Inter_400Regular, 
-  Inter_500Medium, 
-  Inter_600SemiBold, 
-  Inter_700Bold 
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold
 } from '@expo-google-fonts/inter';
-import { 
-  PlusJakartaSans_700Bold, 
-  PlusJakartaSans_800ExtraBold 
+import {
+  PlusJakartaSans_700Bold,
+  PlusJakartaSans_800ExtraBold
 } from '@expo-google-fonts/plus-jakarta-sans';
-import { 
-  JetBrainsMono_400Regular 
+import {
+  JetBrainsMono_400Regular
 } from '@expo-google-fonts/jetbrains-mono';
 
 import AppNavigator from './src/navigation/AppNavigator';
