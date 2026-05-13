@@ -113,12 +113,12 @@ El backend de la aplicación ha sido validado mediante un conjunto de pruebas au
 
 Los resultados obtenidos muestran una ejecución completa y satisfactoria de las pruebas, con:
 
-- **121 tests ejecutados y superados**
+- **123 tests ejecutados y superados**
 - **11 test suites aprobadas**
-- **Cobertura de sentencias:** 88.68%
-- **Cobertura de ramas:** 86.48%
+- **Cobertura de sentencias:** 87.83%
+- **Cobertura de ramas:** 85.27%
 - **Cobertura de funciones:** 92.59%
-- **Cobertura de líneas:** 88.61%
+- **Cobertura de líneas:** 87.76%
 
 Las pruebas automáticas del backend se ejecutan mediante el siguiente comando:
 ```
@@ -133,12 +133,12 @@ Se ha alcanzado una **cobertura de código superior al 75%** en el backend, supe
 
 Los resultados obtenidos muestran una ejecución completa y satisfactoria de las pruebas, con:
 
-- **121 tests ejecutados y superados**
+- **123 tests ejecutados y superados**
 - **11 test suites aprobadas**
-- **Cobertura de sentencias:** 88.68%
-- **Cobertura de ramas:** 86.48%
+- **Cobertura de sentencias:** 87.83%
+- **Cobertura de ramas:** 85.27%
 - **Cobertura de funciones:** 92.59%
-- **Cobertura de líneas:** 88.61%
+- **Cobertura de líneas:** 87.76%
 
 Comando para ejecución de las pruebas y medición de la cobertura:
 ```
