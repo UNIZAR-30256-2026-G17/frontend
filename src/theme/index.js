@@ -1,4 +1,7 @@
-// src/theme/index.js
+/**
+ * @file index.js
+ * @description Punto de entrada del tema. Exporta la configuración completa del tema y la integración con React Native Paper.
+ */
 
 import { colors } from './colors';
 import { typography } from './typography';

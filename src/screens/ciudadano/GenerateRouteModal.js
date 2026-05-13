@@ -1,3 +1,8 @@
+/**
+ * @file GenerateRouteModal.js
+ * @description Modal para solicitar la generación de una ruta segura.
+ * Permite introducir el origen y el destino de la ruta.
+ */
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { theme } from '../../theme';

@@ -1,4 +1,7 @@
-// src/theme/colors.js
+/**
+ * @file colors.js
+ * @description Definición de la paleta de colores de la aplicación, incluyendo colores de fondo, primarios, botones, tarjetas y estados.
+ */
 
 export const colors = {
   // Background

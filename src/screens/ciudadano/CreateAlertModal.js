@@ -1,3 +1,8 @@
+/**
+ * @file CreateAlertModal.js
+ * @description Modal para que los ciudadanos informen sobre un posible delito.
+ * Permite introducir una descripción y la ubicación de la alerta.
+ */
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { theme } from '../../theme';

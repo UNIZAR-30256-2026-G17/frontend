@@ -1,4 +1,7 @@
-// src/theme/shadows.js
+/**
+ * @file shadows.js
+ * @description Configuración de sombras para diferentes plataformas (iOS, Android, Web) y efectos de brillo (glow).
+ */
 import { Platform } from 'react-native';
 
 const shadow = (elevation) =>

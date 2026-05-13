@@ -1,4 +1,7 @@
-// src/theme/typography.js
+/**
+ * @file typography.js
+ * @description Definición de los estilos tipográficos, incluyendo familias de fuentes y tamaños para diferentes elementos de la UI.
+ */
 
 export const typography = {
     title: {
