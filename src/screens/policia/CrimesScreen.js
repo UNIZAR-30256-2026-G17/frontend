@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
 import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
@@ -108,6 +108,8 @@ export const BEAT_OPTIONS = [
 ];
 
 export function CrimesScreen() {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
   const { handleScroll } = useScroll();
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -164,8 +166,8 @@ export function CrimesScreen() {
           )}
 
           {/* ── Barra superior ── */}
-          <View style={styles.topBar}>
-            <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
+          <View style={[styles.topBar, isMobile && styles.topBarMobile]}>
+            <View style={styles.filterButtonWrapper}>
               <Button
                 title="Filtrar"
                 icon="filter"
@@ -178,7 +180,7 @@ export function CrimesScreen() {
                 </View>
               )}
             </View>
-            <View style={styles.orderContainer}>
+            <View style={[styles.orderContainer, isMobile && styles.fullWidth]}>
               <Text style={styles.orderLabel}>Ordenar por</Text>
               <Dropdown
                 options={ORDER_OPTIONS}
@@ -284,9 +286,22 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     gap: 25,
     marginBottom: 20,
+    flexWrap: 'wrap',
+  },
+  topBarMobile: {
+    justifyContent: 'flex-start',
+  },
+  filterButtonWrapper: {
+    position: 'relative',
+    overflow: 'visible',
+    marginTop: 6,
+    marginRight: 6,
   },
   orderContainer: {
     width: 320,
+  },
+  fullWidth: {
+    width: '100%',
   },
   orderLabel: {
     ...theme.typography.body,

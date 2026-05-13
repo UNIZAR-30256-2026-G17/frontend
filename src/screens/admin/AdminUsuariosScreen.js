@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, ScrollView, StyleSheet, RefreshControl, View, TextInput, TouchableOpacity } from 'react-native';
+import { Text, ScrollView, StyleSheet, RefreshControl, View, TextInput, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
@@ -20,6 +20,8 @@ import { UseUsuariosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseU
 import SummaryCards from '../../components/ui/SummaryCards';
 
 export function AdminUsuariosScreen() {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
   const { user } = useAuth();
   const { handleScroll } = useScroll();
   const [users, setUsers] = useState([]);
@@ -109,8 +111,8 @@ export function AdminUsuariosScreen() {
 
             {/* ── Barra superior ── */}
             {hasData && (
-              <View style={styles.topBar}>
-                <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
+              <View style={[styles.topBar, isMobile && styles.topBarMobile]}>
+                <View style={styles.filterButtonWrapper}>
                   <Button
                     title="Filtrar"
                     icon="filter"
@@ -123,7 +125,7 @@ export function AdminUsuariosScreen() {
                     </View>
                   )}
                 </View>
-                <View style={styles.orderContainer}>
+                <View style={[styles.orderContainer, isMobile && styles.fullWidth]}>
                   <Text style={styles.orderLabel}>Ordenar por</Text>
                   <Dropdown
                     options={ORDER_OPTIONS}
@@ -232,8 +234,11 @@ const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: theme.colors.background },
   container: { padding: 24, paddingBottom: 40, width: '100%', maxWidth: 1000, alignSelf: 'center' },
   pageTitle: { ...theme.typography.pageTitle, color: theme.colors.text, textAlign: 'center', marginBottom: 24, marginTop: 20 },
-  topBar: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20 },
+  topBar: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20, flexWrap: 'wrap' },
+  topBarMobile: { justifyContent: 'flex-start' },
+  filterButtonWrapper: { position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 },
   orderContainer: { width: 320 },
+  fullWidth: { width: '100%' },
   orderLabel: { ...theme.typography.body, color: theme.colors.text, marginBottom: 4 },
   searchRow: { marginBottom: 16 },
   searchBox: {

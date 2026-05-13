@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, ScrollView, StyleSheet, View } from 'react-native';
+import { Text, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { theme } from '../../theme';
 
 import { Container } from '../../components/layout/Container';
@@ -21,6 +21,8 @@ import FilterPopover from '../../components/ui/FilterPopover';
 import { UseDelitosFilter, ORDER_OPTIONS, STATUS_OPTIONS } from './filters/UseDelitosFilter';
 
 export function AdminDelitosScreen() {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
   const { user } = useAuth();
   const { handleScroll } = useScroll();
   const [delitos, setDelitos] = useState([]);
@@ -119,8 +121,8 @@ export function AdminDelitosScreen() {
 
           {/* ── Barra superior ── */}
           {!loading && (
-            <View style={styles.topBar}>
-              <View style={{ position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 }}>
+            <View style={[styles.topBar, isMobile && styles.topBarMobile]}>
+              <View style={styles.filterButtonWrapper}>
                 <Button
                   title="Filtrar"
                   icon="filter"
@@ -133,7 +135,7 @@ export function AdminDelitosScreen() {
                   </View>
                 )}
               </View>
-              <View style={styles.orderContainer}>
+              <View style={[styles.orderContainer, isMobile && styles.fullWidth]}>
                 <Text style={styles.orderLabel}>Ordenar por</Text>
                 <Dropdown
                   options={ORDER_OPTIONS}
@@ -231,8 +233,11 @@ const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: theme.colors.background },
   container: { padding: 24, paddingBottom: 40, width: '100%', maxWidth: 1200, alignSelf: 'center' },
   pageTitle: { ...theme.typography.pageTitle, color: theme.colors.text, textAlign: 'center', marginBottom: 24, marginTop: 20 },
-  topBar: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20 },
+  topBar: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', gap: 25, marginBottom: 20, flexWrap: 'wrap' },
+  topBarMobile: { justifyContent: 'flex-start' },
+  filterButtonWrapper: { position: 'relative', overflow: 'visible', marginTop: 6, marginRight: 6 },
   orderContainer: { width: 320 },
+  fullWidth: { width: '100%' },
   orderLabel: { ...theme.typography.body, color: theme.colors.text, marginBottom: 4 },
   resultsText: { ...theme.typography.body, color: theme.colors.text, marginBottom: 8 },
   filterGroupTitle: { ...theme.typography.cardTitle, color: theme.colors.cardText, marginBottom: 8, marginTop: 18 },
