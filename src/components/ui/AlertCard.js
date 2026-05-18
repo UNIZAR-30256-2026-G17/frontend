@@ -105,11 +105,11 @@ export default function AlertCard({ alert, userRole, onDelete, onAttend, onConfi
         {alert.beat && <DetailItem label="Beat" value={alert.beat} />}
         <DetailItem
           label="Confirmada por"
-          value={`${alert.confirmations ?? 0} usuario${alert.confirmations !== 1 ? 's' : ''}`}
+          value={`${alert.confirmations.length ?? 0} usuario${alert.confirmations.length !== 1 ? 's' : ''}`}
         />
         <DetailItem
           label="Descartada por"
-          value={`${alert.discards ?? 0} usuario${alert.discards !== 1 ? 's' : ''}`}
+          value={`${alert.discards.length ?? 0} usuario${alert.discards.length !== 1 ? 's' : ''}`}
         />
       </View>
 
