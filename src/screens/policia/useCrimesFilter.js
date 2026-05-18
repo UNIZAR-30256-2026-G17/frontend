@@ -1,66 +1,72 @@
 /**
- * @file UseCrimesFilter.js
+ * @file useCrimesFilter.js
  * @description Hook personalizado para la gestión de filtros en la pantalla de visualización de delitos policiales.
- * Permite filtrar por tipo, distrito, beat y rango de fechas.
  */
 
 import { useState, useMemo } from 'react';
-import {
-  SAMPLE_DATA, ORDER_OPTIONS, TIPO_OPTIONS,
-  DISTRITO_OPTIONS, BEAT_OPTIONS,
-} from './crimes.constants';
 
-/**
- * Parsea una cadena de fecha con formato DD-MM-YYYY a un objeto Date
- */
 const parseDate = (str) => {
-  const [d, m, y] = str.split('-');
-  return new Date(`${y}-${m}-${d}`);
+  if (!str) return null;
+  return new Date(str);
 };
 
-/**
- * Hook UseCrimesFilter
- */
-export default function useCrimesFilter() {
-  const [order, setOrder] = useState(ORDER_OPTIONS[0]);
-  const [tipoFilter, setTipoFilter] = useState(TIPO_OPTIONS[0]);
-  const [distritoFilter, setDistritoFilter] = useState(DISTRITO_OPTIONS[0]);
-  const [beatFilter, setBeatFilter] = useState(BEAT_OPTIONS[0]);
+export default function useCrimesFilter(delitos = []) {
+  const [order, setOrder] = useState({ label: 'Fecha: de más reciente a más antigua', value: 'date_desc' });
+  const [tipoFilter, setTipoFilter] = useState(null);
+  const [distritoFilter, setDistritoFilter] = useState(null);
+  const [beatFilter, setBeatFilter] = useState(null);
   const [dateFrom, setDateFrom] = useState(null);
-  const [dateTo, setDateTo] = useState(null);
 
-  // Lógica de procesamiento de datos en memoria (mock data)
+  const tipoOptions = useMemo(() => {
+    const unique = [...new Set(delitos.map(d => d.crimename1).filter(Boolean))].sort();
+    return [{ label: 'Todos', value: '' }, ...unique.map(v => ({ label: v, value: v }))];
+  }, [delitos]);
+
+  const distritoOptions = useMemo(() => {
+    const unique = [...new Set(delitos.map(d => d.district).filter(Boolean))].sort();
+    return [{ label: 'Todos', value: '' }, ...unique.map(v => ({ label: v, value: v }))];
+  }, [delitos]);
+
+  const beatOptions = useMemo(() => {
+    const unique = [...new Set(delitos.map(d => d.beat).filter(Boolean))].sort();
+    return [{ label: 'Todos', value: '' }, ...unique.map(v => ({ label: v, value: v }))];
+  }, [delitos]);
+
   const filteredData = useMemo(() => {
-    return SAMPLE_DATA
+    return delitos
       .filter((row) => {
-        if (tipoFilter?.value && row.tipo !== tipoFilter.value) return false;
-        if (distritoFilter?.value && row.distrito !== distritoFilter.value) return false;
+        if (row.status === 'deleted') return false;
+        
+        if (tipoFilter?.value && row.crimename1 !== tipoFilter.value) return false;
+        if (distritoFilter?.value && row.district !== distritoFilter.value) return false;
         if (beatFilter?.value && row.beat !== beatFilter.value) return false;
-        const rd = parseDate(row.fecha);
-        if (dateFrom && rd < dateFrom) return false;
-        if (dateTo && rd > dateTo) return false;
+        const rd = parseDate(row.start_date);
+        if (dateFrom && rd && rd < dateFrom) return false;
         return true;
       })
       .sort((a, b) => {
         switch (order?.value) {
-          case 'date_asc': return parseDate(a.fecha) - parseDate(b.fecha);
-          case 'district_asc': return a.distrito.localeCompare(b.distrito);
-          case 'type_asc': return a.tipo.localeCompare(b.tipo);
-          default: return parseDate(b.fecha) - parseDate(a.fecha);
+          case 'date_asc': return new Date(a.start_date) - new Date(b.start_date);
+          case 'district_asc': return (a.district || '').localeCompare(b.district || '');
+          case 'type_asc': return (a.crimename1 || '').localeCompare(b.crimename1 || '');
+          default: return new Date(b.start_date) - new Date(a.start_date);
         }
       });
-  }, [order, tipoFilter, distritoFilter, beatFilter, dateFrom, dateTo]);
+  }, [order, tipoFilter, distritoFilter, beatFilter, dateFrom, delitos]);
 
-  /**
-   * Limpia todos los selectores de filtro
-   */
   const resetFilters = () => {
-    setTipoFilter(TIPO_OPTIONS[0]);
-    setDistritoFilter(DISTRITO_OPTIONS[0]);
-    setBeatFilter(BEAT_OPTIONS[0]);
+    setTipoFilter(null);
+    setDistritoFilter(null);
+    setBeatFilter(null);
     setDateFrom(null);
-    setDateTo(null);
   };
+
+  const numFiltrosActivos = [
+    tipoFilter?.value,
+    distritoFilter?.value,
+    beatFilter?.value,
+    dateFrom,
+  ].filter(Boolean).length;
 
   return {
     filteredData,
@@ -69,7 +75,10 @@ export default function useCrimesFilter() {
     distritoFilter, setDistritoFilter,
     beatFilter, setBeatFilter,
     dateFrom, setDateFrom,
-    dateTo, setDateTo,
+    tipoOptions,
+    distritoOptions,
+    beatOptions,
     resetFilters,
+    numFiltrosActivos,
   };
-};
+}

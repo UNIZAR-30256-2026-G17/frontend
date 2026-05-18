@@ -12,24 +12,21 @@ import TablePagination from '../../components/ui/TablePagination';
 import FadeInView from '../../components/animations/FadeInView';
 
 const COLS = [
-  { header: 'Id', key: 'id' },
-  { header: 'Tipo de delito', key: 'tipo' },
-  { header: 'Subtipo', key: 'subtipo' },
-  { header: 'Fecha', key: 'fecha' },
-  { header: 'Hora', key: 'hora' },
-  { header: 'Distrito', key: 'distrito' },
+  { header: 'Id', key: '_id' },
+  { header: 'Tipo de delito', key: 'crimename1' },
+  { header: 'Subtipo', key: 'crimename2' },
+  { header: 'Fecha', key: 'start_date' },
+  { header: 'Distrito', key: 'district' },
   { header: 'Beat', key: 'beat' },
-  { header: 'Sector', key: 'sector' },
 ];
 
-const EXPANDED_KEYS = ['fecha', 'hora', 'distrito', 'beat', 'sector'];
 const ITEMS_PER_PAGE = 10;
 
 /**
  * Componente CreateCrimesTable
  * @param {Array} data - Lista de delitos a mostrar
  */
-export default function CreateCrimesTable({ data }) {
+export default function CreateCrimesTable({ data = [], onLoadMore }) {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const [expandedRow, setExpandedRow] = useState(null);
@@ -40,6 +37,12 @@ export default function CreateCrimesTable({ data }) {
   const numberOfPages = Math.ceil(data.length / ITEMS_PER_PAGE);
 
   const rowStyle = (i) => [styles.row, i % 2 === 0 ? styles.rowEven : styles.rowOdd];
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
 
   /**
    * Renderiza el contenido de la tabla según el tamaño de la pantalla
@@ -55,13 +58,14 @@ export default function CreateCrimesTable({ data }) {
             ))}
           </View>
           {paginatedData.map((row, i) => (
-            <FadeInView key={row.id} delay={i * 50} translateY={10}>
+            <FadeInView key={row._id} delay={i * 50} translateY={10}>
               <View style={rowStyle(i)}>
-                {COLS.map((col) => (
-                  <Text key={col.key} style={[styles.cell, col.key === 'id' && styles.monoCell]}>
-                    {row[col.key]}
-                  </Text>
-                ))}
+                <Text style={[styles.cell, styles.monoCell]}>{row._id}</Text>
+                <Text style={styles.cell}>{row.crimename1}</Text>
+                <Text style={styles.cell}>{row.crimename2}</Text>
+                <Text style={styles.cell}>{formatDate(row.start_date)}</Text>
+                <Text style={styles.cell}>{row.district}</Text>
+                <Text style={styles.cell}>{row.beat}</Text>
               </View>
             </FadeInView>
           ))}
@@ -79,17 +83,17 @@ export default function CreateCrimesTable({ data }) {
           <View style={styles.mBtn} />
         </View>
         {paginatedData.map((row, i) => {
-          const expanded = expandedRow === row.id;
+          const expanded = expandedRow === row._id;
           return (
-            <FadeInView key={row.id} delay={i * 40} translateY={8}>
+            <FadeInView key={row._id} delay={i * 40} translateY={8}>
               <View>
                 <View style={rowStyle(i)}>
-                  <Text style={[styles.cell, styles.monoCell, styles.mId]}>{row.id}</Text>
-                  <Text style={[styles.cell, styles.mTipo]}>{row.tipo}</Text>
-                  <Text style={[styles.cell, styles.mSubtipo]}>{row.subtipo}</Text>
+                  <Text style={[styles.cell, styles.monoCell, styles.mId]} numberOfLines={1}>{row._id}</Text>
+                  <Text style={[styles.cell, styles.mTipo]} numberOfLines={1}>{row.crimename1}</Text>
+                  <Text style={[styles.cell, styles.mSubtipo]} numberOfLines={1}>{row.crimename2}</Text>
                   <TouchableOpacity
                     style={styles.mBtn}
-                    onPress={() => setExpandedRow(expanded ? null : row.id)}
+                    onPress={() => setExpandedRow(expanded ? null : row._id)}
                   >
                     <FontAwesome
                       name={expanded ? 'minus-circle' : 'plus-circle'}
@@ -100,12 +104,9 @@ export default function CreateCrimesTable({ data }) {
                 </View>
                 {expanded && (
                   <View style={[styles.expandedRow, i % 2 === 0 ? styles.rowEven : styles.rowOdd]}>
-                    {EXPANDED_KEYS.map((key) => (
-                      <Text key={key} style={styles.expText}>
-                        <Text style={styles.expLabel}>{key.charAt(0).toUpperCase() + key.slice(1)}: </Text>
-                        {row[key]}
-                      </Text>
-                    ))}
+                    <Text style={styles.expText}><Text style={styles.expLabel}>Fecha: </Text>{formatDate(row.start_date)}</Text>
+                    <Text style={styles.expText}><Text style={styles.expLabel}>Distrito: </Text>{row.district}</Text>
+                    <Text style={styles.expText}><Text style={styles.expLabel}>Beat: </Text>{row.beat}</Text>
                   </View>
                 )}
               </View>
@@ -122,7 +123,12 @@ export default function CreateCrimesTable({ data }) {
       <TablePagination
         page={page}
         numberOfPages={numberOfPages}
-        onPageChange={setPage}
+        onPageChange={(newPage) => {
+          setPage(newPage);
+          if (onLoadMore && newPage >= numberOfPages - 2) {
+            onLoadMore();
+          }
+        }}
         totalItems={data.length}
         itemsPerPage={ITEMS_PER_PAGE}
       />
