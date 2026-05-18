@@ -39,17 +39,6 @@ const ICs = [
 ];
 
 /**
- * Construye el resumen de alertas para las SummaryCards
- * @param {Array} alerts - Lista de alertas actuales
- */
-const buildAlertSummary = (alerts) => [
-    { icon: 'warning', label: 'Total alertas', value: alerts.length, color: theme.colors.warning },
-    { icon: 'clock-o', label: 'Sin responder', value: alerts.filter(a => !a.confirmedByMe && !a.discardedByMe).length, color: '#ffffff' },
-    { icon: 'check-circle', label: 'Confirmadas', value: alerts.filter(a => a.confirmedByMe).length, color: theme.colors.success },
-    { icon: 'times-circle', label: 'Descartadas', value: alerts.filter(a => a.discardedByMe).length, color: theme.colors.danger },
-];
-
-/**
  * Componente MapScreen
  */
 export const MapScreen = () => {
@@ -164,13 +153,15 @@ export const MapScreen = () => {
             });
             const data = await response.json();
             if (response.ok) {
-                const normalized = data.alerts.map(alert => ({
-                    ...alert,
-                    confirmations: alert.confirmations.length,
-                    discards: alert.discards.length,
-                    confirmedByMe: false,
-                    discardedByMe: false,
-                }));
+                const normalized = data.alerts
+                    .filter(alert => alert.status !== 'deleted')
+                    .map(alert => ({
+                        ...alert,
+                        confirmations: alert.confirmations.length,
+                        discards: alert.discards.length,
+                        confirmedByMe: false,
+                        discardedByMe: false,
+                    }));
                 setAlerts(normalized);
             }
         } catch (error) {
@@ -413,11 +404,6 @@ export const MapScreen = () => {
                                     </View>
                                 </Card>
                             </View>
-
-                            {/* Tarjetillas resumen debajo del mapa */}
-                            {alertsSelected && alerts.length > 0 && (
-                                <SummaryCards data={buildAlertSummary(alerts)} />
-                            )}
 
                             {/* Mapa — altura fija, no puede crecer */}
                             <View style={{ height: mapHeight }}>
