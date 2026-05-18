@@ -27,7 +27,7 @@ const ITEMS_PER_PAGE = 10;
 /**
  * Componente DelitosTable
  */
-export function DelitosTable({ delitos = [], onToggle }) {
+export function DelitosTable({ delitos = [], onToggle, onLoadMore }) {
   const { width } = useWindowDimensions();
   const isMobile = width < 900;
   const [expandedRow, setExpandedRow] = useState(null);
@@ -157,7 +157,12 @@ export function DelitosTable({ delitos = [], onToggle }) {
       <TablePagination
         page={page}
         numberOfPages={numberOfPages}
-        onPageChange={setPage}
+        onPageChange={(newPage) => {
+          setPage(newPage);
+          if (onLoadMore && newPage >= numberOfPages - 2) {
+            onLoadMore();
+          }
+        }}
         totalItems={delitos.length}
         itemsPerPage={ITEMS_PER_PAGE}
       />

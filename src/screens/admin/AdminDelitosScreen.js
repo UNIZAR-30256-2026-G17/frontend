@@ -3,7 +3,7 @@
  * @description Pantalla de administración para la gestión global del catálogo de delitos.
  * Permite filtrar, ordenar, visualizar y habilitar/deshabilitar delitos en el sistema.
  */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Text, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { theme } from '../../theme';
 
@@ -38,6 +38,10 @@ export function AdminDelitosScreen() {
   const [actionLoading, setActionLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'normal' });
   const [showFilters, setShowFilters] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const isFetchingRef = useRef(false);
 
   // Hook personalizado para la lógica de filtrado de delitos
   const {
@@ -55,10 +59,19 @@ export function AdminDelitosScreen() {
   /**
    * Obtiene la lista de delitos desde la API
    */
-  const fetchDelitos = useCallback(async () => {
+  const fetchDelitos = useCallback(async (isLoadMore = false) => {
+    if (isFetchingRef.current) return;
+
     try {
-      setLoading(true);
-      const response = await fetch(`${API_URL}/crimes?limit=50`, {
+      isFetchingRef.current = true;
+      if (isLoadMore) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
+
+      const currentOffset = isLoadMore ? offset + 50 : 0;
+      const response = await fetch(`${API_URL}/crimes?limit=50&offset=${currentOffset}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${user.token}`,
@@ -66,18 +79,43 @@ export function AdminDelitosScreen() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Error al obtener los delitos');
-      setDelitos(data.crimes || []);
+
+      const newCrimes = data.crimes || [];
+
+      if (newCrimes.length < 50) {
+        setHasMore(false);
+      } else {
+        setHasMore(true);
+      }
+
+      if (isLoadMore) {
+        setDelitos(prev => {
+          // Prevent duplicates by checking IDs
+          const existingIds = new Set(prev.map(d => d._id));
+          const uniqueNewCrimes = newCrimes.filter(d => !existingIds.has(d._id));
+          return [...prev, ...uniqueNewCrimes];
+        });
+        setOffset(currentOffset);
+      } else {
+        setDelitos(newCrimes);
+        setOffset(0);
+      }
     } catch {
       showSnackbar('No se pudieron cargar los delitos', 'error');
     } finally {
-      setLoading(false);
+      if (isLoadMore) {
+        setLoadingMore(false);
+      } else {
+        setLoading(false);
+      }
+      isFetchingRef.current = false;
     }
-  }, [user?.token]);
+  }, [user?.token, offset]);
 
   // Cargar delitos al montar el componente
   useEffect(() => {
-    if (user?.token) fetchDelitos();
-  }, [user, fetchDelitos]);
+    if (user?.token && !loadingMore && offset === 0) fetchDelitos(false);
+  }, [user]);
 
   /**
    * Muestra un mensaje en el snackbar
@@ -115,6 +153,12 @@ export function AdminDelitosScreen() {
       showSnackbar('Error al cambiar el estado del delito', 'error');
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleLoadMore = () => {
+    if (!loading && !loadingMore && hasMore && !isFetchingRef.current) {
+      fetchDelitos(true);
     }
   };
 
@@ -178,7 +222,16 @@ export function AdminDelitosScreen() {
                 <Text style={styles.resultsText}>
                   {filteredData.length} resultado{filteredData.length !== 1 ? 's' : ''}
                 </Text>
-                <DelitosTable delitos={filteredData} onToggle={toggleDelito} />
+                <DelitosTable
+                  delitos={filteredData}
+                  onToggle={toggleDelito}
+                  onLoadMore={handleLoadMore}
+                />
+                {loadingMore && (
+                  <View style={{ padding: theme.spacing.md, alignItems: 'center' }}>
+                    <Text style={{ color: theme.colors.text }}>Cargando más delitos...</Text>
+                  </View>
+                )}
               </>
             )}
           </ScrollView>
